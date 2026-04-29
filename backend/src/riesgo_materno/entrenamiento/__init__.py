@@ -1,0 +1,2 @@
+from .entrenador import obtener_membresias_optimizadas, obtener_resultado_entrenamiento
+

@@ -1,0 +1,7 @@
+numpy
+pandas
+scikit-fuzzy
+pygad
+scikit-learn
+fastapi[standard]
+pydantic-settings
