@@ -5,8 +5,8 @@ from pathlib import Path
 RUTA_PAQUETE = Path(__file__).resolve().parents[1]
 RUTA_CSV = RUTA_PAQUETE / "datos" / "Maternal Health Risk Data Set.csv"
 COLUMNA_RIESGO_CSV = "RiskLevel"
-RUTA_MODELO_OPTIMIZADO  = RUTA_PAQUETE / "modelos" / "modelo_optimizado.json"
-RUTA_REGLAS_APRENDIDAS  = RUTA_PAQUETE / "modelos" / "reglas_aprendidas.json"
+RUTA_REGLAS_APRENDIDAS = RUTA_PAQUETE / "modelos" / "reglas_aprendidas.json"
+RUTA_SELECCION_REGLAS = RUTA_PAQUETE / "modelos" / "modelo_optimizado_reglas.json"
 
 MAPA_COLUMNAS_CSV = OrderedDict(
     [
@@ -19,38 +19,31 @@ MAPA_COLUMNAS_CSV = OrderedDict(
     ]
 )
 
+# 70/30 estratificado entrenamiento/prueba.
+PROPORCION_ENTRENAMIENTO = 0.70
+
 PARAMETROS_AG = {
-    # cuantos cromosomas hay en cada generacion
+    # cuantos cromosomas binarios hay en cada generacion
     "tamano_poblacion": 50,
-    # cuantos hijos se generan por generacion via cruce
-    "cantidad_hijos": 50,
-    # tope de generaciones si no hay parada temprana
-    "maximo_generaciones": 60,
-    # probabilidad de que dos padres se crucen para generar hijos
+    # cuantos padres se seleccionan por ruleta para entrar al pool de cruce
+    # PyGAD luego cruza pares de este pool hasta producir (tamano_poblacion - elitismo) hijos
+    "cantidad_padres": 25,
+    # tope de generaciones
+    "maximo_generaciones": 200,
+    # probabilidad de aplicar cruce de un punto entre dos padres
     "probabilidad_cruce": 0.85,
-    # probabilidad de que cada gen individual mute
-    "probabilidad_mutacion": 0.04,
-    # cuantos mejores individuos pasan directamente a la siguiente generacion sin cambios
-    "elitismo": 3,
-    # cuantos individuos compiten en cada seleccion por torneo
-    "tamano_torneo": 3,
+    # probabilidad de que cada bit individual se invierta  (flip)
+    "probabilidad_mutacion": 0.05,
+    # cuantos mejores individuos pasan intactos a la siguiente generacion
+    "elitismo": 1,
     # generaciones sin mejora antes de detener el AG
-    "paciencia": 50,
+    "paciencia": 30,
 }
 
+# Pesos del fitness Pittsburgh: Fitness(S) = w_ba * BA(S) - w_compacidad * C(S)
+#   BA(S)  = Balanced Accuracy — promedio del recall por clase (trata todas las clases igual)
+#   C(S)   = |S| / |Scand|     — fraccion de reglas candidatas seleccionadas (0 a 1)
 PESOS_FITNESS = {
-    # macro_f1: peso principal — clasifica bien las 3 clases por igual
-    "macro_f1": 0.75,
-    # recall_alto: peso extra — detectar riesgo alto es prioritario (falso negativo = consecuencia grave)
-    "recall_alto": 0.25,
-    # interpretabilidad: penaliza huecos y solapamiento excesivo — el medico debe poder entender las funciones
-    "interpretabilidad": 0.8,
-    # desviacion: penaliza alejarse demasiado del cromosoma base — guia suave para no perder significado clinico
-    "desviacion": 0.05,
-}
-
-PROPORCIONES_SPLIT = {
-    "entrenamiento": 0.70,
-    "validacion": 0.15,
-    "prueba": 0.15,
+    "balanced_accuracy": 0.95,
+    "compacidad": 0.05,
 }

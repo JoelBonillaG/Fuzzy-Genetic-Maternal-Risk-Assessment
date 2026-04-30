@@ -17,9 +17,20 @@ class SistemaDifusoMamdani:
     Flujo: fusificacion -> evaluacion de reglas -> desfusificacion (centroide).
     """
 
-    def __init__(self, membresias_entrada):
-        """Inicializa el motor con las membresias dadas, construye universos, curvas trapezoidales y compila reglas."""
+    def __init__(self, membresias_entrada, reglas=None):
+        """Inicializa el motor con las membresias dadas y un subconjunto opcional de reglas activas.
+
+        Entradas:
+            membresias_entrada: dict {variable: {categoria: np.array([a, b, c, d])}}
+                                Los 4 puntos definen el trapecio de la funcion de pertenencia.
+                                Las variables y categorias deben coincidir con ESPECIFICACIONES_VARIABLES.
+            reglas:             lista de dicts {"numero": int,
+                                               "antecedentes": [(variable, categoria), ...],
+                                               "consecuente": "bajo" | "medio" | "alto"}
+                                Si es None, usa REGLAS (todas las reglas candidatas del JSON).
+        """
         self.membresias_entrada = membresias_entrada
+        self.reglas = reglas if reglas is not None else REGLAS
         self.puntaje_neutro = 50.0
         self.universos_entrada = self._crear_universos_entrada()
         self.universo_salida = self._crear_universo_salida()
@@ -29,21 +40,32 @@ class SistemaDifusoMamdani:
 
     # -- Inferencia (vectorizada para velocidad) --
     def inferir_lote(self, entradas):
-        """Clasifica un lote de casos de forma vectorizada."""
+        """Clasifica un lote de N casos aplicando Mamdani sobre todas las reglas activas.
+
+        Entrada:
+            entradas: dict {variable: np.array de N floats}
+                      Ejemplo: {"presion_sistolica": [120, 140], "edad": [25, 38], ...}
+        Salida:
+            dict con:
+              "puntajes":      np.array de N floats (0-100, resultado de la desfusificacion)
+              "riesgos":       np.array de N strings ("low risk" | "mid risk" | "high risk")
+              "activaciones":  lista de N dicts {"bajo": float, "medio": float, "alto": float}
+              "sin_activacion": np.array de N bools (True si ninguna regla se activo para ese caso)
+        """
         n = len(next(iter(entradas.values())))
 
         # Paso 1: fusificar — calcular grado de pertenencia de cada valor en cada categoria
-        pertenencias = {}  # pertenencias[var][cat] = array de n floats
+        pertenencias = {}
         for variable in VARIABLES_ENTRADA:
             pertenencias[variable] = {}
             universo = self.universos_entrada[variable]
             valores = np.asarray(entradas[variable], dtype=float)
             for categoria, curva in self.curvas_entrada[variable].items():
-                pertenencias[variable][categoria] = np.array(
-                    [fuzz.interp_membership(universo, curva, v) for v in valores],
-                    dtype=float,
-                )
-        
+                grados = []
+                for v in valores:
+                    grados.append(fuzz.interp_membership(universo, curva, v))
+                pertenencias[variable][categoria] = np.array(grados, dtype=float)
+
         # Paso 2: evaluar reglas — AND=minimo acumulativo, OR=maximo entre reglas
         act_bajo = np.zeros(n, dtype=float)
         act_medio = np.zeros(n, dtype=float)
@@ -51,11 +73,9 @@ class SistemaDifusoMamdani:
         mapa_act = {"bajo": act_bajo, "medio": act_medio, "alto": act_alto}
 
         for antecedentes, consecuente in self._reglas_compiladas:
-            # AND de antecedentes: minimo a lo largo de antecedentes
             fuerza = np.ones(n, dtype=float)
             for termino, categoria in antecedentes:
                 fuerza = np.minimum(fuerza, pertenencias[termino][categoria])
-            # OR entre reglas: maximo
             np.maximum(mapa_act[consecuente], fuerza, out=mapa_act[consecuente])
 
         # Paso 3: desfusificar cada caso
@@ -67,16 +87,20 @@ class SistemaDifusoMamdani:
                 "medio": float(act_medio[i]),
                 "alto": float(act_alto[i]),
             }
-            # Si ninguna regla activo nada, todas las activaciones son 0
             sin_activacion[i] = (act_bajo[i] == 0.0 and act_medio[i] == 0.0 and act_alto[i] == 0.0)
             puntajes[i] = self._desfusificar(activaciones_i)
 
-        riesgos = np.array([puntaje_a_riesgo(p) for p in puntajes], dtype=object)
+        riesgos = np.empty(n, dtype=object)
+        for i, puntaje in enumerate(puntajes):
+            riesgos[i] = puntaje_a_riesgo(puntaje)
 
-        activaciones = [
-            {"bajo": float(act_bajo[i]), "medio": float(act_medio[i]), "alto": float(act_alto[i])}
-            for i in range(n)
-        ]
+        activaciones = []
+        for i in range(n):
+            activaciones.append({
+                "bajo": float(act_bajo[i]),
+                "medio": float(act_medio[i]),
+                "alto": float(act_alto[i]),
+            })
 
         return {
             "puntajes": puntajes,
@@ -101,28 +125,27 @@ class SistemaDifusoMamdani:
         for variable in VARIABLES_ENTRADA:
             universo = self.universos_entrada[variable]
             valor = float(entradas[variable])
-            pertenencias[variable] = {
-                categoria: float(fuzz.interp_membership(universo, curva, valor))
-                for categoria, curva in self.curvas_entrada[variable].items()
-            }
+            pertenencias[variable] = {}
+            for categoria, curva in self.curvas_entrada[variable].items():
+                pertenencias[variable][categoria] = float(fuzz.interp_membership(universo, curva, valor))
 
         # Paso 2: evaluacion de reglas
         activaciones = {"bajo": 0.0, "medio": 0.0, "alto": 0.0}
         reglas_activadas = []
 
-        for regla in REGLAS:
-
-            antecedentes_con_valor = [
-                {
+        for regla in self.reglas:
+            antecedentes_con_valor = []
+            for termino, categoria in regla["antecedentes"]:
+                antecedentes_con_valor.append({
                     "variable":    termino,
                     "categoria":   categoria,
                     "pertenencia": pertenencias[termino][categoria],
-                }
-                for termino, categoria in regla["antecedentes"]
-            ]
+                })
 
             # AND: la fuerza de la regla es el minimo de las pertenencias de sus antecedentes
-            fuerza = min(a["pertenencia"] for a in antecedentes_con_valor)
+            fuerza = antecedentes_con_valor[0]["pertenencia"]
+            for antecedente in antecedentes_con_valor[1:]:
+                fuerza = min(fuerza, antecedente["pertenencia"])
 
             # OR: si otra regla ya activo este consecuente con mas fuerza, se conserva el maximo
             activaciones[regla["consecuente"]] = max(activaciones[regla["consecuente"]], fuerza)
@@ -138,8 +161,11 @@ class SistemaDifusoMamdani:
         # Paso 3: desfusificacion — centroide del area resultante
         puntaje = self._desfusificar(activaciones)
 
-        # Ninguna regla se activo si todas las activaciones son 0 — puntaje=50 es neutro, no clinico
-        sin_activacion = all(v == 0.0 for v in activaciones.values())
+        sin_activacion = True
+        for v in activaciones.values():
+            if v != 0.0:
+                sin_activacion = False
+                break
 
         return {
             "pertenencias":     pertenencias,
@@ -159,7 +185,6 @@ class SistemaDifusoMamdani:
             salida_recortada = np.fmin(activaciones[categoria], curva_salida)
             salida_agregada = np.fmax(salida_agregada, salida_recortada)
 
-        
         if float(np.max(salida_agregada)) == 0.0:
             return self.puntaje_neutro
 
@@ -167,10 +192,18 @@ class SistemaDifusoMamdani:
 
     # -- Compilacion de reglas --
     def _compilar_reglas(self):
-        """Convierte las reglas a tuplas para evaluacion rapida."""
+        """Convierte las reglas activas a tuplas para evaluacion rapida.
+
+        Transforma cada regla de su formato dict original a:
+            ([("presion_sistolica", "elevada"), ("azucar_sangre", "alta")], "alto")
+             ↑ lista de pares (variable, categoria)                          ↑ consecuente
+        Esta estructura permite recorrerla mas rapido en cada ciclo de inferencia.
+        """
         compiladas = []
-        for regla in REGLAS:
-            var_cats = [(v, c) for v, c in regla["antecedentes"]]
+        for regla in self.reglas:
+            var_cats = []
+            for v, c in regla["antecedentes"]:
+                var_cats.append((v, c))
             compiladas.append((var_cats, regla["consecuente"]))
         return compiladas
 

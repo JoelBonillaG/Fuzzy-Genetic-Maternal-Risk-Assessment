@@ -24,6 +24,7 @@ class PrediccionResponse(BaseModel):
     sistema: str
     origen_modelo: str
     ajustes_entrada: list[AjusteEntradaResponse]
+    cantidad_reglas_activas: int
 
 
 class AntecedentExplicacion(BaseModel):
@@ -48,6 +49,7 @@ class ExplicacionResponse(BaseModel):
     riesgo: str
     origen_modelo: str
     ajustes_entrada: list[AjusteEntradaResponse]
+    cantidad_reglas_activas: int
 
 
 class CurvaMembresia(BaseModel):
@@ -60,90 +62,39 @@ class MembresiasResponse(BaseModel):
     origen_modelo: str
 
 
-# ── Algoritmo genetico ────────────────────────────────────────────────────────
+# ── Algoritmo genetico (lectura de la seleccion guardada) ─────────────────────
 
 class GeneracionHistorial(BaseModel):
     generacion: int
-    fitness: float
+    mejor_fitness: float
     fitness_promedio: float
-    macro_f1: float
-    recall_alto: float
+    aciertos: int
+    cantidad_reglas: int
 
 
-class GAHistorialResponse(BaseModel):
-    disponible: bool
-    historial_generaciones: list[GeneracionHistorial]
+class MetricasPrueba(BaseModel):
+    aciertos: int
+    total: int
+    accuracy: float
     fitness: float
-    generaciones: int
-    macro_f1: float
-    recall_alto: float
 
 
-class ComparacionRow(BaseModel):
-    metrica: str
-    base: float
-    optimizado: float
-    delta: float
-
-
-class GAComparacionResponse(BaseModel):
+class SeleccionReglasResponse(BaseModel):
     disponible: bool
-    tabla_comparativa: list[ComparacionRow]
-    mejor_cromosoma: list[float]
-    membresias_decodificadas: dict[str, dict[str, list[float]]]
-
-
-class ReentrenarRequest(BaseModel):
-    tamano_poblacion: int = 50
-    cantidad_hijos: int = 50
-    maximo_generaciones: int = 60
-    probabilidad_cruce: float = 0.85
-    probabilidad_mutacion: float = 0.04
-
-    model_config = {"json_schema_extra": {"example": {
-        "tamano_poblacion": 50,
-        "cantidad_hijos": 50,
-        "maximo_generaciones": 60,
-        "probabilidad_cruce": 0.85,
-        "probabilidad_mutacion": 0.04,
-    }}}
-
-    @classmethod
-    def __get_validators__(cls):
-        yield cls._validate
-
-    def model_post_init(self, __context):
-        if self.tamano_poblacion < 4:
-            raise ValueError("tamano_poblacion debe ser al menos 4")
-        if self.cantidad_hijos < 2:
-            raise ValueError("cantidad_hijos debe ser al menos 2")
-        if self.maximo_generaciones < 1:
-            raise ValueError("maximo_generaciones debe ser al menos 1")
-        if not (0.0 < self.probabilidad_cruce <= 1.0):
-            raise ValueError("probabilidad_cruce debe estar en (0, 1]")
-        if not (0.0 < self.probabilidad_mutacion <= 1.0):
-            raise ValueError("probabilidad_mutacion debe estar en (0, 1]")
-
-
-class ReentrenarResponse(BaseModel):
-    exito: bool
+    cromosoma: list[int]
+    numeros_reglas_activas: list[int]
+    cantidad_reglas: int
     fitness: float
-    generaciones: int
-    macro_f1: float
-    recall_alto: float
+    metricas_prueba: dict | MetricasPrueba | None = None
+    historial: list[GeneracionHistorial] = []
 
 
 # ── Logica difusa ─────────────────────────────────────────────────────────────
 
-class CategoriaDefinicion(BaseModel):
-    puntos_base: list[float]
-    puntos_optimizados: list[float]
-
-
 class VariableDefinicion(BaseModel):
     limites: list[float]
     epsilon: float
-    categorias: dict[str, CategoriaDefinicion]
+    categorias: dict[str, list[float]]
 
 
 class SalidaDifusa(BaseModel):
@@ -167,8 +118,10 @@ class ReglaSchema(BaseModel):
     numero: int
     antecedentes: list[AntecedentRegla]
     consecuente: str
+    activa: bool
 
 
 class FuzzyReglasResponse(BaseModel):
     reglas: list[ReglaSchema]
     total: int
+    total_activas: int

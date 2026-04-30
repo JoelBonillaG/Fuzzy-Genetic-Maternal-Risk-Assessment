@@ -1,23 +1,17 @@
-import threading
+"""Servicios HTTP: prediccion + lectura de la seleccion de reglas guardada por el CLI.
 
-from src.riesgo_materno.entrenamiento.entrenador import (
-    cargar_modelo_optimizado,
-    entrenar_con_progreso,
-    obtener_membresias_optimizadas,
-    obtener_resultado_entrenamiento,
-)
+El entrenamiento del AG vive en el CLI; la API solo lee resultados.
+"""
+
+from src.riesgo_materno.entrenamiento.entrenador import cargar_seleccion_reglas
 from src.riesgo_materno.logica_difusa.reglas import REGLAS
 from src.riesgo_materno.logica_difusa.variables import ESPECIFICACIONES_VARIABLES, SALIDA_DIFUSA
-from src.riesgo_materno.optimizacion.cromosoma import decodificar_cromosoma
-from src.riesgo_materno.prediccion import predecir_caso
-from src.riesgo_materno.prediccion.predictor import obtener_curvas_membresia, predecir_caso_con_explicacion
+from src.riesgo_materno.prediccion.predictor import (
+    obtener_curvas_membresia,
+    predecir_caso,
+    predecir_caso_con_explicacion,
+)
 
-_lock_reentrenamiento = threading.Lock()
-_entrenamiento_activo = False
-
-
-def esta_entrenando() -> bool:
-    return _entrenamiento_activo
 
 # ── Prediccion ────────────────────────────────────────────────────────────────
 
@@ -33,102 +27,46 @@ def explicar_prediccion(valores_entrada: dict[str, float]) -> dict:
     return predecir_caso_con_explicacion(valores_entrada)
 
 
-# ── Algoritmo genetico ────────────────────────────────────────────────────────
+# ── Algoritmo genetico (solo lectura) ─────────────────────────────────────────
 
-def obtener_historial_ga() -> dict:
-    resultado = cargar_modelo_optimizado()
-    if resultado is None or not resultado.get("historial"):
+def obtener_seleccion_reglas_actual() -> dict:
+    """Devuelve la seleccion de reglas guardada o un payload vacio si no existe."""
+    seleccion = cargar_seleccion_reglas()
+    if seleccion is None:
         return {
             "disponible": False,
-            "historial_generaciones": [],
+            "cromosoma": [],
+            "numeros_reglas_activas": [],
+            "cantidad_reglas": 0,
             "fitness": 0.0,
-            "generaciones": 0,
-            "macro_f1": 0.0,
-            "recall_alto": 0.0,
+            "metricas_prueba": {},
+            "historial": [],
         }
-    print("aqui")
     return {
         "disponible": True,
-        "historial_generaciones": resultado["historial"],
-        "fitness": resultado.get("fitness", 0.0),
-        "generaciones": resultado.get("generaciones", 0),
-        "macro_f1": resultado.get("macro_f1", 0.0),
-        "recall_alto": resultado.get("recall_alto", 0.0),
-    }
-
-
-def obtener_comparacion_ga() -> dict:
-    resultado = cargar_modelo_optimizado()
-    if resultado is None:
-        return {
-            "disponible": False,
-            "tabla_comparativa": [],
-            "mejor_cromosoma": [],
-            "membresias_decodificadas": {},
-        }
-    cromosoma = resultado["mejor_cromosoma"]
-    membresias = decodificar_cromosoma(cromosoma)
-    membresias_serializables = {
-        var: {cat: puntos.tolist() for cat, puntos in cats.items()}
-        for var, cats in membresias.items()
-    }
-    print("tabla_comparativa", resultado.get("tabla_comparativa", []))
-    return {
-        "disponible": True,
-        "tabla_comparativa": resultado.get("tabla_comparativa", []),
-        "mejor_cromosoma": cromosoma.tolist(),
-        "membresias_decodificadas": membresias_serializables,
-    }
-
-
-def reentrenar_ga_con_progreso(parametros: dict, progress_callback) -> dict:
-    """Entrena el GA emitiendo cada generacion via progress_callback."""
-    global _entrenamiento_activo
-    with _lock_reentrenamiento:
-        _entrenamiento_activo = True
-        try:
-            resultado = entrenar_con_progreso(parametros=parametros, progress_callback=progress_callback)
-        finally:
-            _entrenamiento_activo = False
-    mejor = resultado["mejor_individuo"]
-    return {
-        "exito": True,
-        "fitness": float(mejor.fitness),
-        "generaciones": int(len(resultado["historial"]) - 1),
-        "macro_f1": float(mejor.macro_f1_validacion),
-        "recall_alto": float(mejor.recall_alto_validacion),
-    }
-
-
-def reentrenar_ga(parametros: dict | None = None) -> dict:
-    resultado = obtener_resultado_entrenamiento(
-        forzar_reentrenamiento=True,
-        parametros=parametros,
-    )
-    mejor = resultado["mejor_individuo"]
-    return {
-        "exito": True,
-        "fitness": float(mejor.fitness),
-        "generaciones": int(len(resultado["historial"]) - 1),
-        "macro_f1": float(mejor.macro_f1_validacion),
-        "recall_alto": float(mejor.recall_alto_validacion),
+        "cromosoma": seleccion["cromosoma"].tolist(),
+        "numeros_reglas_activas": seleccion["numeros_reglas_activas"],
+        "cantidad_reglas": seleccion["cantidad_reglas"],
+        "fitness": seleccion["fitness"],
+        "metricas_prueba": seleccion["metricas_prueba"],
+        "historial": seleccion["historial"],
     }
 
 
 # ── Logica difusa ─────────────────────────────────────────────────────────────
 
 def obtener_definiciones_difusas() -> dict:
-    membresias, origen = obtener_membresias_optimizadas()
+    """Definiciones de las variables y la salida (las membresias no se optimizan)."""
+    seleccion = cargar_seleccion_reglas()
+    origen = seleccion["ruta_modelo"] if seleccion else "modelo no entrenado"
+
     variables = {}
     for nombre, espec in ESPECIFICACIONES_VARIABLES.items():
         variables[nombre] = {
             "limites": list(map(float, espec["limites"])),
             "epsilon": float(espec["epsilon"]),
             "categorias": {
-                cat: {
-                    "puntos_base": list(map(float, puntos)),
-                    "puntos_optimizados": membresias[nombre][cat].tolist(),
-                }
+                cat: list(map(float, puntos))
                 for cat, puntos in espec["categorias"].items()
             },
         }
@@ -144,6 +82,10 @@ def obtener_definiciones_difusas() -> dict:
 
 
 def obtener_reglas_difusas() -> dict:
+    """Lista todas las reglas candidatas y marca cuales estan activas en la base optimizada."""
+    seleccion = cargar_seleccion_reglas()
+    numeros_activos = set(seleccion["numeros_reglas_activas"]) if seleccion else set()
+
     reglas_formateadas = [
         {
             "numero": regla["numero"],
@@ -152,10 +94,12 @@ def obtener_reglas_difusas() -> dict:
                 for var, cat in regla["antecedentes"]
             ],
             "consecuente": regla["consecuente"],
+            "activa": regla["numero"] in numeros_activos,
         }
         for regla in REGLAS
     ]
     return {
         "reglas": reglas_formateadas,
         "total": len(REGLAS),
+        "total_activas": len(numeros_activos),
     }

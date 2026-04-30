@@ -5,3 +5,4 @@ pygad
 scikit-learn
 fastapi[standard]
 pydantic-settings
+wittgenstein

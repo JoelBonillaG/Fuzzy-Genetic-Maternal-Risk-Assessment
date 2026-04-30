@@ -67,7 +67,7 @@ def aprender_reglas_ripper(tabla):
     Parámetros
     ----------
     tabla : pd.DataFrame
-        Resultado de cargar_datos() — columnas numéricas + columna "riesgo".
+        Resultado de cargar_dataset() — columnas numéricas + columna "riesgo".
 
     Retorna
     -------
@@ -103,19 +103,39 @@ def aprender_reglas_ripper(tabla):
 
     return reglas
 
+# Después de aprender_reglas_ripper, evalúa así:
+def evaluar_reglas_duras(reglas, tabla):
+    ejemplos = _discretizar(tabla)
+    aciertos = 0
+    for ej in ejemplos:
+        clase_real = ej["clase"]
+        # Aplica reglas en orden, primera que matche gana
+        prediccion = None
+        for r in reglas:
+            if all(ej[var] == cat for var, cat in r["antecedentes"]):
+                prediccion = {"alto": "high risk", "medio": "mid risk", 
+                              "bajo": "low risk"}[r["consecuente"]]
+                break
+        if prediccion == clase_real:
+            aciertos += 1
+    return aciertos / len(ejemplos)
 
 # ── Ejecución directa: genera reglas y las guarda en JSON ────────────────────
 
 if __name__ == "__main__":
     import json
-    from .datos import cargar_datos
+    from .datos import cargar_dataset
     from .modelo import RUTA_CSV, RUTA_REGLAS_APRENDIDAS
 
     print("Cargando dataset...")
-    datos = cargar_datos(RUTA_CSV)
+    datos = cargar_dataset(RUTA_CSV)
 
     print("Ejecutando RIPPER...")
     reglas = aprender_reglas_ripper(datos)
+
+    print("Evaluando reglas duras...")
+    precision = evaluar_reglas_duras(reglas, datos)
+    print(f"Precision de las reglas duras: {precision:.2%}")
 
     # Guardar en JSON — antecedentes como listas (JSON no tiene tuplas)
     contenido = [
@@ -134,3 +154,5 @@ if __name__ == "__main__":
     for r in reglas:
         ants = " AND ".join(f"{v}={c}" for v, c in r["antecedentes"])
         print(f"  Regla {r['numero']:>2}: SI {ants} → {r['consecuente']}")
+
+    

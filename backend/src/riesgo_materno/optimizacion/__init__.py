@@ -1,1 +1,1 @@
-"""Optimizacion de funciones de pertenencia."""
+"""Algoritmo genetico Pittsburgh: seleccion del mejor subconjunto de reglas candidatas."""

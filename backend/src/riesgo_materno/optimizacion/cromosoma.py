@@ -1,252 +1,64 @@
-from collections import OrderedDict
+"""Cromosoma Pittsburgh: vector binario de inclusion/exclusion de reglas candidatas.
+
+Cada bit ci indica si la regla candidata Ri esta activa (1) o no (0).
+Un cromosoma representa una base completa de reglas.
+"""
 
 import numpy as np
 
-from ..logica_difusa.variables import ESPECIFICACIONES_VARIABLES
-
-# Maximo solapamiento permitido entre dos trapecios vecinos.
-# El soporte es la base completa del trapecio, desde a hasta d.
-# Este limite se calcula usando el soporte del trapecio mas pequeno.
-MAX_FRACCION_SOLAPAMIENTO = 0.30
-
-# Numero de veces que se repite el ajuste entre categorias vecinas.
-# Se hacen varias pasadas porque al corregir un par se puede afectar al siguiente.
-ITERACIONES_REPARACION = 5
+from ..logica_difusa.reglas import REGLAS
 
 
-# ---------------------------------------------------------------------------
-# Funciones basicas de trapecios
-# Un trapecio difuso se guarda como [a, b, c, d]:
-#   a, d -> inicio y fin del soporte
-#   b, c -> inicio y fin del nucleo
-# ---------------------------------------------------------------------------
-
-def centro_de_trapecio(trapecio):
-    """Devuelve el centro del nucleo del trapecio."""
-    return float((trapecio[1] + trapecio[2]) / 2.0)
+CANTIDAD_REGLAS_CANDIDATAS = len(REGLAS)
 
 
-def ancho_de_soporte(trapecio):
-    """Devuelve el ancho del soporte, es decir, d - a."""
-    return float(trapecio[3] - trapecio[0])
+def cromosoma_todas_activas():
+    """Cromosoma con todas las reglas candidatas activas (Cfull = [1, 1, ..., 1])."""
+    return np.ones(CANTIDAD_REGLAS_CANDIDATAS, dtype=int)
 
 
-def reparar_trapecio(trapecio, limite_inferior, limite_superior, epsilon):
-    """Corrige un trapecio para que no quede fuera de forma.
+def cromosoma_aleatorio():
+    """Cromosoma binario aleatorio: cada bit es 1 con probabilidad 0.5."""
+    return np.random.randint(0, 2, size=CANTIDAD_REGLAS_CANDIDATAS).astype(int)
 
-    Esta funcion se asegura de tres cosas:
-    1. que los puntos queden dentro del dominio de la variable,
-    2. que esten ordenados como a <= b <= c <= d,
-    3. que el trapecio no se vuelva demasiado pequeno.
+
+def seleccion_a_base_reglas(cromosoma, reglas_candidatas=REGLAS):
+    """Decodifica un cromosoma binario en la lista de reglas activas (la base S).
+
+    Entrada:
+        cromosoma: array de ints [1, 0, 1, 1, 0, ...]  — un bit por regla candidata
+    Salida:
+        lista de dicts con formato:
+        {"numero": int, "antecedentes": [(variable, categoria), ...], "consecuente": str}
+        Solo se incluyen las reglas donde el bit es 1.
     """
-    trapecio = np.clip(
-        np.sort(np.asarray(trapecio, dtype=float)),
-        limite_inferior,
-        limite_superior,
-    )
-    a, b, c, d = trapecio
-
-    ancho_minimo = max(epsilon * 0.5, 0.000001)
-
-    if d - a < ancho_minimo:
-        # Si el soporte es muy pequeno, se abre un poco desde el centro.
-        punto_medio = np.clip((a + d) / 2.0, limite_inferior, limite_superior)
-        mitad = ancho_minimo / 2.0
-        a = max(limite_inferior, punto_medio - mitad)
-        d = min(limite_superior, punto_medio + mitad)
-
-        if d - a < ancho_minimo:
-            # Si esta pegado a un borde, se extiende hacia adentro del dominio.
-            if a <= limite_inferior:
-                d = min(limite_superior, limite_inferior + ancho_minimo)
-            else:
-                a = max(limite_inferior, limite_superior - ancho_minimo)
-                d = limite_superior
-
-    b = np.clip(b, a, d)
-    c = np.clip(c, b, d)
-    return np.asarray([a, b, c, d], dtype=float)
+    cromosoma = np.asarray(cromosoma, dtype=int)
+    base = []
+    for i, bit in enumerate(cromosoma):
+        if bit == 1:
+            base.append(reglas_candidatas[i])
+    return base
 
 
-# ---------------------------------------------------------------------------
-# Orden y ajuste entre categorias
-# ---------------------------------------------------------------------------
-
-def ordenar_categorias_por_centro(bloque):
-    """Ordena los trapecios de una variable de izquierda a derecha."""
-    centros = np.asarray([centro_de_trapecio(fila) for fila in bloque], dtype=float)
-    orden = np.argsort(centros, kind="stable")
-    return bloque[orden]
+def es_base_vacia(cromosoma):
+    """True si ningun bit esta activo — la base es vacia."""
+    return cantidad_reglas_activas(cromosoma) == 0
 
 
-# bloque -> edad: joven, adulta, avanzada
-def ajustar_categorias_adyacentes(bloque, limite_inferior, limite_superior, epsilon):
-    """Ajusta trapecios vecinos para que queden mejor organizados.
-
-    En cada par revisa tres cosas:
-    1. que no haya huecos,
-    2. que no haya demasiado solapamiento,
-    3. que los nucleos no se crucen.
-    """
-    bloque = bloque.copy()
-
-    for _ in range(ITERACIONES_REPARACION):
-        bloque = np.asarray(
-            [reparar_trapecio(fila, limite_inferior, limite_superior, epsilon) for fila in bloque],
-            dtype=float,
-        )
-        bloque = ordenar_categorias_por_centro(bloque)
-
-        for indice in range(len(bloque) - 1):
-            izquierda = bloque[indice].copy()
-            derecha = bloque[indice + 1].copy()
-
-            # Si hay hueco entre soportes, ambos se unen en el punto medio.
-            # d del trapecio izquierdo y a del trapecio derecho.
-            if izquierda[3] < derecha[0]:
-                punto_medio = (izquierda[3] + derecha[0]) / 2.0
-                izquierda[3] = punto_medio
-                derecha[0] = punto_medio
-
-            izquierda = reparar_trapecio(izquierda, limite_inferior, limite_superior, epsilon)
-            derecha = reparar_trapecio(derecha, limite_inferior, limite_superior, epsilon)
-
-            # Si se montan demasiado, se reduce el exceso en ambos lados.
-            solapamiento = izquierda[3] - derecha[0]
-            maximo_solapamiento = MAX_FRACCION_SOLAPAMIENTO * min(
-                ancho_de_soporte(izquierda),
-                ancho_de_soporte(derecha),
-            )
-            if solapamiento > maximo_solapamiento:
-                exceso = (solapamiento - maximo_solapamiento) / 2.0
-                izquierda[3] -= exceso
-                derecha[0] += exceso
-
-            izquierda = reparar_trapecio(izquierda, limite_inferior, limite_superior, epsilon)
-            derecha = reparar_trapecio(derecha, limite_inferior, limite_superior, epsilon)
-
-            # Si un nucleo invade al otro, se separan un poco.
-            # c del trapecio izquierdo y b del trapecio derecho.
-            if izquierda[2] > derecha[1]:
-                punto_medio = (izquierda[2] + derecha[1]) / 2.0
-                izquierda[2] = punto_medio - epsilon / 2.0
-                derecha[1] = punto_medio + epsilon / 2.0
-
-            izquierda = reparar_trapecio(izquierda, limite_inferior, limite_superior, epsilon)
-            derecha = reparar_trapecio(derecha, limite_inferior, limite_superior, epsilon)
-            bloque[indice] = izquierda
-            bloque[indice + 1] = derecha
-
-    return bloque
+def cantidad_reglas_activas(cromosoma):
+    """Numero de reglas activas |S| en el cromosoma."""
+    return int(np.sum(np.asarray(cromosoma, dtype=int)))
 
 
-# ---------------------------------------------------------------------------
-# Reparacion del cromosoma completo
-# ---------------------------------------------------------------------------
-
-def reparar_bloque_variable(bloque, limite_inferior, limite_superior, epsilon):
-    """Repara todos los trapecios de una variable.
-
-    El proceso es:
-    recortar al dominio, ordenar puntos, reparar trapecios,
-    ordenar categorias, ajustar vecinas y reparar otra vez.
-    """
-    bloque = np.clip(np.asarray(bloque, dtype=float), limite_inferior, limite_superior)
-    
-    bloque = np.sort(bloque, axis=1)
-    
-    bloque = np.asarray(
-        [reparar_trapecio(fila, limite_inferior, limite_superior, epsilon) for fila in bloque],
-        dtype=float,
-    )
-    bloque = ordenar_categorias_por_centro(bloque)
-    bloque = ajustar_categorias_adyacentes(bloque, limite_inferior, limite_superior, epsilon)
-    bloque = ordenar_categorias_por_centro(bloque)
-    bloque = np.asarray(
-        [reparar_trapecio(fila, limite_inferior, limite_superior, epsilon) for fila in bloque],
-        dtype=float,
-    )
-    return bloque
+def numeros_reglas_activas(cromosoma, reglas_candidatas=REGLAS):
+    """Numeros legibles ('numero' del JSON) de las reglas activas."""
+    numeros = []
+    for i in indices_reglas_activas(cromosoma):
+        numeros.append(reglas_candidatas[i]["numero"])
+    return numeros
 
 
-def reparar_cromosoma(cromosoma):
-    """Repara todo el cromosoma, variable por variable."""
-    cromosoma = np.asarray(cromosoma, dtype=float).copy()
-    genes_reparados = []
-    cursor = 0
-
-    for variable, especificacion in ESPECIFICACIONES_VARIABLES.items():
-        cantidad_categorias = len(especificacion["categorias"])
-        bloque = cromosoma[cursor : cursor + cantidad_categorias * 4].reshape(cantidad_categorias, 4)
-        bloque_reparado = reparar_bloque_variable(
-            bloque,
-            limite_inferior=especificacion["limites"][0],
-            limite_superior=especificacion["limites"][1],
-            epsilon=especificacion["epsilon"],
-        )
-        genes_reparados.extend(bloque_reparado.reshape(-1).tolist())
-        cursor += cantidad_categorias * 4
-
-    return np.asarray(genes_reparados, dtype=float)
-
-
-# ---------------------------------------------------------------------------
-# Codificacion y decodificacion
-# ---------------------------------------------------------------------------
-
-def decodificar_cromosoma(cromosoma):
-    """Convierte el cromosoma plano en variable -> categoria -> [a, b, c, d]."""
-    membresias = OrderedDict()
-    cursor = 0
-    for variable, especificacion in ESPECIFICACIONES_VARIABLES.items():
-        membresias[variable] = OrderedDict()
-        for categoria in especificacion["categorias"].keys():
-            membresias[variable][categoria] = np.asarray(cromosoma[cursor : cursor + 4], dtype=float)
-            cursor += 4
-    return membresias
-
-
-def aplanar_membresias(membresias):
-    """Convierte las membresias en arreglos utiles para el optimizador.
-
-    Devuelve cuatro arreglos:
-    genes, minimos, maximos y rangos.
-    """
-    genes, minimos, maximos, rangos = [], [], [], []
-
-    for variable, especificacion in ESPECIFICACIONES_VARIABLES.items():
-        limite_inferior, limite_superior = especificacion["limites"]
-        rango = limite_superior - limite_inferior
-        for categoria in especificacion["categorias"].keys():
-            puntos = np.asarray(membresias[variable][categoria], dtype=float)
-            genes.extend(puntos.tolist())
-            minimos.extend([limite_inferior] * 4)
-            maximos.extend([limite_superior] * 4)
-            rangos.extend([rango] * 4)
-
-    return (
-        np.asarray(genes, dtype=float),
-        np.asarray(minimos, dtype=float),
-        np.asarray(maximos, dtype=float),
-        np.asarray(rangos, dtype=float),
-    )
-
-# Es el punto de partida
-def crear_membresias_base():
-    """Crea las membresias iniciales usando ESPECIFICACIONES_VARIABLES."""
-    membresias = OrderedDict()
-    for variable, especificacion in ESPECIFICACIONES_VARIABLES.items():
-        membresias[variable] = OrderedDict()
-        for categoria, puntos in especificacion["categorias"].items():
-            membresias[variable][categoria] = np.asarray(puntos, dtype=float)
-    return membresias
-
-# ---------------------------------------------------------------------------
-# Cromosoma base: punto de partida del optimizador
-# ---------------------------------------------------------------------------
-
-MEMBRESIAS_BASE = crear_membresias_base()
-CROMOSOMA_BASE_CRUDO, LIMITES_INFERIORES, LIMITES_SUPERIORES, RANGOS_GENES = aplanar_membresias(MEMBRESIAS_BASE)
-
-# Solo es por seguridad, aunqeu al ser base ya deberian ser validso en primer momento.
-CROMOSOMA_BASE = reparar_cromosoma(CROMOSOMA_BASE_CRUDO)
+def indices_reglas_activas(cromosoma):
+    """Indices (base 0) de las reglas activas en el cromosoma."""
+    cromosoma = np.asarray(cromosoma, dtype=int)
+    return np.where(cromosoma == 1)[0].tolist()
