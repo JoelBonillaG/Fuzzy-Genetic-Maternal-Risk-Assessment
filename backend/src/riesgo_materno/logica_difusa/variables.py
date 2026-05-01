@@ -30,7 +30,6 @@ ESPECIFICACIONES_VARIABLES = OrderedDict(
             "edad",
             {
                 "limites": (10.0, 70.0),
-                "tolerancia_saturacion": 2.0,
                 "categorias": OrderedDict(
                     [
                         ("adolescente", [10.0, 10.0, 17.0, 20.0]),
@@ -45,7 +44,6 @@ ESPECIFICACIONES_VARIABLES = OrderedDict(
             "presion_sistolica",
             {
                 "limites": (70.0, 220.0),
-                "tolerancia_saturacion": 5.0,
                 "categorias": OrderedDict(
                     [
                         ("hipotension", [70.0, 70.0, 85.0, 95.0]),
@@ -61,7 +59,6 @@ ESPECIFICACIONES_VARIABLES = OrderedDict(
             "presion_diastolica",
             {
                 "limites": (49.0, 130.0),
-                "tolerancia_saturacion": 5.0,
                 "categorias": OrderedDict(
                     [
                         ("normal", [49.0, 55.0, 79.0, 85.0]),
@@ -76,7 +73,6 @@ ESPECIFICACIONES_VARIABLES = OrderedDict(
             "azucar_sangre",
             {
                 "limites": (6.0, 19.0),
-                "tolerancia_saturacion": 0.5,
                 "categorias": OrderedDict(
                     [
                         ("normoglucemia", [6.0, 6.0, 7.0, 7.8]),
@@ -90,7 +86,6 @@ ESPECIFICACIONES_VARIABLES = OrderedDict(
             "temperatura_corporal",
             {
                 "limites": (95.0, 105.0),
-                "tolerancia_saturacion": 0.5,
                 "categorias": OrderedDict(
                     [
                         ("normal", [95.0, 96.8, 99.0, 99.5]),
@@ -105,7 +100,6 @@ ESPECIFICACIONES_VARIABLES = OrderedDict(
             "frecuencia_cardiaca",
             {
                 "limites": (40.0, 160.0),
-                "tolerancia_saturacion": 5.0,
                 "categorias": OrderedDict(
                     [
                         ("bradicardia", [40.0, 40.0, 58.0, 65.0]),
