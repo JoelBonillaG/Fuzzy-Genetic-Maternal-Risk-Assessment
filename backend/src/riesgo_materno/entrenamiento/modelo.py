@@ -29,7 +29,7 @@ PARAMETROS_AG = {
     # PyGAD luego cruza pares de este pool hasta producir (tamano_poblacion - elitismo) hijos
     "cantidad_padres": 25,
     # tope de generaciones
-    "maximo_generaciones": 200,
+    "maximo_generaciones": 50,
     # probabilidad de aplicar cruce de un punto entre dos padres
     "probabilidad_cruce": 0.85,
     # probabilidad de que cada bit individual se invierta  (flip)
