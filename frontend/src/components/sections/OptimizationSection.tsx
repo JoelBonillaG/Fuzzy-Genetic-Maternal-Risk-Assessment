@@ -3,17 +3,21 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Binary, LoaderCircle, RefreshCw, Terminal, X } from "lucide-react";
 import {
-  defaultReentrenarParams,
   getFieldLabel,
-  obtenerComparacionGA,
-  obtenerEstadoGA,
-  obtenerHistorialGA,
-  reentrenarGAStream,
-  type GAComparacionResponse,
-  type GAHistorialResponse,
-  type GeneracionHistorial,
-  type ReentrenarParams,
+  obtenerSeleccionReglas,
+  type SeleccionReglasResponse,
 } from "../../lib/riesgoMaterno";
+
+// Stubs for removed GA streaming endpoints — kept to avoid import errors in dead code paths
+const obtenerEstadoGA = async () => ({ en_entrenamiento: false });
+const obtenerHistorialGA = async (): Promise<never> => { throw new Error("404"); };
+const obtenerComparacionGA = async (): Promise<never> => { throw new Error("404"); };
+const reentrenarGAStream = async function*(): AsyncGenerator<never> {};
+type GAHistorialResponse = { disponible: boolean; historial_generaciones: never[]; fitness: number; generaciones: number; macro_f1: number; recall_alto: number };
+type GAComparacionResponse = { disponible: boolean; tabla_comparativa: never[]; mejor_cromosoma: number[]; membresias_decodificadas: Record<string, Record<string, number[]>> };
+type GeneracionHistorial = { generacion: number; fitness: number; fitness_promedio: number; macro_f1: number; recall_alto: number };
+type ReentrenarParams = { tamano_poblacion: number; cantidad_hijos: number; maximo_generaciones: number; probabilidad_cruce: number; probabilidad_mutacion: number };
+const defaultReentrenarParams: ReentrenarParams = { tamano_poblacion: 50, cantidad_hijos: 50, maximo_generaciones: 50, probabilidad_cruce: 0.85, probabilidad_mutacion: 0.05 };
 import { cn } from "../../lib/utils";
 import { ChartPanel } from "../ui/ChartPanel";
 import { GlassPanel } from "../ui/GlassPanel";

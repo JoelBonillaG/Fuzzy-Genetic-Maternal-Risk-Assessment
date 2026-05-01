@@ -208,37 +208,21 @@ function MembershipCurvesPanel({
   const categoryNames = Object.keys(varDef.categorias);
   const currentPoint = explanationResult?.entrada_validada?.[selectedVariable] ?? null;
 
-  const series = categoryNames.flatMap((cat, idx) => {
+  const series = categoryNames.map((cat, idx) => {
     const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
-    const { puntos_base, puntos_optimizados } = varDef.categorias[cat];
-
-    const basePoints = puntos_base as [number, number, number, number];
-    const optPoints = puntos_optimizados as [number, number, number, number];
-
-    const baseSeries = generateMembershipSeries(domain, basePoints);
-    const optSeries = generateMembershipSeries(domain, optPoints);
-
+    const points = varDef.categorias[cat] as [number, number, number, number];
+    const curveSeries = generateMembershipSeries(domain, points);
     const mu = explanationResult?.pertenencias?.[selectedVariable]?.[cat] ?? null;
 
-    return [
-      {
-        name: `${cat} (base)`,
-        type: "line",
-        smooth: false,
-        symbol: "none",
-        lineStyle: { width: 1.5, type: "dashed", color, opacity: 0.5 },
-        data: baseSeries.map((p) => [p.x, p.membership]),
-      },
-      {
-        name: `${cat} (opt)  μ=${mu !== null ? mu.toFixed(2) : "—"}`,
-        type: "line",
-        smooth: false,
-        symbol: "none",
-        lineStyle: { width: 2.5, color },
-        areaStyle: { opacity: 0.06, color },
-        data: optSeries.map((p) => [p.x, p.membership]),
-      },
-    ];
+    return {
+      name: cat,
+      type: "line",
+      smooth: false,
+      symbol: "none",
+      lineStyle: { width: 2.5, color },
+      areaStyle: { opacity: 0.06, color },
+      data: curveSeries.map((p) => [p.x, p.membership]),
+    };
   });
 
   // Vertical marker for current patient value
@@ -318,10 +302,10 @@ function MembershipCurvesPanel({
 
         {varDef && (
           <div className="mt-5 space-y-2">
-            <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Categorias (opt)</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Categorias</div>
             {categoryNames.map((cat, idx) => {
               const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
-              const pts = varDef.categorias[cat].puntos_optimizados;
+              const pts = varDef.categorias[cat] as number[];
               const mu = explanationResult?.pertenencias?.[selectedVariable]?.[cat];
               return (
                 <div
@@ -354,7 +338,7 @@ function MembershipCurvesPanel({
 
       <ChartPanel
         title={`${getFieldLabel(selectedVariable)} — curvas de pertenencia`}
-        subtitle="Linea discontinua = base / Linea solida = optimizado"
+        subtitle="Curvas trapezoidales por categoria linguistica"
       >
         <div className="h-[420px]">
           <ReactECharts
