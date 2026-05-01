@@ -1,16 +1,15 @@
-import React, { Component, useEffect, useRef, useState, type ChangeEvent } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useAnimationControls } from "framer-motion";
 import { ActivitySquare, AlertTriangle, FlaskConical, Microscope, Stethoscope } from "lucide-react";
 import { DifusoSection } from "./components/sections/DifusoSection";
 import { OptimizationSection } from "./components/sections/OptimizationSection";
 import { PatientDataSection } from "./components/sections/PatientDataSection";
 import { RecommendationSection } from "./components/sections/RecommendationSection";
-import { initialPatientForm, type PatientFormData } from "./data/mockData";
+import { initialPatientValues, type PatientValues } from "./data/mockData";
 import {
   buildPredictionPayload,
   explicarPrediccion,
   type ExplicacionResponse,
-  type PrediccionRequest,
 } from "./lib/riesgoMaterno";
 import { cn } from "./lib/utils";
 
@@ -23,7 +22,7 @@ const navigation = [
 type SectionKey = (typeof navigation)[number]["key"];
 
 export default function App() {
-  const [formData, setFormData] = useState<PatientFormData>(initialPatientForm);
+  const [formData, setFormData] = useState<PatientValues>(initialPatientValues);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [explanationResult, setExplanationResult] = useState<ExplicacionResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
@@ -36,22 +35,21 @@ export default function App() {
     };
   }, []);
 
-  function handleFieldChange(
-    field: keyof PatientFormData,
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
-    if (explanationResult || analysisError || isAnalyzing) {
-      resetAnalysisState();
-    }
-    setFormData((current) => ({ ...current, [field]: event.target.value }));
+  function handleValueChange(variable: string, value: number) {
+    setFormData((current) => ({ ...current, [variable]: value }));
+  }
+
+  function handleClear() {
+    resetAnalysisState();
+    setFormData(initialPatientValues);
   }
 
   async function handleAnalyze() {
     if (isAnalyzing) return;
 
-    let payload: PrediccionRequest;
+    let payload;
     try {
-      payload = buildPredictionPayload(formData);
+      payload = buildPredictionPayload(formData as Record<string, number>);
     } catch (error) {
       setAnalysisError(getErrorMessage(error));
       return;
@@ -153,10 +151,11 @@ export default function App() {
         <AnimatedSection isActive={activeSection === "prediccion"}>
           <div className="space-y-6">
             <PatientDataSection
-              formData={formData}
+              values={formData}
               isAnalyzing={isAnalyzing}
               onAnalyze={handleAnalyze}
-              onFieldChange={handleFieldChange}
+              onValueChange={handleValueChange}
+              onClear={handleClear}
             />
             <AnimatePresence>
               {(isAnalyzing || explanationResult || analysisError) && (
