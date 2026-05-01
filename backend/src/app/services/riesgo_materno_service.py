@@ -64,7 +64,6 @@ def obtener_definiciones_difusas() -> dict:
     for nombre, espec in ESPECIFICACIONES_VARIABLES.items():
         variables[nombre] = {
             "limites": list(map(float, espec["limites"])),
-            "epsilon": float(espec["epsilon"]),
             "categorias": {
                 cat: list(map(float, puntos))
                 for cat, puntos in espec["categorias"].items()

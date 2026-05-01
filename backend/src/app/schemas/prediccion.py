@@ -93,7 +93,6 @@ class SeleccionReglasResponse(BaseModel):
 
 class VariableDefinicion(BaseModel):
     limites: list[float]
-    epsilon: float
     categorias: dict[str, list[float]]
 
 
