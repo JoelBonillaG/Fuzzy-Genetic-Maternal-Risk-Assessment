@@ -24,20 +24,20 @@ PROPORCION_ENTRENAMIENTO = 0.70
 
 PARAMETROS_AG = {
     # cuantos cromosomas binarios hay en cada generacion
-    "tamano_poblacion": 50,
+    "tamano_poblacion": 100,
     # cuantos padres se seleccionan por ruleta para entrar al pool de cruce
     # PyGAD luego cruza pares de este pool hasta producir (tamano_poblacion - elitismo) hijos
-    "cantidad_padres": 25,
+    "cantidad_padres": 50,
     # tope de generaciones
-    "maximo_generaciones": 50,
+    "maximo_generaciones": 200,
     # probabilidad de aplicar cruce de un punto entre dos padres
     "probabilidad_cruce": 0.85,
     # probabilidad de que cada bit individual se invierta  (flip)
-    "probabilidad_mutacion": 0.05,
+    "probabilidad_mutacion": 0.03,
     # cuantos mejores individuos pasan intactos a la siguiente generacion
-    "elitismo": 1,
+    "elitismo": 3,
     # generaciones sin mejora antes de detener el AG
-    "paciencia": 30,
+    "paciencia": 50,
 }
 
 # Pesos del fitness Pittsburgh: Fitness(S) = w_ba * BA(S) - w_compacidad * C(S)
