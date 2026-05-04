@@ -21,6 +21,7 @@ class AjusteEntradaResponse(BaseModel):
 class PrediccionResponse(BaseModel):
     puntaje: float
     riesgo: str
+    sin_activacion: bool
     sistema: str
     origen_modelo: str
     ajustes_entrada: list[AjusteEntradaResponse]
@@ -47,6 +48,7 @@ class ExplicacionResponse(BaseModel):
     activaciones: dict[str, float]
     puntaje: float
     riesgo: str
+    sin_activacion: bool
     origen_modelo: str
     ajustes_entrada: list[AjusteEntradaResponse]
     cantidad_reglas_activas: int

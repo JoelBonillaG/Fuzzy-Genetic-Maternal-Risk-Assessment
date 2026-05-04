@@ -45,6 +45,7 @@ def predecir_riesgo_materno_endpoint(payload: PrediccionRequest) -> PrediccionRe
     return PrediccionResponse(
         puntaje=resultado["puntaje"],
         riesgo=resultado["riesgo"],
+        sin_activacion=resultado["sin_activacion"],
         sistema=resultado["sistema"],
         origen_modelo=resultado["origen_modelo"],
         cantidad_reglas_activas=resultado["cantidad_reglas_activas"],
