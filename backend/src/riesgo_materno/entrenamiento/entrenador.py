@@ -83,8 +83,16 @@ def guardar_seleccion_reglas(resultado):
     total_prueba = len(resultado["splits"]["prueba"])
     total_entrenamiento = len(resultado["splits"]["entrenamiento"])
 
+    cromosoma = np.asarray(mejor.cromosoma, dtype=int).copy()
+    cantidad_reglas = cantidad_reglas_activas(cromosoma)
+    if cantidad_reglas != int(mejor.cantidad_reglas):
+        raise ValueError(
+            "Inconsistencia al guardar: el cromosoma no coincide con "
+            "la cantidad de reglas del resultado evaluado."
+        )
+
     cromosoma_serializable = []
-    for bit in mejor.cromosoma.tolist():
+    for bit in cromosoma.tolist():
         cromosoma_serializable.append(int(bit))
 
     historial_serializable = []
@@ -98,9 +106,9 @@ def guardar_seleccion_reglas(resultado):
         "ruta_csv": str(RUTA_CSV),
         "cantidad_reglas_candidatas": CANTIDAD_REGLAS_CANDIDATAS,
         "cromosoma": cromosoma_serializable,
-        "indices_reglas_activas": indices_reglas_activas(mejor.cromosoma),
-        "numeros_reglas_activas": numeros_reglas_activas(mejor.cromosoma),
-        "cantidad_reglas": int(mejor.cantidad_reglas),
+        "indices_reglas_activas": indices_reglas_activas(cromosoma),
+        "numeros_reglas_activas": numeros_reglas_activas(cromosoma),
+        "cantidad_reglas": int(cantidad_reglas),
         "fitness": float(mejor.fitness),
         "balanced_accuracy_entrenamiento": float(mejor.balanced_accuracy),
         "compacidad_entrenamiento": float(mejor.compacidad),

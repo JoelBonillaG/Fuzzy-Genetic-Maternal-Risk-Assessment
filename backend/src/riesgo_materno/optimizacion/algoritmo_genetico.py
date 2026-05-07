@@ -182,7 +182,9 @@ def evaluar_base_reglas(cromosoma, datos, membresias):
 
     Si la base resulta vacia, devuelve fitness 0 (penalizacion fuerte para la ruleta).
     """
-    cromosoma = np.asarray(cromosoma, dtype=int)
+    # Copia defensiva: PyGAD reutiliza/muta arrays de la poblacion.
+    # El resultado evaluado debe conservar exactamente el cromosoma evaluado.
+    cromosoma = np.asarray(cromosoma, dtype=int).copy()
     cantidad_reglas = cantidad_reglas_activas(cromosoma)
 
     if es_base_vacia(cromosoma):
