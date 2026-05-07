@@ -147,7 +147,7 @@ def ejecutar_ag_pittsburgh(
         num_generations=parametros["maximo_generaciones"],
         parent_selection_type="rws",            # ruleta
         keep_elitism=parametros["elitismo"],
-        crossover_type="single_point",
+        crossover_type="uniform",
         crossover_probability=parametros["probabilidad_cruce"],
         mutation_type="random",                 # con gene_space=[0,1] equivale a flip
         mutation_probability=parametros["probabilidad_mutacion"],
