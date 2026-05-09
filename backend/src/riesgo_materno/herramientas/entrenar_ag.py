@@ -12,7 +12,7 @@ def principal():
     print("Entrenamiento AG Pittsburgh - seleccion de reglas difusas")
     print("=" * 70)
 
-    resultado = entrenar_seleccion_reglas()
+    resultado = entrenar_seleccion_reglas(semilla=42)
 
     mejor = resultado["mejor"]
     prueba = resultado["resultado_prueba"]

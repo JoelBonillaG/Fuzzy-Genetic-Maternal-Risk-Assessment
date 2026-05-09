@@ -14,6 +14,7 @@ from ..optimizacion.algoritmo_genetico import (
 )
 from ..optimizacion.cromosoma import (
     CANTIDAD_REGLAS_CANDIDATAS,
+    cantidad_reglas_activas,
     indices_reglas_activas,
     numeros_reglas_activas,
 )

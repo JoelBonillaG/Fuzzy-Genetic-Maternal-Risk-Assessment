@@ -124,18 +124,29 @@ def evaluar_reglas_duras(reglas, tabla):
 
 if __name__ == "__main__":
     import json
-    from .datos import cargar_dataset
+    from .datos import cargar_dataset, dividir_entrenamiento_prueba
     from .modelo import RUTA_CSV, RUTA_REGLAS_APRENDIDAS
 
     print("Cargando dataset...")
     datos = cargar_dataset(RUTA_CSV)
 
-    print("Ejecutando RIPPER...")
-    reglas = aprender_reglas_ripper(datos)
+    print("Dividiendo 70/30 estratificado...")
+    splits = dividir_entrenamiento_prueba(datos, semilla=42)
+    entrenamiento = splits["entrenamiento"]
+    prueba = splits["prueba"]
+    print(f"  Entrenamiento: {len(entrenamiento)} instancias")
+    print(f"  Prueba:        {len(prueba)} instancias")
 
-    print("Evaluando reglas duras...")
-    precision = evaluar_reglas_duras(reglas, datos)
-    print(f"Precision de las reglas duras: {precision:.2%}")
+    print("Ejecutando RIPPER sobre el conjunto de entrenamiento...")
+    reglas = aprender_reglas_ripper(entrenamiento)
+
+    print("Evaluando reglas duras sobre entrenamiento...")
+    precision_train = evaluar_reglas_duras(reglas, entrenamiento)
+    print(f"  Precision entrenamiento: {precision_train:.2%}")
+
+    print("Evaluando reglas duras sobre prueba...")
+    precision_test = evaluar_reglas_duras(reglas, prueba)
+    print(f"  Precision prueba:        {precision_test:.2%}")
 
     # Guardar en JSON — antecedentes como listas (JSON no tiene tuplas)
     contenido = [
