@@ -184,7 +184,7 @@ def ejecutar_ag_pittsburgh(
         num_parents_mating=parametros["cantidad_padres"],
         fitness_func=fitness_func,
         num_generations=parametros["maximo_generaciones"],
-        parent_selection_type="rws",            # ruleta
+        parent_selection_type="rws",
         keep_elitism=parametros["elitismo"],
         crossover_type="single_point",
         crossover_probability=parametros["probabilidad_cruce"],
@@ -202,9 +202,9 @@ def ejecutar_ag_pittsburgh(
 
 
 def inicializar_poblacion(tamano):
-    """1 cromosoma con todas las reglas activas + (tamano - 1) cromosomas aleatorios 50/50."""
-    poblacion = [cromosoma_todas_activas()]
-    for _ in range(tamano - 1):
+    """Poblacion inicial completamente aleatoria 50/50 por bit."""
+    poblacion = []
+    for _ in range(tamano):
         poblacion.append(cromosoma_aleatorio())
     return np.asarray(poblacion, dtype=int)
 
