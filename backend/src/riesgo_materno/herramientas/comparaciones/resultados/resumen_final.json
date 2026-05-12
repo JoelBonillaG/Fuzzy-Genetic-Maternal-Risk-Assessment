@@ -2,40 +2,40 @@
   "tabla": [
     {
       "algorithm": "GENETIC_ALGORITHM",
-      "ba_test_mean": 0.4781898367220314,
-      "ba_test_std": 0.024095757753566878,
-      "fitness_test_mean": 0.4676342811664758,
-      "f1_macro_mean": 0.42043827339190143,
-      "active_rules_mean": 6.333333333333333,
-      "coverage_mean": 0.24671052631578946,
-      "runtime_ms_mean": 227634.66666666666
+      "ba_test_mean": 0.4855552074054412,
+      "ba_test_std": 0.029123196245686038,
+      "fitness_test_mean": 0.4711107629609968,
+      "f1_macro_mean": 0.42626088624574315,
+      "active_rules_mean": 8.666666666666666,
+      "coverage_mean": 0.2817982456140351,
+      "runtime_ms_mean": 202181.0
     },
     {
       "algorithm": "PRISM",
       "ba_test_mean": 0.4814490318211422,
       "ba_test_std": 0.01804459774214155,
-      "fitness_test_mean": 0.4708934762655866,
+      "fitness_test_mean": 0.45589347626558663,
       "f1_macro_mean": 0.40731990780502364,
-      "active_rules_mean": 6.333333333333333,
+      "active_rules_mean": 15.333333333333334,
       "coverage_mean": 0.15789473684210528,
-      "runtime_ms_mean": 18011.666666666668
+      "runtime_ms_mean": 17448.666666666668
     },
     {
       "algorithm": "RIPPER",
-      "ba_test_mean": 0.6519257247232484,
-      "ba_test_std": 0.026734575495524927,
-      "fitness_test_mean": 0.6069257247232485,
-      "f1_macro_mean": 0.6406290011677616,
-      "active_rules_mean": 27.0,
-      "coverage_mean": 0.9440789473684211,
-      "runtime_ms_mean": 1119.0
+      "ba_test_mean": 0.6266663251691023,
+      "ba_test_std": 0.033477956436936164,
+      "fitness_test_mean": 0.5811107696135468,
+      "f1_macro_mean": 0.6130958639350174,
+      "active_rules_mean": 27.333333333333332,
+      "coverage_mean": 0.913377192982456,
+      "runtime_ms_mean": 978.3333333333334
     }
   ],
   "best_iterations": {
     "GENETIC_ALGORITHM": {
-      "iteration": 2,
-      "seed": 2,
-      "balanced_accuracy_test": 0.4922507771841486
+      "iteration": 1,
+      "seed": 1,
+      "balanced_accuracy_test": 0.5107475270808677
     },
     "PRISM": {
       "iteration": 1,
@@ -45,14 +45,14 @@
     "RIPPER": {
       "iteration": 1,
       "seed": 1,
-      "balanced_accuracy_test": 0.6709582266430635
+      "balanced_accuracy_test": 0.6521977031406023
     }
   },
   "worst_iterations": {
     "GENETIC_ALGORITHM": {
       "iteration": 3,
       "seed": 3,
-      "balanced_accuracy_test": 0.45036698791830404
+      "balanced_accuracy_test": 0.4536673179513073
     },
     "PRISM": {
       "iteration": 3,
@@ -62,7 +62,7 @@
     "RIPPER": {
       "iteration": 3,
       "seed": 3,
-      "balanced_accuracy_test": 0.6213604730761325
+      "balanced_accuracy_test": 0.5887633109208925
     }
   }
 }

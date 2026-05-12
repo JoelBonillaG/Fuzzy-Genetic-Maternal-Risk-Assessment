@@ -25,7 +25,7 @@
       "mid risk",
       "high risk"
     ],
-    "max_conditions_per_rule": 3,
+    "max_conditions_per_rule": 6,
     "max_rules_per_class": 25,
     "remove_covered_positives": false
   },
@@ -39,7 +39,7 @@
     "elitism_count": 2,
     "selection_method": "roulette",
     "lambda_penalty": 0.05,
-    "max_conditions_per_rule": 6,
+    "max_conditions_per_rulesssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss": 6,
     "min_rule_coverage": 2
   }
 }

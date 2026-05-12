@@ -17,27 +17,27 @@
       "mid risk",
       "high risk"
     ],
-    "max_conditions_per_rule": 3,
+    "max_conditions_per_rule": 6,
     "max_rules_per_class": 25,
     "remove_covered_positives": false
   },
   "rules_summary": {
-    "num_rules_initial": 7,
-    "num_rules_generated": 7,
-    "num_rules_active": 7,
+    "num_rules_initial": 16,
+    "num_rules_generated": 16,
+    "num_rules_active": 16,
     "num_rules_inactive": 0,
     "rule_reduction_ratio": 0.0,
-    "avg_rule_length": 2.2857142857142856,
-    "total_antecedents": 16,
+    "avg_rule_length": 3.8125,
+    "total_antecedents": 61,
     "rules_by_class": {
-      "low risk": 2,
-      "mid risk": 2,
-      "high risk": 3
+      "low risk": 5,
+      "mid risk": 5,
+      "high risk": 6
     },
     "active_rules_by_class": {
-      "low risk": 2,
-      "mid risk": 2,
-      "high risk": 3
+      "low risk": 5,
+      "mid risk": 5,
+      "high risk": 6
     }
   },
   "rules": {
@@ -82,6 +82,90 @@
         "id": "R003",
         "antecedent": [
           {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R004",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R005",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R006",
+        "antecedent": [
+          {
             "variable": "temperatura_corporal",
             "linguistic_term": "febricular"
           },
@@ -95,7 +179,7 @@
         "active": true
       },
       {
-        "id": "R004",
+        "id": "R007",
         "antecedent": [
           {
             "variable": "temperatura_corporal",
@@ -115,7 +199,91 @@
         "active": true
       },
       {
-        "id": "R005",
+        "id": "R008",
+        "antecedent": [
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R009",
+        "antecedent": [
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R010",
+        "antecedent": [
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R011",
         "antecedent": [
           {
             "variable": "presion_sistolica",
@@ -127,7 +295,7 @@
         "active": true
       },
       {
-        "id": "R006",
+        "id": "R012",
         "antecedent": [
           {
             "variable": "presion_sistolica",
@@ -143,7 +311,7 @@
         "active": true
       },
       {
-        "id": "R007",
+        "id": "R013",
         "antecedent": [
           {
             "variable": "presion_sistolica",
@@ -161,12 +329,96 @@
         "consequent": "high risk",
         "source": "PRISM",
         "active": true
+      },
+      {
+        "id": "R014",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R015",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R016",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "PRISM",
+        "active": true
       }
     ]
   },
   "metrics_train": {
     "balanced_accuracy": 0.4665669511723825,
-    "fitness_penalized": 0.45490028450571585,
+    "fitness_penalized": 0.43990028450571583,
     "accuracy": 0.4392655367231638,
     "precision_macro": 0.6180926916221033,
     "recall_macro": 0.4665669511723825,
@@ -217,7 +469,7 @@
   },
   "metrics_test": {
     "balanced_accuracy": 0.5019678242768845,
-    "fitness_penalized": 0.4903011576102178,
+    "fitness_penalized": 0.4753011576102178,
     "accuracy": 0.46710526315789475,
     "precision_macro": 0.5428286852589642,
     "recall_macro": 0.5019678242768845,
@@ -267,9 +519,9 @@
     ]
   },
   "runtime": {
-    "training_time_ms": 14498,
+    "training_time_ms": 14253,
     "inference_time_train_ms": 45,
-    "inference_time_test_ms": 22,
-    "total_time_ms": 14565
+    "inference_time_test_ms": 23,
+    "total_time_ms": 14321
   }
 }

@@ -15,22 +15,22 @@
     "dl_allowance": 64
   },
   "rules_summary": {
-    "num_rules_initial": 28,
-    "num_rules_generated": 28,
-    "num_rules_active": 28,
+    "num_rules_initial": 30,
+    "num_rules_generated": 30,
+    "num_rules_active": 30,
     "num_rules_inactive": 0,
     "rule_reduction_ratio": 0.0,
-    "avg_rule_length": 3.0357142857142856,
-    "total_antecedents": 85,
+    "avg_rule_length": 3.033333333333333,
+    "total_antecedents": 91,
     "rules_by_class": {
       "low risk": 10,
-      "mid risk": 4,
-      "high risk": 14
+      "mid risk": 5,
+      "high risk": 15
     },
     "active_rules_by_class": {
       "low risk": 10,
-      "mid risk": 4,
-      "high risk": 14
+      "mid risk": 5,
+      "high risk": 15
     }
   },
   "rules": {
@@ -51,30 +51,6 @@
             "linguistic_term": "hipotension"
           },
           {
-            "variable": "frecuencia_cardiaca",
-            "linguistic_term": "bradicardia"
-          }
-        ],
-        "consequent": "low risk",
-        "source": "RIPPER",
-        "active": true
-      },
-      {
-        "id": "R002",
-        "antecedent": [
-          {
-            "variable": "azucar_sangre",
-            "linguistic_term": "normoglucemia"
-          },
-          {
-            "variable": "temperatura_corporal",
-            "linguistic_term": "normal"
-          },
-          {
-            "variable": "presion_sistolica",
-            "linguistic_term": "hipotension"
-          },
-          {
             "variable": "edad",
             "linguistic_term": "adolescente"
           }
@@ -84,7 +60,7 @@
         "active": true
       },
       {
-        "id": "R003",
+        "id": "R002",
         "antecedent": [
           {
             "variable": "azucar_sangre",
@@ -105,10 +81,30 @@
           {
             "variable": "edad",
             "linguistic_term": "optima"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "RIPPER",
+        "active": true
+      },
+      {
+        "id": "R003",
+        "antecedent": [
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
           },
           {
-            "variable": "frecuencia_cardiaca",
+            "variable": "temperatura_corporal",
             "linguistic_term": "normal"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
           }
         ],
         "consequent": "low risk",
@@ -123,11 +119,19 @@
             "linguistic_term": "normoglucemia"
           },
           {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
             "variable": "presion_sistolica",
             "linguistic_term": "normal"
           },
           {
-            "variable": "temperatura_corporal",
+            "variable": "edad",
+            "linguistic_term": "muy_avanzada"
+          },
+          {
+            "variable": "presion_diastolica",
             "linguistic_term": "normal"
           }
         ],
@@ -139,16 +143,16 @@
         "id": "R005",
         "antecedent": [
           {
-            "variable": "presion_sistolica",
-            "linguistic_term": "hipotension"
-          },
-          {
-            "variable": "temperatura_corporal",
-            "linguistic_term": "normal"
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
           },
           {
             "variable": "edad",
             "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
           }
         ],
         "consequent": "low risk",
@@ -159,12 +163,20 @@
         "id": "R006",
         "antecedent": [
           {
-            "variable": "presion_sistolica",
-            "linguistic_term": "hipotension"
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
           },
           {
             "variable": "temperatura_corporal",
             "linguistic_term": "normal"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
           }
         ],
         "consequent": "low risk",
@@ -188,7 +200,11 @@
           },
           {
             "variable": "edad",
-            "linguistic_term": "adolescente"
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
           }
         ],
         "consequent": "low risk",
@@ -199,23 +215,15 @@
         "id": "R008",
         "antecedent": [
           {
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
+          },
+          {
             "variable": "presion_sistolica",
             "linguistic_term": "normal"
           },
           {
-            "variable": "azucar_sangre",
-            "linguistic_term": "hiperglucemia_gestacional"
-          },
-          {
-            "variable": "edad",
-            "linguistic_term": "optima"
-          },
-          {
             "variable": "temperatura_corporal",
-            "linguistic_term": "normal"
-          },
-          {
-            "variable": "presion_diastolica",
             "linguistic_term": "normal"
           }
         ],
@@ -228,11 +236,15 @@
         "antecedent": [
           {
             "variable": "presion_sistolica",
-            "linguistic_term": "normal"
+            "linguistic_term": "hipotension"
           },
           {
             "variable": "temperatura_corporal",
-            "linguistic_term": "hiperpirexia"
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
           }
         ],
         "consequent": "low risk",
@@ -243,20 +255,12 @@
         "id": "R010",
         "antecedent": [
           {
-            "variable": "azucar_sangre",
-            "linguistic_term": "hiperglucemia_gestacional"
-          },
-          {
-            "variable": "presion_diastolica",
-            "linguistic_term": "elevada"
-          },
-          {
-            "variable": "frecuencia_cardiaca",
+            "variable": "presion_sistolica",
             "linguistic_term": "normal"
           },
           {
-            "variable": "edad",
-            "linguistic_term": "optima"
+            "variable": "temperatura_corporal",
+            "linguistic_term": "hiperpirexia"
           }
         ],
         "consequent": "low risk",
@@ -291,16 +295,20 @@
             "linguistic_term": "normal"
           },
           {
-            "variable": "temperatura_corporal",
-            "linguistic_term": "fiebre"
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
           },
           {
             "variable": "azucar_sangre",
             "linguistic_term": "normoglucemia"
           },
           {
-            "variable": "edad",
-            "linguistic_term": "optima"
+            "variable": "temperatura_corporal",
+            "linguistic_term": "fiebre"
           }
         ],
         "consequent": "mid risk",
@@ -315,16 +323,12 @@
             "linguistic_term": "normal"
           },
           {
-            "variable": "azucar_sangre",
-            "linguistic_term": "normoglucemia"
-          },
-          {
-            "variable": "presion_diastolica",
-            "linguistic_term": "normal"
-          },
-          {
             "variable": "edad",
             "linguistic_term": "optima"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
           }
         ],
         "consequent": "mid risk",
@@ -333,6 +337,26 @@
       },
       {
         "id": "R014",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "muy_avanzada"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "RIPPER",
+        "active": true
+      },
+      {
+        "id": "R015",
         "antecedent": [
           {
             "variable": "presion_diastolica",
@@ -348,7 +372,27 @@
         "active": true
       },
       {
-        "id": "R015",
+        "id": "R016",
+        "antecedent": [
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "RIPPER",
+        "active": true
+      },
+      {
+        "id": "R017",
         "antecedent": [
           {
             "variable": "azucar_sangre",
@@ -364,7 +408,7 @@
         "active": true
       },
       {
-        "id": "R016",
+        "id": "R018",
         "antecedent": [
           {
             "variable": "azucar_sangre",
@@ -373,42 +417,6 @@
           {
             "variable": "edad",
             "linguistic_term": "optima"
-          }
-        ],
-        "consequent": "high risk",
-        "source": "RIPPER",
-        "active": true
-      },
-      {
-        "id": "R017",
-        "antecedent": [
-          {
-            "variable": "edad",
-            "linguistic_term": "avanzada"
-          },
-          {
-            "variable": "azucar_sangre",
-            "linguistic_term": "diabetes_manifiesta"
-          }
-        ],
-        "consequent": "high risk",
-        "source": "RIPPER",
-        "active": true
-      },
-      {
-        "id": "R018",
-        "antecedent": [
-          {
-            "variable": "azucar_sangre",
-            "linguistic_term": "hiperglucemia_gestacional"
-          },
-          {
-            "variable": "temperatura_corporal",
-            "linguistic_term": "fiebre"
-          },
-          {
-            "variable": "edad",
-            "linguistic_term": "avanzada"
           }
         ],
         "consequent": "high risk",
@@ -423,8 +431,16 @@
             "linguistic_term": "hiperglucemia_gestacional"
           },
           {
-            "variable": "presion_diastolica",
-            "linguistic_term": "hipertension"
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
           }
         ],
         "consequent": "high risk",
@@ -435,12 +451,12 @@
         "id": "R020",
         "antecedent": [
           {
-            "variable": "presion_sistolica",
-            "linguistic_term": "elevada"
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
           },
           {
-            "variable": "presion_diastolica",
-            "linguistic_term": "hipertension"
+            "variable": "edad",
+            "linguistic_term": "avanzada"
           }
         ],
         "consequent": "high risk",
@@ -453,18 +469,6 @@
           {
             "variable": "azucar_sangre",
             "linguistic_term": "diabetes_manifiesta"
-          },
-          {
-            "variable": "frecuencia_cardiaca",
-            "linguistic_term": "normal"
-          },
-          {
-            "variable": "presion_diastolica",
-            "linguistic_term": "elevada"
-          },
-          {
-            "variable": "presion_sistolica",
-            "linguistic_term": "elevada"
           }
         ],
         "consequent": "high risk",
@@ -483,8 +487,8 @@
             "linguistic_term": "avanzada"
           },
           {
-            "variable": "presion_diastolica",
-            "linguistic_term": "elevada"
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
           }
         ],
         "consequent": "high risk",
@@ -499,12 +503,8 @@
             "linguistic_term": "hiperglucemia_gestacional"
           },
           {
-            "variable": "presion_sistolica",
-            "linguistic_term": "hipotension"
-          },
-          {
-            "variable": "temperatura_corporal",
-            "linguistic_term": "febricular"
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
           }
         ],
         "consequent": "high risk",
@@ -515,16 +515,12 @@
         "id": "R024",
         "antecedent": [
           {
-            "variable": "azucar_sangre",
-            "linguistic_term": "diabetes_manifiesta"
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
           },
           {
             "variable": "presion_sistolica",
-            "linguistic_term": "normal"
-          },
-          {
-            "variable": "presion_diastolica",
-            "linguistic_term": "normal"
+            "linguistic_term": "elevada"
           }
         ],
         "consequent": "high risk",
@@ -536,11 +532,19 @@
         "antecedent": [
           {
             "variable": "azucar_sangre",
-            "linguistic_term": "diabetes_manifiesta"
+            "linguistic_term": "hiperglucemia_gestacional"
           },
           {
-            "variable": "frecuencia_cardiaca",
-            "linguistic_term": "bradicardia"
+            "variable": "edad",
+            "linguistic_term": "muy_avanzada"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
           }
         ],
         "consequent": "high risk",
@@ -551,12 +555,12 @@
         "id": "R026",
         "antecedent": [
           {
-            "variable": "presion_sistolica",
-            "linguistic_term": "elevada"
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
           },
           {
-            "variable": "presion_diastolica",
-            "linguistic_term": "elevada"
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
           }
         ],
         "consequent": "high risk",
@@ -567,16 +571,12 @@
         "id": "R027",
         "antecedent": [
           {
-            "variable": "azucar_sangre",
-            "linguistic_term": "hiperglucemia_gestacional"
-          },
-          {
-            "variable": "edad",
-            "linguistic_term": "avanzada"
+            "variable": "temperatura_corporal",
+            "linguistic_term": "fiebre"
           },
           {
             "variable": "presion_sistolica",
-            "linguistic_term": "hipotension"
+            "linguistic_term": "elevada"
           }
         ],
         "consequent": "high risk",
@@ -598,33 +598,73 @@
         "consequent": "high risk",
         "source": "RIPPER",
         "active": true
+      },
+      {
+        "id": "R029",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "RIPPER",
+        "active": true
+      },
+      {
+        "id": "R030",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "RIPPER",
+        "active": true
       }
     ]
   },
   "metrics_train": {
-    "balanced_accuracy": 0.6783634524247616,
-    "fitness_penalized": 0.631696785758095,
-    "accuracy": 0.6892655367231638,
-    "precision_macro": 0.6918121476632115,
-    "recall_macro": 0.6783634524247616,
-    "f1_macro": 0.6713415703576748,
-    "coverage": 0.9110169491525424,
-    "uncovered_instances": 63,
+    "balanced_accuracy": 0.6755434560387887,
+    "fitness_penalized": 0.6255434560387887,
+    "accuracy": 0.6793785310734464,
+    "precision_macro": 0.6764530459098793,
+    "recall_macro": 0.6755434560387887,
+    "f1_macro": 0.656808911194109,
+    "coverage": 0.9124293785310734,
+    "uncovered_instances": 62,
     "per_class": {
       "low risk": {
-        "precision": 0.6728723404255319,
-        "recall": 0.8939929328621908,
-        "f1": 0.7678300455235205
+        "precision": 0.675,
+        "recall": 0.8586572438162544,
+        "f1": 0.7558320373250389
       },
       "mid risk": {
-        "precision": 0.6333333333333333,
-        "recall": 0.40425531914893614,
-        "f1": 0.4935064935064935
+        "precision": 0.6511627906976745,
+        "recall": 0.3574468085106383,
+        "f1": 0.46153846153846156
       },
       "high risk": {
-        "precision": 0.7692307692307693,
-        "recall": 0.7368421052631579,
-        "f1": 0.7526881720430108
+        "precision": 0.7031963470319634,
+        "recall": 0.8105263157894737,
+        "f1": 0.7530562347188264
       }
     },
     "confusion_matrix": {
@@ -635,48 +675,48 @@
       ],
       "matrix": [
         [
-          253,
-          17,
-          13
+          243,
+          19,
+          21
         ],
         [
-          111,
-          95,
-          29
+          107,
+          84,
+          44
         ],
         [
-          12,
-          38,
-          140
+          10,
+          26,
+          154
         ]
       ]
     }
   },
   "metrics_test": {
-    "balanced_accuracy": 0.6709582266430635,
-    "fitness_penalized": 0.6242915599763968,
-    "accuracy": 0.6743421052631579,
-    "precision_macro": 0.681322272498743,
-    "recall_macro": 0.6709582266430635,
-    "f1_macro": 0.6657840726772196,
-    "coverage": 0.9078947368421053,
-    "uncovered_instances": 28
+    "balanced_accuracy": 0.6521977031406023,
+    "fitness_penalized": 0.6021977031406023,
+    "accuracy": 0.6480263157894737,
+    "precision_macro": 0.6434872372372372,
+    "recall_macro": 0.6521977031406023,
+    "f1_macro": 0.6338377738994835,
+    "coverage": 0.9046052631578947,
+    "uncovered_instances": 29
   },
   "metrics_per_class_test": {
     "low risk": {
-      "precision": 0.6410256410256411,
-      "recall": 0.8264462809917356,
-      "f1": 0.7220216606498195
+      "precision": 0.6283783783783784,
+      "recall": 0.768595041322314,
+      "f1": 0.6914498141263941
     },
     "mid risk": {
-      "precision": 0.6029411764705882,
-      "recall": 0.40594059405940597,
-      "f1": 0.48520710059171596
+      "precision": 0.5833333333333334,
+      "recall": 0.3465346534653465,
+      "f1": 0.43478260869565216
     },
     "high risk": {
-      "precision": 0.8,
-      "recall": 0.7804878048780488,
-      "f1": 0.7901234567901234
+      "precision": 0.71875,
+      "recall": 0.8414634146341463,
+      "f1": 0.7752808988764045
     }
   },
   "confusion_matrix_test": {
@@ -687,26 +727,26 @@
     ],
     "matrix": [
       [
-        100,
-        13,
-        8
+        93,
+        16,
+        12
       ],
       [
-        52,
-        41,
-        8
+        51,
+        35,
+        15
       ],
       [
         4,
-        14,
-        64
+        9,
+        69
       ]
     ]
   },
   "runtime": {
-    "training_time_ms": 499,
-    "inference_time_train_ms": 193,
-    "inference_time_test_ms": 82,
-    "total_time_ms": 774
+    "training_time_ms": 637,
+    "inference_time_train_ms": 169,
+    "inference_time_test_ms": 72,
+    "total_time_ms": 878
   }
 }

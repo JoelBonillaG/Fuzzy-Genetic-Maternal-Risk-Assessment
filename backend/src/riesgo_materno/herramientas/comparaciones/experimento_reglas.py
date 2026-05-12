@@ -64,7 +64,7 @@ CONFIGURACION_EXPERIMENTO = {
     "prism": {
         "min_rule_coverage": 2,
         "class_order": CLASES,
-        "max_conditions_per_rule": 3,
+        "max_conditions_per_rule": 6,
         "max_rules_per_class": 25,
         "remove_covered_positives": False,
     },
