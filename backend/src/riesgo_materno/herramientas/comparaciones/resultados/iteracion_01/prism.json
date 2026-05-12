@@ -1,0 +1,275 @@
+{
+  "experiment_id": "maternal_risk_rule_comparison",
+  "iteration": 1,
+  "seed": 1,
+  "algorithm": "PRISM",
+  "split": {
+    "strategy": "stratified_holdout",
+    "train_ratio": 0.7,
+    "test_ratio": 0.3,
+    "train_size": 708,
+    "test_size": 304
+  },
+  "hyperparameters": {
+    "min_rule_coverage": 2,
+    "class_order": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "max_conditions_per_rule": 3,
+    "max_rules_per_class": 25,
+    "remove_covered_positives": false
+  },
+  "rules_summary": {
+    "num_rules_initial": 7,
+    "num_rules_generated": 7,
+    "num_rules_active": 7,
+    "num_rules_inactive": 0,
+    "rule_reduction_ratio": 0.0,
+    "avg_rule_length": 2.2857142857142856,
+    "total_antecedents": 16,
+    "rules_by_class": {
+      "low risk": 2,
+      "mid risk": 2,
+      "high risk": 3
+    },
+    "active_rules_by_class": {
+      "low risk": 2,
+      "mid risk": 2,
+      "high risk": 3
+    }
+  },
+  "rules": {
+    "generated_rules": [
+      {
+        "id": "R001",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R002",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R003",
+        "antecedent": [
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R004",
+        "antecedent": [
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R005",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipertension"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R006",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "PRISM",
+        "active": true
+      },
+      {
+        "id": "R007",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "PRISM",
+        "active": true
+      }
+    ]
+  },
+  "metrics_train": {
+    "balanced_accuracy": 0.4665669511723825,
+    "fitness_penalized": 0.45490028450571585,
+    "accuracy": 0.4392655367231638,
+    "precision_macro": 0.6180926916221033,
+    "recall_macro": 0.4665669511723825,
+    "f1_macro": 0.3846404677573509,
+    "coverage": 0.13983050847457623,
+    "uncovered_instances": 609,
+    "per_class": {
+      "low risk": {
+        "precision": 0.5454545454545454,
+        "recall": 0.02120141342756184,
+        "f1": 0.04081632653061224
+      },
+      "mid risk": {
+        "precision": 0.36764705882352944,
+        "recall": 0.9574468085106383,
+        "f1": 0.5312868949232585
+      },
+      "high risk": {
+        "precision": 0.9411764705882353,
+        "recall": 0.42105263157894735,
+        "f1": 0.5818181818181818
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "low risk",
+        "mid risk",
+        "high risk"
+      ],
+      "matrix": [
+        [
+          6,
+          277,
+          0
+        ],
+        [
+          5,
+          225,
+          5
+        ],
+        [
+          0,
+          110,
+          80
+        ]
+      ]
+    }
+  },
+  "metrics_test": {
+    "balanced_accuracy": 0.5019678242768845,
+    "fitness_penalized": 0.4903011576102178,
+    "accuracy": 0.46710526315789475,
+    "precision_macro": 0.5428286852589642,
+    "recall_macro": 0.5019678242768845,
+    "f1_macro": 0.42648063217784876,
+    "coverage": 0.17763157894736847,
+    "uncovered_instances": 250
+  },
+  "metrics_per_class_test": {
+    "low risk": {
+      "precision": 0.25,
+      "recall": 0.01652892561983471,
+      "f1": 0.031007751937984496
+    },
+    "mid risk": {
+      "precision": 0.3784860557768924,
+      "recall": 0.9405940594059405,
+      "f1": 0.5397727272727273
+    },
+    "high risk": {
+      "precision": 1.0,
+      "recall": 0.5487804878048781,
+      "f1": 0.7086614173228346
+    }
+  },
+  "confusion_matrix_test": {
+    "labels": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "matrix": [
+      [
+        2,
+        119,
+        0
+      ],
+      [
+        6,
+        95,
+        0
+      ],
+      [
+        0,
+        37,
+        45
+      ]
+    ]
+  },
+  "runtime": {
+    "training_time_ms": 14498,
+    "inference_time_train_ms": 45,
+    "inference_time_test_ms": 22,
+    "total_time_ms": 14565
+  }
+}

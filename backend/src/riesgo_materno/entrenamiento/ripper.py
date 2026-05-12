@@ -60,7 +60,7 @@ def _discretizar(tabla):
 
 # ── RIPPER ────────────────────────────────────────────────────────────────────
 
-def aprender_reglas_ripper(tabla):
+def aprender_reglas_ripper(tabla, orden_clases=None, parametros=None):
     """
     Aprende reglas IF-THEN desde el dataset usando RIPPER.
 
@@ -80,12 +80,15 @@ def aprender_reglas_ripper(tabla):
     reglas = []
     numero = 1
 
-    for clase in ORDEN_CLASES:
+    orden = orden_clases or ORDEN_CLASES
+    parametros = parametros or {}
+
+    for clase in orden:
         # RIPPER es binario: convertir a "clase vs resto"
         df_binario = df.copy()
         df_binario["riesgo"] = df["riesgo"].apply(lambda x: clase if x == clase else "otro")
 
-        clf = RIPPER()
+        clf = RIPPER(**parametros)
         clf.fit(df_binario, class_feat="riesgo", pos_class=clase)
 
         for rule in clf.ruleset_.rules:

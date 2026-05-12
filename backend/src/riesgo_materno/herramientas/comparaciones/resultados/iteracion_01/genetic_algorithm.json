@@ -1,0 +1,2142 @@
+{
+  "experiment_id": "maternal_risk_rule_comparison",
+  "iteration": 1,
+  "seed": 1,
+  "algorithm": "GENETIC_ALGORITHM",
+  "split": {
+    "strategy": "stratified_holdout",
+    "train_ratio": 0.7,
+    "test_ratio": 0.3,
+    "train_size": 708,
+    "test_size": 304
+  },
+  "hyperparameters": {
+    "candidate_rules": 30,
+    "population_size": 20,
+    "max_generations": 100,
+    "patience": 50,
+    "mutation_rate": 0.1,
+    "crossover_rate": 0.9,
+    "elitism_count": 2,
+    "selection_method": "roulette",
+    "lambda_penalty": 0.05,
+    "max_conditions_per_rule": 6,
+    "min_rule_coverage": 2
+  },
+  "rules_summary": {
+    "num_rules_initial": 30,
+    "num_rules_generated": 30,
+    "num_rules_active": 5,
+    "num_rules_inactive": 25,
+    "rule_reduction_ratio": 0.8333333333333334,
+    "avg_rule_length": 3.0,
+    "total_antecedents": 15,
+    "rules_by_class": {
+      "low risk": 2,
+      "mid risk": 0,
+      "high risk": 3
+    },
+    "active_rules_by_class": {
+      "low risk": 2,
+      "mid risk": 0,
+      "high risk": 3
+    }
+  },
+  "rules": {
+    "candidate_rules": [
+      {
+        "id": "R001",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 1
+      },
+      {
+        "id": "R002",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 2
+      },
+      {
+        "id": "R003",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 3
+      },
+      {
+        "id": "R004",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 4
+      },
+      {
+        "id": "R005",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 5
+      },
+      {
+        "id": "R006",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 6
+      },
+      {
+        "id": "R007",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 7
+      },
+      {
+        "id": "R008",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 8
+      },
+      {
+        "id": "R009",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 9
+      },
+      {
+        "id": "R010",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 10
+      },
+      {
+        "id": "R011",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 11
+      },
+      {
+        "id": "R012",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 12
+      },
+      {
+        "id": "R013",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "bradicardia"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 13
+      },
+      {
+        "id": "R014",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 14
+      },
+      {
+        "id": "R015",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 15
+      },
+      {
+        "id": "R016",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "bradicardia"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 16
+      },
+      {
+        "id": "R017",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 17
+      },
+      {
+        "id": "R018",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 18
+      },
+      {
+        "id": "R019",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "bradicardia"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 19
+      },
+      {
+        "id": "R020",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "muy_avanzada"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 20
+      },
+      {
+        "id": "R021",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 21
+      },
+      {
+        "id": "R022",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "bradicardia"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 22
+      },
+      {
+        "id": "R023",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "muy_avanzada"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "normoglucemia"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 23
+      },
+      {
+        "id": "R024",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 24
+      },
+      {
+        "id": "R025",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "bradicardia"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 25
+      },
+      {
+        "id": "R026",
+        "antecedent": [
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 26
+      },
+      {
+        "id": "R027",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 27
+      },
+      {
+        "id": "R028",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "hipotension"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 28
+      },
+      {
+        "id": "R029",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "febricular"
+          }
+        ],
+        "consequent": "mid risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 29
+      },
+      {
+        "id": "R030",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 30
+      }
+    ],
+    "active_rules": [
+      {
+        "id": "R001",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "adolescente"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "hiperglucemia_gestacional"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 1
+      },
+      {
+        "id": "R002",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "avanzada"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 3
+      },
+      {
+        "id": "R003",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "temperatura_corporal",
+            "linguistic_term": "normal"
+          },
+          {
+            "variable": "frecuencia_cardiaca",
+            "linguistic_term": "bradicardia"
+          }
+        ],
+        "consequent": "low risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 13
+      },
+      {
+        "id": "R004",
+        "antecedent": [
+          {
+            "variable": "edad",
+            "linguistic_term": "optima"
+          },
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "hipertension"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 21
+      },
+      {
+        "id": "R005",
+        "antecedent": [
+          {
+            "variable": "presion_sistolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "presion_diastolica",
+            "linguistic_term": "elevada"
+          },
+          {
+            "variable": "azucar_sangre",
+            "linguistic_term": "diabetes_manifiesta"
+          }
+        ],
+        "consequent": "high risk",
+        "source": "GA",
+        "active": true,
+        "candidate_index": 30
+      }
+    ],
+    "best_chromosome": [
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  "metrics_train": {
+    "balanced_accuracy": 0.4744209972340821,
+    "fitness_penalized": 0.46608766390074874,
+    "accuracy": 0.4576271186440678,
+    "precision_macro": 0.5912698412698413,
+    "recall_macro": 0.4744209972340821,
+    "f1_macro": 0.4318736450571204,
+    "coverage": 0.288135593220339,
+    "uncovered_instances": 504,
+    "per_class": {
+      "low risk": {
+        "precision": 0.8333333333333334,
+        "recall": 0.17667844522968199,
+        "f1": 0.2915451895043732
+      },
+      "mid risk": {
+        "precision": 0.38492063492063494,
+        "recall": 0.825531914893617,
+        "f1": 0.5250338294993234
+      },
+      "high risk": {
+        "precision": 0.5555555555555556,
+        "recall": 0.42105263157894735,
+        "f1": 0.47904191616766467
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "low risk",
+        "mid risk",
+        "high risk"
+      ],
+      "matrix": [
+        [
+          50,
+          201,
+          32
+        ],
+        [
+          9,
+          194,
+          32
+        ],
+        [
+          1,
+          109,
+          80
+        ]
+      ]
+    }
+  },
+  "metrics_test": {
+    "balanced_accuracy": 0.49195174506364153,
+    "fitness_penalized": 0.4836184117303082,
+    "accuracy": 0.47039473684210525,
+    "precision_macro": 0.6360626301802773,
+    "recall_macro": 0.49195174506364164,
+    "f1_macro": 0.4424705580340529,
+    "coverage": 0.2730263157894737,
+    "uncovered_instances": 221
+  },
+  "metrics_per_class_test": {
+    "low risk": {
+      "precision": 0.9,
+      "recall": 0.1487603305785124,
+      "f1": 0.2553191489361702
+    },
+    "mid risk": {
+      "precision": 0.3891402714932127,
+      "recall": 0.8514851485148515,
+      "f1": 0.5341614906832298
+    },
+    "high risk": {
+      "precision": 0.6190476190476191,
+      "recall": 0.47560975609756095,
+      "f1": 0.5379310344827586
+    }
+  },
+  "confusion_matrix_test": {
+    "labels": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "matrix": [
+      [
+        18,
+        92,
+        11
+      ],
+      [
+        2,
+        86,
+        13
+      ],
+      [
+        0,
+        43,
+        39
+      ]
+    ]
+  },
+  "runtime": {
+    "training_time_ms": 265987,
+    "inference_time_train_ms": 120,
+    "inference_time_test_ms": 64,
+    "total_time_ms": 266171
+  },
+  "ga_history": {
+    "best_generation": 82,
+    "final_generation": 100,
+    "stopped_by": "max_generations",
+    "initial_best_fitness": 0.4525938229153064,
+    "final_best_fitness": 0.46608766390074874,
+    "history": [
+      {
+        "generation": 0,
+        "best_fitness": 0.4525938229153064,
+        "mean_fitness": 0.43198398550695966,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.45781731884029303,
+        "active_rules": 15,
+        "rules_min": 11,
+        "rules_mean": 15.5,
+        "rules_max": 30
+      },
+      {
+        "generation": 1,
+        "best_fitness": 0.4525938229153064,
+        "mean_fitness": 0.43342405728628763,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.45775739061962106,
+        "active_rules": 15,
+        "rules_min": 11,
+        "rules_mean": 14.6,
+        "rules_max": 18
+      },
+      {
+        "generation": 2,
+        "best_fitness": 0.4559271562486398,
+        "mean_fitness": 0.43352815610750806,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4606114894408414,
+        "active_rules": 13,
+        "rules_min": 13,
+        "rules_mean": 16.25,
+        "rules_max": 21
+      },
+      {
+        "generation": 3,
+        "best_fitness": 0.4559271562486398,
+        "mean_fitness": 0.42417502146653013,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.44975835479986337,
+        "active_rules": 13,
+        "rules_min": 11,
+        "rules_mean": 15.35,
+        "rules_max": 19
+      },
+      {
+        "generation": 4,
+        "best_fitness": 0.4559271562486398,
+        "mean_fitness": 0.42632387322150944,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.45090720655484284,
+        "active_rules": 13,
+        "rules_min": 11,
+        "rules_mean": 14.75,
+        "rules_max": 18
+      },
+      {
+        "generation": 5,
+        "best_fitness": 0.4559271562486398,
+        "mean_fitness": 0.4301908450360544,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4553575117027212,
+        "active_rules": 13,
+        "rules_min": 12,
+        "rules_mean": 15.1,
+        "rules_max": 19
+      },
+      {
+        "generation": 6,
+        "best_fitness": 0.4559271562486398,
+        "mean_fitness": 0.4272389587512876,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.45132229208462105,
+        "active_rules": 13,
+        "rules_min": 10,
+        "rules_mean": 14.45,
+        "rules_max": 19
+      },
+      {
+        "generation": 7,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.4303581883435753,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.453024855010242,
+        "active_rules": 12,
+        "rules_min": 9,
+        "rules_mean": 13.6,
+        "rules_max": 18
+      },
+      {
+        "generation": 8,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.43704208857795945,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4582920885779595,
+        "active_rules": 12,
+        "rules_min": 9,
+        "rules_mean": 12.75,
+        "rules_max": 17
+      },
+      {
+        "generation": 9,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.4339810438339288,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4560643771672622,
+        "active_rules": 12,
+        "rules_min": 9,
+        "rules_mean": 13.25,
+        "rules_max": 18
+      },
+      {
+        "generation": 10,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.43869907552129694,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4603657421879637,
+        "active_rules": 12,
+        "rules_min": 9,
+        "rules_mean": 13.0,
+        "rules_max": 17
+      },
+      {
+        "generation": 11,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.4351620192123794,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.45716201921237953,
+        "active_rules": 12,
+        "rules_min": 11,
+        "rules_mean": 13.2,
+        "rules_max": 17
+      },
+      {
+        "generation": 12,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.42997639539040067,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4513097287237341,
+        "active_rules": 12,
+        "rules_min": 10,
+        "rules_mean": 12.8,
+        "rules_max": 17
+      },
+      {
+        "generation": 13,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.44471761488715406,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.46896761488715394,
+        "active_rules": 12,
+        "rules_min": 12,
+        "rules_mean": 14.55,
+        "rules_max": 18
+      },
+      {
+        "generation": 14,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.44362551424045416,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4666255142404541,
+        "active_rules": 12,
+        "rules_min": 8,
+        "rules_mean": 13.8,
+        "rules_max": 17
+      },
+      {
+        "generation": 15,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.4392114512561382,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4629614512561383,
+        "active_rules": 12,
+        "rules_min": 11,
+        "rules_mean": 14.25,
+        "rules_max": 19
+      },
+      {
+        "generation": 16,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.4372513127228264,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4634179793894931,
+        "active_rules": 12,
+        "rules_min": 12,
+        "rules_mean": 15.7,
+        "rules_max": 20
+      },
+      {
+        "generation": 17,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.44164459208317003,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4696445920831701,
+        "active_rules": 12,
+        "rules_min": 12,
+        "rules_mean": 16.8,
+        "rules_max": 21
+      },
+      {
+        "generation": 18,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.4416323667129631,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.46838236671296307,
+        "active_rules": 12,
+        "rules_min": 12,
+        "rules_mean": 16.05,
+        "rules_max": 20
+      },
+      {
+        "generation": 19,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.43750997616588644,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4628433094992198,
+        "active_rules": 12,
+        "rules_min": 12,
+        "rules_mean": 15.2,
+        "rules_max": 19
+      },
+      {
+        "generation": 20,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.43914305348364524,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.46247638681697856,
+        "active_rules": 12,
+        "rules_min": 10,
+        "rules_mean": 14.0,
+        "rules_max": 18
+      },
+      {
+        "generation": 21,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.4329851228043795,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.45856845613771285,
+        "active_rules": 12,
+        "rules_min": 10,
+        "rules_mean": 15.35,
+        "rules_max": 21
+      },
+      {
+        "generation": 22,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.424861927674611,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4480285943412777,
+        "active_rules": 12,
+        "rules_min": 9,
+        "rules_mean": 13.9,
+        "rules_max": 18
+      },
+      {
+        "generation": 23,
+        "best_fitness": 0.45617538319899437,
+        "mean_fitness": 0.4331121555297913,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.45561215552979134,
+        "active_rules": 12,
+        "rules_min": 9,
+        "rules_mean": 13.5,
+        "rules_max": 16
+      },
+      {
+        "generation": 24,
+        "best_fitness": 0.4595087165323277,
+        "mean_fitness": 0.43854156757769164,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.46162490091102504,
+        "active_rules": 10,
+        "rules_min": 9,
+        "rules_mean": 13.85,
+        "rules_max": 18
+      },
+      {
+        "generation": 25,
+        "best_fitness": 0.4595087165323277,
+        "mean_fitness": 0.4447728062921004,
+        "best_balanced_accuracy": 0.4761753831989944,
+        "mean_balanced_accuracy": 0.4669394729587671,
+        "active_rules": 10,
+        "rules_min": 8,
+        "rules_mean": 13.3,
+        "rules_max": 17
+      },
+      {
+        "generation": 26,
+        "best_fitness": 0.4610876639007488,
+        "mean_fitness": 0.4491670458757223,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4691670458757223,
+        "active_rules": 8,
+        "rules_min": 8,
+        "rules_mean": 12.0,
+        "rules_max": 16
+      },
+      {
+        "generation": 27,
+        "best_fitness": 0.4610876639007488,
+        "mean_fitness": 0.44512947285324805,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4653794728532481,
+        "active_rules": 8,
+        "rules_min": 8,
+        "rules_mean": 12.15,
+        "rules_max": 18
+      },
+      {
+        "generation": 28,
+        "best_fitness": 0.4610876639007488,
+        "mean_fitness": 0.4409802649715033,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46089693163816997,
+        "active_rules": 8,
+        "rules_min": 7,
+        "rules_mean": 11.95,
+        "rules_max": 17
+      },
+      {
+        "generation": 29,
+        "best_fitness": 0.4610876639007488,
+        "mean_fitness": 0.4383478695705508,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4602645362372174,
+        "active_rules": 8,
+        "rules_min": 8,
+        "rules_mean": 13.15,
+        "rules_max": 17
+      },
+      {
+        "generation": 30,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44218789083263754,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4621045574993043,
+        "active_rules": 9,
+        "rules_min": 6,
+        "rules_mean": 11.95,
+        "rules_max": 18
+      },
+      {
+        "generation": 31,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43594610713875886,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4551961071387588,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 11.55,
+        "rules_max": 19
+      },
+      {
+        "generation": 32,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4323327124197231,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4530827124197231,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 12.45,
+        "rules_max": 19
+      },
+      {
+        "generation": 33,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43704357276922856,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4600435727692286,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.8,
+        "rules_max": 20
+      },
+      {
+        "generation": 34,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44567401441917703,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4685906810858437,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.75,
+        "rules_max": 19
+      },
+      {
+        "generation": 35,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44255593069773147,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4648059306977316,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.35,
+        "rules_max": 16
+      },
+      {
+        "generation": 36,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4507245481476791,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.47114121481434595,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 12.25,
+        "rules_max": 18
+      },
+      {
+        "generation": 37,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44735681132008265,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4666901446534161,
+        "active_rules": 9,
+        "rules_min": 7,
+        "rules_mean": 11.6,
+        "rules_max": 19
+      },
+      {
+        "generation": 38,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4374244266029332,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.45609109326959973,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 11.2,
+        "rules_max": 14
+      },
+      {
+        "generation": 39,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43289270197333807,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4536427019733379,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 12.45,
+        "rules_max": 17
+      },
+      {
+        "generation": 40,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4364734049148131,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.45722340491481306,
+        "active_rules": 9,
+        "rules_min": 6,
+        "rules_mean": 12.45,
+        "rules_max": 16
+      },
+      {
+        "generation": 41,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4375109106688983,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.460677577335565,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.9,
+        "rules_max": 21
+      },
+      {
+        "generation": 42,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44359224507588796,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.463842245075888,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 12.15,
+        "rules_max": 18
+      },
+      {
+        "generation": 43,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43898822110723773,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4615715544405711,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.55,
+        "rules_max": 19
+      },
+      {
+        "generation": 44,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44090148445506666,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4614848177884,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 12.35,
+        "rules_max": 16
+      },
+      {
+        "generation": 45,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4461894732885141,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4670228066218475,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 12.5,
+        "rules_max": 18
+      },
+      {
+        "generation": 46,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4477075998111209,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4696242664777876,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.15,
+        "rules_max": 16
+      },
+      {
+        "generation": 47,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44257523870385684,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4643252387038568,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.05,
+        "rules_max": 18
+      },
+      {
+        "generation": 48,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43948495529290116,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4612349552929011,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.05,
+        "rules_max": 18
+      },
+      {
+        "generation": 49,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4376439477575225,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.46181061442418925,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 14.5,
+        "rules_max": 20
+      },
+      {
+        "generation": 50,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43529449639058937,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4584611630572558,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.9,
+        "rules_max": 19
+      },
+      {
+        "generation": 51,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4431121868557567,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.46519552018909016,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.25,
+        "rules_max": 19
+      },
+      {
+        "generation": 52,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43574625440377124,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.46007958773710456,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 14.6,
+        "rules_max": 20
+      },
+      {
+        "generation": 53,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43935410277818443,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4621874361115178,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.7,
+        "rules_max": 19
+      },
+      {
+        "generation": 54,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44590552715334686,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4681555271533469,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.35,
+        "rules_max": 20
+      },
+      {
+        "generation": 55,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43686099152286406,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.458110991522864,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 12.75,
+        "rules_max": 18
+      },
+      {
+        "generation": 56,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44052301502195457,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4613563483552879,
+        "active_rules": 9,
+        "rules_min": 6,
+        "rules_mean": 12.5,
+        "rules_max": 20
+      },
+      {
+        "generation": 57,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44261100965894923,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4660276763256159,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 14.05,
+        "rules_max": 18
+      },
+      {
+        "generation": 58,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.44036395166172715,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4645306183283937,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 14.5,
+        "rules_max": 18
+      },
+      {
+        "generation": 59,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4337450109278157,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4558283442611491,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.25,
+        "rules_max": 19
+      },
+      {
+        "generation": 60,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4339193646566608,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4568360313233274,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.75,
+        "rules_max": 20
+      },
+      {
+        "generation": 61,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43731319997045465,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4585631999704546,
+        "active_rules": 9,
+        "rules_min": 7,
+        "rules_mean": 12.75,
+        "rules_max": 17
+      },
+      {
+        "generation": 62,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43497963581421795,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4552296358142178,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 12.15,
+        "rules_max": 16
+      },
+      {
+        "generation": 63,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4384622568280713,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4582122568280712,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 11.85,
+        "rules_max": 17
+      },
+      {
+        "generation": 64,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43756128051313914,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.45847794717980567,
+        "active_rules": 9,
+        "rules_min": 6,
+        "rules_mean": 12.55,
+        "rules_max": 17
+      },
+      {
+        "generation": 65,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.43423548816406105,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4575688214973943,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 14.0,
+        "rules_max": 19
+      },
+      {
+        "generation": 66,
+        "best_fitness": 0.46259382291530643,
+        "mean_fitness": 0.4290728160526117,
+        "best_balanced_accuracy": 0.47759382291530644,
+        "mean_balanced_accuracy": 0.4520728160526118,
+        "active_rules": 9,
+        "rules_min": 8,
+        "rules_mean": 13.8,
+        "rules_max": 17
+      },
+      {
+        "generation": 67,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.42700560372060137,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.44783893705393474,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 12.5,
+        "rules_max": 19
+      },
+      {
+        "generation": 68,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4258170237167236,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4482336903833902,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 13.45,
+        "rules_max": 20
+      },
+      {
+        "generation": 69,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4320208489138794,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4522708489138793,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 12.15,
+        "rules_max": 16
+      },
+      {
+        "generation": 70,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.43904982345345356,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.45804982345345363,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 11.4,
+        "rules_max": 17
+      },
+      {
+        "generation": 71,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4378544859442042,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.45735448594420414,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 11.7,
+        "rules_max": 16
+      },
+      {
+        "generation": 72,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4399987561942975,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46066542286096424,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 12.4,
+        "rules_max": 18
+      },
+      {
+        "generation": 73,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4422185394977558,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46430187283108904,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 13.25,
+        "rules_max": 19
+      },
+      {
+        "generation": 74,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.43669244925523343,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4591091159219,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 13.45,
+        "rules_max": 20
+      },
+      {
+        "generation": 75,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4452551832931702,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46825518329317006,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 13.8,
+        "rules_max": 23
+      },
+      {
+        "generation": 76,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.44532262908605996,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46482262908606,
+        "active_rules": 6,
+        "rules_min": 4,
+        "rules_mean": 11.7,
+        "rules_max": 21
+      },
+      {
+        "generation": 77,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.44886606303179954,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4681160630317994,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 11.55,
+        "rules_max": 17
+      },
+      {
+        "generation": 78,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4438823495661189,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46571568289945225,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 13.1,
+        "rules_max": 18
+      },
+      {
+        "generation": 79,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4408899264927976,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46222325982613094,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 12.8,
+        "rules_max": 20
+      },
+      {
+        "generation": 80,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.44780175346267326,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46746842012934,
+        "active_rules": 6,
+        "rules_min": 5,
+        "rules_mean": 11.8,
+        "rules_max": 18
+      },
+      {
+        "generation": 81,
+        "best_fitness": 0.4644209972340821,
+        "mean_fitness": 0.4422879459663368,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46137127929967015,
+        "active_rules": 6,
+        "rules_min": 6,
+        "rules_mean": 11.45,
+        "rules_max": 18
+      },
+      {
+        "generation": 82,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4437971495349908,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4606304828683241,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.1,
+        "rules_max": 16
+      },
+      {
+        "generation": 83,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4496680990876559,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4670014324209893,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.4,
+        "rules_max": 16
+      },
+      {
+        "generation": 84,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4503017531329262,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46905175313292624,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 11.25,
+        "rules_max": 15
+      },
+      {
+        "generation": 85,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4427561642905097,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4628394976238431,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 12.05,
+        "rules_max": 16
+      },
+      {
+        "generation": 86,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.43533503515762567,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4567517018242923,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 12.85,
+        "rules_max": 18
+      },
+      {
+        "generation": 87,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4375331003340996,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4567831003340996,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 11.55,
+        "rules_max": 16
+      },
+      {
+        "generation": 88,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4397077547922132,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4571244214588798,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.45,
+        "rules_max": 18
+      },
+      {
+        "generation": 89,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4432109991729945,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46037766583966117,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.3,
+        "rules_max": 16
+      },
+      {
+        "generation": 90,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4393031308159128,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.45721979748257946,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.75,
+        "rules_max": 14
+      },
+      {
+        "generation": 91,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4470139548932477,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.463347288226581,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 9.8,
+        "rules_max": 16
+      },
+      {
+        "generation": 92,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.45347106008386123,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46963772675052795,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 9.7,
+        "rules_max": 17
+      },
+      {
+        "generation": 93,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.444653185290118,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4613198519567847,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.0,
+        "rules_max": 14
+      },
+      {
+        "generation": 94,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4375255382460361,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.45402553824603603,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 9.9,
+        "rules_max": 16
+      },
+      {
+        "generation": 95,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.43599027345259617,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4535736067859296,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.55,
+        "rules_max": 16
+      },
+      {
+        "generation": 96,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.44371087320963853,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46021087320963855,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 9.9,
+        "rules_max": 15
+      },
+      {
+        "generation": 97,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.44247735495418505,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.45881068828751825,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 9.8,
+        "rules_max": 13
+      },
+      {
+        "generation": 98,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.45038005617569976,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.4661300561756997,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 9.45,
+        "rules_max": 13
+      },
+      {
+        "generation": 99,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.4457208813609846,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46280421469431793,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.25,
+        "rules_max": 14
+      },
+      {
+        "generation": 100,
+        "best_fitness": 0.46608766390074874,
+        "mean_fitness": 0.44230636101757287,
+        "best_balanced_accuracy": 0.4744209972340821,
+        "mean_balanced_accuracy": 0.46022302768423956,
+        "active_rules": 5,
+        "rules_min": 5,
+        "rules_mean": 10.75,
+        "rules_max": 18
+      }
+    ]
+  }
+}

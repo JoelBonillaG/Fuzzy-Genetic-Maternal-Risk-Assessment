@@ -1,0 +1,45 @@
+{
+  "experiment_id": "maternal_risk_rule_comparison",
+  "iterations": 3,
+  "random_seeds": [
+    1,
+    2,
+    3
+  ],
+  "train_size": 0.7,
+  "test_size": 0.3,
+  "classes": [
+    "low risk",
+    "mid risk",
+    "high risk"
+  ],
+  "primary_metric": "balanced_accuracy",
+  "ripper": {
+    "k": 2,
+    "dl_allowance": 64
+  },
+  "prism": {
+    "min_rule_coverage": 2,
+    "class_order": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "max_conditions_per_rule": 3,
+    "max_rules_per_class": 25,
+    "remove_covered_positives": false
+  },
+  "ga": {
+    "candidate_rules": 30,
+    "population_size": 20,
+    "max_generations": 100,
+    "patience": 50,
+    "mutation_rate": 0.1,
+    "crossover_rate": 0.9,
+    "elitism_count": 2,
+    "selection_method": "roulette",
+    "lambda_penalty": 0.05,
+    "max_conditions_per_rule": 6,
+    "min_rule_coverage": 2
+  }
+}

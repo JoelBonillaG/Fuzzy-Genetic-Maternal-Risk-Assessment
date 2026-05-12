@@ -1,0 +1,68 @@
+{
+  "tabla": [
+    {
+      "algorithm": "GENETIC_ALGORITHM",
+      "ba_test_mean": 0.4781898367220314,
+      "ba_test_std": 0.024095757753566878,
+      "fitness_test_mean": 0.4676342811664758,
+      "f1_macro_mean": 0.42043827339190143,
+      "active_rules_mean": 6.333333333333333,
+      "coverage_mean": 0.24671052631578946,
+      "runtime_ms_mean": 227634.66666666666
+    },
+    {
+      "algorithm": "PRISM",
+      "ba_test_mean": 0.4814490318211422,
+      "ba_test_std": 0.01804459774214155,
+      "fitness_test_mean": 0.4708934762655866,
+      "f1_macro_mean": 0.40731990780502364,
+      "active_rules_mean": 6.333333333333333,
+      "coverage_mean": 0.15789473684210528,
+      "runtime_ms_mean": 18011.666666666668
+    },
+    {
+      "algorithm": "RIPPER",
+      "ba_test_mean": 0.6519257247232484,
+      "ba_test_std": 0.026734575495524927,
+      "fitness_test_mean": 0.6069257247232485,
+      "f1_macro_mean": 0.6406290011677616,
+      "active_rules_mean": 27.0,
+      "coverage_mean": 0.9440789473684211,
+      "runtime_ms_mean": 1119.0
+    }
+  ],
+  "best_iterations": {
+    "GENETIC_ALGORITHM": {
+      "iteration": 2,
+      "seed": 2,
+      "balanced_accuracy_test": 0.4922507771841486
+    },
+    "PRISM": {
+      "iteration": 1,
+      "seed": 1,
+      "balanced_accuracy_test": 0.5019678242768845
+    },
+    "RIPPER": {
+      "iteration": 1,
+      "seed": 1,
+      "balanced_accuracy_test": 0.6709582266430635
+    }
+  },
+  "worst_iterations": {
+    "GENETIC_ALGORITHM": {
+      "iteration": 3,
+      "seed": 3,
+      "balanced_accuracy_test": 0.45036698791830404
+    },
+    "PRISM": {
+      "iteration": 3,
+      "seed": 3,
+      "balanced_accuracy_test": 0.4680524593479303
+    },
+    "RIPPER": {
+      "iteration": 3,
+      "seed": 3,
+      "balanced_accuracy_test": 0.6213604730761325
+    }
+  }
+}

@@ -8,7 +8,6 @@ from .variables import (
     SALIDA_DIFUSA,
     VARIABLES_ENTRADA,
 )
-from .reglas import REGLAS
 
 
 class SistemaDifusoMamdani:
@@ -30,7 +29,12 @@ class SistemaDifusoMamdani:
                                 Si es None, usa REGLAS (todas las reglas candidatas del JSON).
         """
         self.membresias_entrada = membresias_entrada
-        self.reglas = reglas if reglas is not None else REGLAS
+        if reglas is None:
+            from .reglas import REGLAS
+
+            self.reglas = REGLAS
+        else:
+            self.reglas = reglas
         self.puntaje_neutro = 50.0
         self.universos_entrada = self._crear_universos_entrada()
         self.universo_salida = self._crear_universo_salida()
