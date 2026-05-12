@@ -1,6 +1,6 @@
 import argparse
 
-from ..prediccion import predecir_caso
+from ...prediccion import predecir_caso
 
 
 def principal():

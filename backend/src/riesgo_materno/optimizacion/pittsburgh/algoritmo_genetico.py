@@ -16,8 +16,8 @@ import pandas as pd
 import pygad
 from sklearn.metrics import balanced_accuracy_score
 
-from ..logica_difusa.motor import SistemaDifusoMamdani
-from ..entrenamiento.modelo import PARAMETROS_AG, PESOS_FITNESS
+from ...logica_difusa.motor import SistemaDifusoMamdani
+from ...entrenamiento.modelo import PARAMETROS_AG, PESOS_FITNESS
 from .cromosoma import (
     CANTIDAD_REGLAS_CANDIDATAS,
     cantidad_reglas_activas,

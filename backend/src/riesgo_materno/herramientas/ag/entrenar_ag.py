@@ -1,10 +1,10 @@
 """CLI de entrenamiento: corre el AG Pittsburgh y guarda la seleccion de reglas.
 
 Uso:
-    python -m src.riesgo_materno.herramientas.entrenar_ag
+    python -m riesgo_materno.herramientas.ag.entrenar_ag
 """
 
-from ..entrenamiento.entrenador import entrenar_seleccion_reglas
+from ...entrenamiento.entrenador import entrenar_seleccion_reglas
 
 
 def principal():

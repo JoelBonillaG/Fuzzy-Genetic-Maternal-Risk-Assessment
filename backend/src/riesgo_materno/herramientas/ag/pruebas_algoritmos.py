@@ -1,7 +1,7 @@
 import argparse
 import csv
 
-from ..prediccion import predecir_caso
+from ...prediccion import predecir_caso
 
 
 MAPA_RIESGO = {
@@ -228,7 +228,7 @@ def construir_salida_individual(resultado):
 
 def construir_comando(valores):
     return (
-        "venv\\Scripts\\python.exe -m riesgo_materno_difuso.herramientas.predecir_cli "
+        ".venv\\Scripts\\python.exe -m riesgo_materno.herramientas.ag.predecir_cli "
         f"--edad {formatear_numero(valores['edad'])} "
         f"--presion-sistolica {formatear_numero(valores['presion_sistolica'])} "
         f"--presion-diastolica {formatear_numero(valores['presion_diastolica'])} "

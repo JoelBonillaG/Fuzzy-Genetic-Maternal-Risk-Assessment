@@ -6,7 +6,7 @@ Un cromosoma representa una base completa de reglas.
 
 import numpy as np
 
-from ..logica_difusa.reglas import REGLAS
+from ...logica_difusa.reglas import REGLAS
 
 
 CANTIDAD_REGLAS_CANDIDATAS = len(REGLAS)

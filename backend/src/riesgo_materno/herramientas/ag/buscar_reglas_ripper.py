@@ -9,9 +9,9 @@ Para evitar fuga de informacion, el ranking NO usa el 30% de prueba del split
 principal. Ese test se calcula solo como auditoria informativa.
 
 Uso:
-    python -m src.riesgo_materno.herramientas.buscar_reglas_ripper
-    python -m src.riesgo_materno.herramientas.buscar_reglas_ripper --iteraciones 120 --top 10
-    python -m src.riesgo_materno.herramientas.buscar_reglas_ripper --guardar-mejor
+    python -m riesgo_materno.herramientas.ag.buscar_reglas_ripper
+    python -m riesgo_materno.herramientas.ag.buscar_reglas_ripper --iteraciones 120 --top 10
+    python -m riesgo_materno.herramientas.ag.buscar_reglas_ripper --guardar-mejor
 """
 
 from __future__ import annotations
@@ -29,22 +29,22 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
 from wittgenstein import RIPPER
 
-from ..entrenamiento.datos import (
+from ...entrenamiento.datos import (
     cargar_dataset,
     convertir_split_a_diccionario,
     dividir_entrenamiento_prueba,
 )
-from ..entrenamiento.modelo import RUTA_CSV, RUTA_REGLAS_APRENDIDAS
-from ..entrenamiento.ripper import MAPA_CONSECUENTE, _discretizar
-from ..logica_difusa.motor import SistemaDifusoMamdani
-from ..logica_difusa.variables import ETIQUETAS_RIESGO
-from ..entrenamiento.entrenador import construir_membresias_base
+from ...entrenamiento.modelo import RUTA_CSV, RUTA_REGLAS_APRENDIDAS
+from ...entrenamiento.ripper import MAPA_CONSECUENTE, _discretizar
+from ...logica_difusa.motor import SistemaDifusoMamdani
+from ...logica_difusa.variables import ETIQUETAS_RIESGO
+from ...entrenamiento.entrenador import construir_membresias_base
 
 
 SEMILLA = 42
 ORDEN_BASE = ("high risk", "mid risk", "low risk")
 MAPA_INVERSO = {"alto": "high risk", "medio": "mid risk", "bajo": "low risk"}
-RUTA_SALIDA = Path(__file__).resolve().parents[1] / "modelos" / "busqueda_ripper"
+RUTA_SALIDA = Path(__file__).resolve().parents[2] / "modelos" / "busqueda_ripper"
 
 
 @dataclass

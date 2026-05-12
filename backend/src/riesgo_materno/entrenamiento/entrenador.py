@@ -7,12 +7,12 @@ import numpy as np
 
 from ..logica_difusa.reglas import REGLAS
 from ..logica_difusa.variables import ESPECIFICACIONES_VARIABLES
-from ..optimizacion.algoritmo_genetico import (
+from ..optimizacion.pittsburgh.algoritmo_genetico import (
     ResultadoBase,
     ejecutar_ag_pittsburgh,
     evaluar_base_reglas,
 )
-from ..optimizacion.cromosoma import (
+from ..optimizacion.pittsburgh.cromosoma import (
     CANTIDAD_REGLAS_CANDIDATAS,
     cantidad_reglas_activas,
     indices_reglas_activas,

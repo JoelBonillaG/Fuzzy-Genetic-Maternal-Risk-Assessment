@@ -5,7 +5,8 @@ from __future__ import annotations
 import pandas as pd
 
 from ..logica_difusa.variables import ESPECIFICACIONES_VARIABLES, VARIABLES_ENTRADA
-from .ripper import MAPA_CONSECUENTE, _discretizar
+from .reglas_completas import completar_antecedentes_reglas
+from .ripper import CONSECUENTE_A_CLASE, MAPA_CONSECUENTE, _discretizar
 
 
 CLASES = ["low risk", "mid risk", "high risk"]
@@ -15,16 +16,16 @@ def aprender_reglas_prism(tabla, config):
     """Aprende reglas PRISM desde train_i y devuelve reglas para el motor difuso."""
     df = pd.DataFrame(_discretizar(tabla)).rename(columns={"clase": "riesgo"})
     reglas = []
-    for clase in config["class_order"]:
+    for clase in config["orden_clases"]:
         positivos_restantes = set(df.index[df["riesgo"] == clase].tolist())
         reglas_clase = 0
         bloqueadas = set()
-        while positivos_restantes and reglas_clase < config["max_rules_per_class"]:
+        while positivos_restantes and reglas_clase < config["maximo_reglas_por_clase"]:
             regla = construir_regla_prism(
                 df=df,
                 clase=clase,
                 positivos_restantes=positivos_restantes,
-                max_condiciones=config["max_conditions_per_rule"],
+                max_condiciones=config["maximo_condiciones_por_regla"],
                 bloqueadas=bloqueadas,
             )
             if regla is None:
@@ -33,9 +34,9 @@ def aprender_reglas_prism(tabla, config):
             bloqueadas.add(clave)
             cubiertos = indices_cubiertos(df, regla)
             positivos_cubiertos = {i for i in cubiertos if df.at[i, "riesgo"] == clase}
-            if len(positivos_cubiertos) < config["min_rule_coverage"]:
+            if len(positivos_cubiertos) < config["cobertura_minima_regla"]:
                 continue
-            if config["remove_covered_positives"]:
+            if config["eliminar_positivos_cubiertos"]:
                 positivos_restantes -= positivos_cubiertos
             else:
                 positivos_restantes -= {min(positivos_cubiertos)}
@@ -47,6 +48,7 @@ def aprender_reglas_prism(tabla, config):
                 }
             )
             reglas_clase += 1
+    reglas = completar_antecedentes_reglas(reglas, df, CONSECUENTE_A_CLASE)
     return quitar_duplicadas(reglas)
 
 

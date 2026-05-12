@@ -9,7 +9,7 @@ import pandas as pd
 import pygad
 from sklearn.metrics import balanced_accuracy_score
 
-from ..logica_difusa.motor import SistemaDifusoMamdani
+from ...logica_difusa.motor import SistemaDifusoMamdani
 
 
 FITNESS_MINIMO_RULETA = 1e-6
