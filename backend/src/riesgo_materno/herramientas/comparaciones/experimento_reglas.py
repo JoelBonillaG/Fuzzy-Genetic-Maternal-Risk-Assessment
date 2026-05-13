@@ -71,7 +71,6 @@ CONFIGURACION_EXPERIMENTO = {
         "fraccion_reemplazo": 0.10,
         "elitismo": 3,
         "tamano_torneo": 3,
-        "ruido_clase_inicial": 0.35,
         "peso_balanced_accuracy": 0.98,
         "penalizacion_duplicados": 0.02,
     },
@@ -130,7 +129,10 @@ def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
     print(
         f"  RIPPER | reglas={len(reglas)} | "
         f"accuracy={resultado['metricas']['accuracy']:.4f} | "
-        f"error={resultado['metricas']['error_clasificacion']:.4f}"
+        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
+        f"error={resultado['metricas']['error_clasificacion']:.4f} | "
+        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
+        f"fitness={resultado['metricas']['fitness']:.4f}"
     )
     return resultado
 
@@ -153,7 +155,10 @@ def ejecutar_prism(iteracion, tabla, ruta_iteracion, config):
     print(
         f"  PRISM  | modo=bootstrap | reglas={len(reglas)} | "
         f"accuracy={resultado['metricas']['accuracy']:.4f} | "
-        f"error={resultado['metricas']['error_clasificacion']:.4f}"
+        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
+        f"error={resultado['metricas']['error_clasificacion']:.4f} | "
+        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
+        f"fitness={resultado['metricas']['fitness']:.4f}"
     )
     return resultado
 
@@ -205,7 +210,10 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
     print(
         f"  AG-PM  | reglas={len(reglas)} | "
         f"accuracy={resultado['metricas']['accuracy']:.4f} | "
+        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
         f"error={resultado['metricas']['error_clasificacion']:.4f} | "
+        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
+        f"fitness={resultado['metricas']['fitness']:.4f} | "
         f"duplicados={resultado['resumen_reglas']['reglas_duplicadas']}"
     )
     return resultado
@@ -232,7 +240,6 @@ def evaluar_y_guardar(
         total_reglas=resumen_reglas["total_reglas"],
         config_fitness=config_fitness,
     )
-
     resultado = {
         "id_experimento": CONFIGURACION_EXPERIMENTO["id_experimento"],
         "iteracion": int(iteracion),
@@ -275,13 +282,15 @@ def construir_metricas_desde_predicciones(reales, predichos, puntajes, sin_activ
     total = int(len(reales))
     accuracy = float(accuracy_score(reales, predichos))
     matriz = confusion_matrix(reales, predichos, labels=CLASES).tolist()
+    balanced_accuracy = float(balanced_accuracy_score(reales, predichos))
     return {
         "accuracy": accuracy,
         "error_clasificacion": float(1.0 - accuracy),
         "errores": int(total - correctas),
         "aciertos": correctas,
         "total": total,
-        "balanced_accuracy": float(balanced_accuracy_score(reales, predichos)),
+        "balanced_accuracy": balanced_accuracy,
+        "error_balanceado": float(1.0 - balanced_accuracy),
         "desviacion_estandar_puntajes": float(np.std(puntajes, ddof=1)),
         "cobertura": float(1.0 - np.mean(sin_activacion)),
         "instancias_sin_activacion": int(np.sum(sin_activacion)),
@@ -344,6 +353,7 @@ def construir_resumen_final(resultados):
         grupo = [r for r in resultados if r["algoritmo"] == algoritmo]
         accuracies = [r["metricas"]["accuracy"] for r in grupo]
         errores = [r["metricas"]["error_clasificacion"] for r in grupo]
+        errores_balanceados = [r["metricas"]["error_balanceado"] for r in grupo]
         fitness = [r["metricas"]["fitness"] for r in grupo]
         ba = [r["metricas"]["balanced_accuracy"] for r in grupo]
         filas.append(
@@ -353,6 +363,8 @@ def construir_resumen_final(resultados):
                 "accuracy_desviacion_estandar": desviacion(accuracies),
                 "error_promedio": promedio(errores),
                 "error_desviacion_estandar": desviacion(errores),
+                "error_balanceado_promedio": promedio(errores_balanceados),
+                "error_balanceado_desviacion_estandar": desviacion(errores_balanceados),
                 "balanced_accuracy_promedio": promedio(ba),
                 "balanced_accuracy_desviacion_estandar": desviacion(ba),
                 "fitness_promedio": promedio(fitness),

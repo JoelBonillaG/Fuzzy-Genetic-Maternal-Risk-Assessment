@@ -41,7 +41,6 @@
     "fraccion_reemplazo": 0.1,
     "elitismo": 3,
     "tamano_torneo": 3,
-    "ruido_clase_inicial": 0.35,
     "peso_balanced_accuracy": 0.98,
     "penalizacion_duplicados": 0.02
   }

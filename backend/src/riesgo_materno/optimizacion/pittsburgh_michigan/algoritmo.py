@@ -192,25 +192,20 @@ def construir_gene_space(reglas_por_individuo, codificacion):
 def inicializar_poblacion(df_discretizado, parametros, codificacion):
     poblacion = []
     for _ in range(parametros["tamano_poblacion"]):
-        poblacion.append(generar_cromosoma_inicial(df_discretizado, parametros, codificacion))
+        poblacion.append(generar_cromosoma_inicial(parametros, codificacion))
     return np.asarray(poblacion, dtype=int)
 
 
-def generar_cromosoma_inicial(df_discretizado, parametros, codificacion):
+def generar_cromosoma_inicial(parametros, codificacion):
+    """Genera un cromosoma 100% aleatorio dentro de rangos linguisticos validos."""
     genes = []
     cantidad_reglas = parametros["reglas_por_individuo"]
-    indices = np.random.choice(df_discretizado.index.to_numpy(), size=cantidad_reglas, replace=True)
 
-    for indice in indices:
-        fila = df_discretizado.loc[indice]
+    for _ in range(cantidad_reglas):
         for variable in VARIABLES_ENTRADA:
-            genes.append(codificacion["indice_por_categoria"][variable][fila[variable]])
-
-        if np.random.random() < parametros["ruido_clase_inicial"]:
-            clase = str(np.random.choice(codificacion["clases"]))
-        else:
-            clase = str(fila["riesgo"])
-        genes.append(codificacion["indice_por_clase"][clase])
+            cantidad_categorias = len(codificacion["categorias_por_variable"][variable])
+            genes.append(int(np.random.randint(0, cantidad_categorias)))
+        genes.append(int(np.random.randint(0, len(codificacion["clases"]))))
 
     return np.asarray(genes, dtype=int)
 

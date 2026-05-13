@@ -247,8 +247,8 @@ def puntaje_a_riesgo(puntaje):
     """Convierte un puntaje numerico a una etiqueta de riesgo."""
     if np.isnan(puntaje):
         return None
-    if puntaje < 40.0:
+    if puntaje < 39.92:
         return "low risk"
-    if puntaje < 65.0:
+    if puntaje < 73.12:
         return "mid risk"
     return "high risk"

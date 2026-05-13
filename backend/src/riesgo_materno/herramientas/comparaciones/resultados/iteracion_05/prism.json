@@ -1,6 +1,6 @@
 {
   "id_experimento": "comparacion_reglas_riesgo_materno_dataset_completo",
-  "iteracion": 1,
+  "iteracion": 5,
   "algoritmo": "PRISM_ESTOCASTICO",
   "datos": {
     "estrategia": "dataset_completo_sin_splits",
@@ -35,16 +35,16 @@
     }
   },
   "metricas": {
-    "accuracy": 0.35079051383399207,
-    "error_clasificacion": 0.6492094861660079,
-    "errores": 657,
-    "aciertos": 355,
+    "accuracy": 0.3557312252964427,
+    "error_clasificacion": 0.6442687747035574,
+    "errores": 652,
+    "aciertos": 360,
     "total": 1012,
-    "balanced_accuracy": 0.35488139150049464,
-    "desviacion_estandar_puntajes": 6.06197165816291,
-    "cobertura": 0.038537549407114624,
-    "instancias_sin_activacion": 973,
-    "fitness": 0.34778376367048475
+    "balanced_accuracy": 0.36034265191225007,
+    "desviacion_estandar_puntajes": 5.042137992699076,
+    "cobertura": 0.029644268774703608,
+    "instancias_sin_activacion": 982,
+    "fitness": 0.35313579887400504
   },
   "matriz_confusion": {
     "etiquetas": [
@@ -54,18 +54,18 @@
     ],
     "matriz": [
       [
-        9,
-        395,
-        0
-      ],
-      [
-        8,
-        328,
+        6,
+        398,
         0
       ],
       [
         0,
-        254,
+        336,
+        0
+      ],
+      [
+        2,
+        252,
         18
       ]
     ]
@@ -76,19 +76,19 @@
       "antecedentes": [
         {
           "variable": "edad",
-          "etiqueta_linguistica": "optima"
+          "etiqueta_linguistica": "muy_avanzada"
         },
         {
           "variable": "presion_sistolica",
-          "etiqueta_linguistica": "normal"
+          "etiqueta_linguistica": "hipotension"
         },
         {
           "variable": "presion_diastolica",
-          "etiqueta_linguistica": "elevada"
+          "etiqueta_linguistica": "normal"
         },
         {
           "variable": "azucar_sangre",
-          "etiqueta_linguistica": "normoglucemia"
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
         },
         {
           "variable": "temperatura_corporal",
@@ -96,7 +96,7 @@
         },
         {
           "variable": "frecuencia_cardiaca",
-          "etiqueta_linguistica": "bradicardia"
+          "etiqueta_linguistica": "normal"
         }
       ],
       "consecuente": "low risk",
@@ -166,8 +166,8 @@
     }
   ],
   "tiempos": {
-    "entrenamiento_ms": 31736,
-    "inferencia_ms": 95,
-    "total_ms": 31831
+    "entrenamiento_ms": 31922,
+    "inferencia_ms": 60,
+    "total_ms": 31982
   }
 }
