@@ -1,7 +1,7 @@
-"""Comparacion experimental de RIPPER, PRISM y AG Pittsburgh-Michigan.
+"""Comparacion experimental de RIPPER, PRISM y AG Michigan binario.
 
-El experimento usa el dataset completo, sin particiones train/test. Todas las
-reglas generadas conservan los seis antecedentes clinicos.
+El experimento usa el dataset completo, sin particiones train/test. PRISM y
+RIPPER conservan su longitud original; el AG usa seis antecedentes clinicos.
 
 Uso:
     python -m riesgo_materno.herramientas.comparaciones.experimento_reglas
@@ -23,9 +23,11 @@ from ...entrenamiento.prism import aprender_reglas_prism as aprender_prism
 from ...entrenamiento.ripper import aprender_reglas_ripper as aprender_ripper
 from ...logica_difusa.motor import SistemaDifusoMamdani
 from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES
-from ...optimizacion.pittsburgh_michigan import (
+from ...optimizacion.michigan_binario import (
+    BITS_POR_GEN,
+    BITS_POR_REGLA,
     contar_duplicados,
-    ejecutar_ag_pittsburgh_michigan,
+    ejecutar_ag_michigan_binario,
 )
 
 
@@ -37,15 +39,15 @@ CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "al
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 
 CONFIGURACION_EXPERIMENTO = {
-    "id_experimento": "prueba_guardado_rapida",
-    "iteraciones": 2,
+    "id_experimento": "prueba_rapida_michigan_binario",
+    "iteraciones": 1,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
     "metrica_principal": "accuracy",
 
     "fitness": {
         "peso_balanced_accuracy": 0.98,
-        "penalizacion_duplicados": 0.02,
+        "penalizacion_duplicados": 0.0,
     },
 
     "ripper": {
@@ -63,21 +65,21 @@ CONFIGURACION_EXPERIMENTO = {
         "eliminar_positivos_cubiertos": True,
     },
 
-    "ag_pittsburgh_michigan": {
-        "reglas_por_individuo": 5,
-        "tamano_poblacion": 4,
-        "cantidad_padres": 2,
-        "maximo_generaciones": 1,
-        "paciencia": 1,
+    "ag_michigan_binario": {
+        "reglas_por_poblacion": 10,
+        "bits_por_gen": 3,
+        "cantidad_padres": 4,
+        "maximo_generaciones": 3,
+        "paciencia": 2,
         "probabilidad_cruce": 0.90,
-        "probabilidad_mutacion": 0.12,
-        "probabilidad_reemplazo": 0.50,
-        "fraccion_reemplazo": 0.10,
+        "probabilidad_mutacion": 0.03,
         "elitismo": 1,
+        "penalizacion_error_regla": 0.10,
         "peso_balanced_accuracy": 0.98,
-        "penalizacion_duplicados": 0.02,
+        "penalizacion_duplicados": 0.0,
     },
 }
+
 
 def principal():
     ejecutar_experimento(CONFIGURACION_EXPERIMENTO)
@@ -111,14 +113,12 @@ def ejecutar_experimento(config):
 
 
 def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
-    inicio = time.perf_counter()
     reglas = aprender_ripper(
         tabla,
         orden_clases=CLASES,
         parametros=traducir_parametros_ripper(config["ripper"]),
     )
     asignar_origen(reglas, "RIPPER")
-    tiempo_ms = medir_ms(inicio)
     resultado = evaluar_y_guardar(
         iteracion=iteracion,
         algoritmo="RIPPER",
@@ -126,7 +126,6 @@ def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
         tabla=tabla,
         ruta=ruta_iteracion / "ripper.json",
         hiperparametros=config["ripper"],
-        tiempo_entrenamiento_ms=tiempo_ms,
         config_fitness=config["fitness"],
     )
     print(
@@ -141,10 +140,8 @@ def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
 
 
 def ejecutar_prism(iteracion, tabla, ruta_iteracion, config):
-    inicio = time.perf_counter()
     reglas = aprender_prism_estocastico(tabla, config["prism"])
     asignar_origen(reglas, "PRISM_ESTOCASTICO")
-    tiempo_ms = medir_ms(inicio)
     resultado = evaluar_y_guardar(
         iteracion=iteracion,
         algoritmo="PRISM_ESTOCASTICO",
@@ -152,7 +149,6 @@ def ejecutar_prism(iteracion, tabla, ruta_iteracion, config):
         tabla=tabla,
         ruta=ruta_iteracion / "prism.json",
         hiperparametros=config["prism"],
-        tiempo_entrenamiento_ms=tiempo_ms,
         config_fitness=config["fitness"],
     )
     print(
@@ -178,40 +174,41 @@ def aprender_prism_estocastico(tabla, config):
 
 
 def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
-    inicio = time.perf_counter()
-    print("  AG-PM  | evolucionando base completa de reglas...")
-    mejor, historial = ejecutar_ag_pittsburgh_michigan(
+    print("  AG-MB  | evolucionando poblacion de reglas binarias...")
+    mejor, historial = ejecutar_ag_michigan_binario(
         tabla=tabla,
         membresias=construir_membresias_base(),
-        parametros=config["ag_pittsburgh_michigan"],
+        parametros=config["ag_michigan_binario"],
     )
     reglas = mejor.reglas
-    asignar_origen(reglas, "AG_PITTSBURGH_MICHIGAN")
-    tiempo_ms = medir_ms(inicio)
+    asignar_origen(reglas, "AG_MICHIGAN_BINARIO")
     resultado = evaluar_y_guardar(
         iteracion=iteracion,
-        algoritmo="AG_PITTSBURGH_MICHIGAN",
+        algoritmo="AG_MICHIGAN_BINARIO",
         reglas=reglas,
         tabla=tabla,
         ruta=ruta_iteracion / "genetic_algorithm.json",
-        hiperparametros=config["ag_pittsburgh_michigan"],
-        tiempo_entrenamiento_ms=tiempo_ms,
+        hiperparametros=config["ag_michigan_binario"],
         config_fitness=config["fitness"],
         extra={
             "historial_ag": resumir_historial_ag(historial),
-            "mejor_individuo_ag": {
-                "cromosoma": [int(gene) for gene in mejor.cromosoma.tolist()],
-                "longitud_cromosoma": int(len(mejor.cromosoma)),
-                "genes_por_regla": 7,
-                "fitness": mejor.fitness,
-                "balanced_accuracy": mejor.balanced_accuracy,
-                "duplicados": mejor.duplicados,
-                "proporcion_duplicados": mejor.proporcion_duplicados,
+            "mejor_poblacion_ag": {
+                "bits_por_gen": BITS_POR_GEN,
+                "bits_por_regla": BITS_POR_REGLA,
+                "intentos_invalidos_descartados_generacion": mejor.intentos_invalidos_descartados_generacion,
+                "cromosomas": [
+                    {
+                        "id": f"R{indice:03d}",
+                        "bits": "".join(str(int(bit)) for bit in individuo.cromosoma.tolist()),
+                        "clase_fija": individuo.clase,
+                    }
+                    for indice, individuo in enumerate(mejor.individuos, start=1)
+                ],
             },
         },
     )
     print(
-        f"  AG-PM  | reglas={len(reglas)} | "
+        f"  AG-MB  | reglas={len(reglas)} | "
         f"accuracy={resultado['metricas']['accuracy']:.4f} | "
         f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
         f"error={resultado['metricas']['error_clasificacion']:.4f} | "
@@ -229,13 +226,10 @@ def evaluar_y_guardar(
     tabla,
     ruta,
     hiperparametros,
-    tiempo_entrenamiento_ms,
     config_fitness,
     extra=None,
 ):
-    inicio_inferencia = time.perf_counter()
     metricas = evaluar_reglas(reglas, tabla)
-    tiempo_inferencia_ms = medir_ms(inicio_inferencia)
     resumen_reglas = resumir_reglas(reglas)
     metricas["fitness"] = calcular_fitness(
         balanced_accuracy=metricas["balanced_accuracy"],
@@ -256,11 +250,6 @@ def evaluar_y_guardar(
         "metricas": metricas,
         "matriz_confusion": metricas.pop("matriz_confusion"),
         "reglas_finales": [regla_a_formato_comun(regla, i) for i, regla in enumerate(reglas, start=1)],
-        "tiempos": {
-            "entrenamiento_ms": int(tiempo_entrenamiento_ms),
-            "inferencia_ms": int(tiempo_inferencia_ms),
-            "total_ms": int(tiempo_entrenamiento_ms + tiempo_inferencia_ms),
-        },
     }
     if extra:
         resultado.update(extra)
@@ -275,12 +264,10 @@ def evaluar_reglas(reglas, tabla):
     return construir_metricas_desde_predicciones(
         reales=datos["riesgos"],
         predichos=inferencia["riesgos"],
-        puntajes=inferencia["puntajes"],
-        sin_activacion=inferencia["sin_activacion"],
     )
 
 
-def construir_metricas_desde_predicciones(reales, predichos, puntajes, sin_activacion):
+def construir_metricas_desde_predicciones(reales, predichos):
     correctas = int(np.sum(reales == predichos))
     total = int(len(reales))
     accuracy = float(accuracy_score(reales, predichos))
@@ -294,9 +281,6 @@ def construir_metricas_desde_predicciones(reales, predichos, puntajes, sin_activ
         "total": total,
         "balanced_accuracy": balanced_accuracy,
         "error_balanceado": float(1.0 - balanced_accuracy),
-        "desviacion_estandar_puntajes": float(np.std(puntajes, ddof=1)),
-        "cobertura": float(1.0 - np.mean(sin_activacion)),
-        "instancias_sin_activacion": int(np.sum(sin_activacion)),
         "matriz_confusion": {
             "etiquetas": CLASES,
             "matriz": matriz,
@@ -325,12 +309,6 @@ def resumir_reglas(reglas):
     return {
         "total_reglas": int(total_reglas),
         "reglas_duplicadas": int(reglas_duplicadas),
-        "proporcion_duplicados": float(reglas_duplicadas / total_reglas) if total_reglas else 0.0,
-        "antecedentes_por_regla": {
-            "minimo": int(min(longitudes)) if longitudes else 0,
-            "promedio": float(np.mean(longitudes)) if longitudes else 0.0,
-            "maximo": int(max(longitudes)) if longitudes else 0,
-        },
         "reglas_por_clase": por_clase,
     }
 
@@ -372,30 +350,11 @@ def construir_resumen_final(resultados):
                 "balanced_accuracy_desviacion_estandar": desviacion(ba),
                 "fitness_promedio": promedio(fitness),
                 "fitness_desviacion_estandar": desviacion(fitness),
-                "reglas_promedio": promedio([r["resumen_reglas"]["total_reglas"] for r in grupo]),
-                "duplicados_promedio": promedio([r["resumen_reglas"]["reglas_duplicadas"] for r in grupo]),
-                "tiempo_total_ms_promedio": promedio([r["tiempos"]["total_ms"] for r in grupo]),
             }
         )
     return {
         "tabla_resumen": filas,
-        "mejores_iteraciones": mejores_iteraciones(resultados, max),
-        "peores_iteraciones": mejores_iteraciones(resultados, min),
     }
-
-
-def mejores_iteraciones(resultados, funcion):
-    salida = {}
-    for algoritmo in sorted({r["algoritmo"] for r in resultados}):
-        grupo = [r for r in resultados if r["algoritmo"] == algoritmo]
-        elegido = funcion(grupo, key=lambda r: r["metricas"]["accuracy"])
-        salida[algoritmo] = {
-            "iteracion": elegido["iteracion"],
-            "accuracy": elegido["metricas"]["accuracy"],
-            "error_clasificacion": elegido["metricas"]["error_clasificacion"],
-            "fitness": elegido["metricas"]["fitness"],
-        }
-    return salida
 
 
 def promedio(valores):
@@ -408,18 +367,7 @@ def desviacion(valores):
 
 def resumir_historial_ag(historial):
     filas = historial.to_dict(orient="records") if isinstance(historial, pd.DataFrame) else historial
-    if not filas:
-        return {
-            "mejor_generacion": 0,
-            "generacion_final": 0,
-            "historial": [],
-        }
-    mejor = max(filas, key=lambda h: h["mejor_fitness"])
     return {
-        "mejor_generacion": int(mejor["generacion"]),
-        "generacion_final": int(filas[-1]["generacion"]),
-        "fitness_inicial": float(filas[0]["mejor_fitness"]),
-        "fitness_final": float(filas[-1]["mejor_fitness"]),
         "historial": filas,
     }
 
@@ -483,10 +431,6 @@ def serializar_resultado(valor):
     if hasattr(valor, "item"):
         return valor.item()
     return valor
-
-
-def medir_ms(inicio):
-    return int((time.perf_counter() - inicio) * 1000)
 
 
 if __name__ == "__main__":

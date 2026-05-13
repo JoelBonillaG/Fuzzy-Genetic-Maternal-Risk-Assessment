@@ -1,6 +1,6 @@
 {
-  "id_experimento": "prueba_guardado_rapida",
-  "iteraciones": 2,
+  "id_experimento": "prueba_rapida_michigan_binario",
+  "iteraciones": 1,
   "clases": [
     "low risk",
     "mid risk",
@@ -10,7 +10,7 @@
   "metrica_principal": "accuracy",
   "fitness": {
     "peso_balanced_accuracy": 0.98,
-    "penalizacion_duplicados": 0.02
+    "penalizacion_duplicados": 0.0
   },
   "ripper": {
     "k": 1,
@@ -29,18 +29,17 @@
     "maximo_reglas_por_clase": 1,
     "eliminar_positivos_cubiertos": true
   },
-  "ag_pittsburgh_michigan": {
-    "reglas_por_individuo": 5,
-    "tamano_poblacion": 4,
-    "cantidad_padres": 2,
-    "maximo_generaciones": 1,
-    "paciencia": 1,
+  "ag_michigan_binario": {
+    "reglas_por_poblacion": 10,
+    "bits_por_gen": 3,
+    "cantidad_padres": 4,
+    "maximo_generaciones": 3,
+    "paciencia": 2,
     "probabilidad_cruce": 0.9,
-    "probabilidad_mutacion": 0.12,
-    "probabilidad_reemplazo": 0.5,
-    "fraccion_reemplazo": 0.1,
+    "probabilidad_mutacion": 0.03,
     "elitismo": 1,
+    "penalizacion_error_regla": 0.1,
     "peso_balanced_accuracy": 0.98,
-    "penalizacion_duplicados": 0.02
+    "penalizacion_duplicados": 0.0
   }
 }

@@ -1,5 +1,5 @@
 {
-  "id_experimento": "prueba_guardado_rapida",
+  "id_experimento": "prueba_rapida_michigan_binario",
   "iteracion": 1,
   "algoritmo": "PRISM_ESTOCASTICO",
   "datos": {
@@ -22,12 +22,6 @@
   "resumen_reglas": {
     "total_reglas": 3,
     "reglas_duplicadas": 0,
-    "proporcion_duplicados": 0.0,
-    "antecedentes_por_regla": {
-      "minimo": 6,
-      "promedio": 6.0,
-      "maximo": 6
-    },
     "reglas_por_clase": {
       "low risk": 1,
       "mid risk": 1,
@@ -35,17 +29,14 @@
     }
   },
   "metricas": {
-    "accuracy": 0.35177865612648224,
-    "error_clasificacion": 0.6482213438735178,
-    "errores": 656,
-    "aciertos": 356,
+    "accuracy": 0.383399209486166,
+    "error_clasificacion": 0.616600790513834,
+    "errores": 624,
+    "aciertos": 388,
     "total": 1012,
-    "balanced_accuracy": 0.3570423218792467,
-    "error_balanceado": 0.6429576781207533,
-    "desviacion_estandar_puntajes": 4.921941046357839,
-    "cobertura": 0.03063241106719372,
-    "instancias_sin_activacion": 981,
-    "fitness": 0.3499014754416618
+    "balanced_accuracy": 0.39899268288173356,
+    "error_balanceado": 0.6010073171182664,
+    "fitness": 0.39101282922409886
   },
   "matriz_confusion": {
     "etiquetas": [
@@ -55,19 +46,19 @@
     ],
     "matriz": [
       [
-        2,
-        402,
+        1,
+        403,
         0
       ],
       [
         0,
-        336,
-        0
+        326,
+        10
       ],
       [
         0,
-        254,
-        18
+        211,
+        61
       ]
     ]
   },
@@ -77,11 +68,11 @@
       "antecedentes": [
         {
           "variable": "edad",
-          "etiqueta_linguistica": "avanzada"
+          "etiqueta_linguistica": "muy_avanzada"
         },
         {
           "variable": "presion_sistolica",
-          "etiqueta_linguistica": "hipotension"
+          "etiqueta_linguistica": "normal"
         },
         {
           "variable": "presion_diastolica",
@@ -93,7 +84,7 @@
         },
         {
           "variable": "temperatura_corporal",
-          "etiqueta_linguistica": "normal"
+          "etiqueta_linguistica": "hiperpirexia"
         },
         {
           "variable": "frecuencia_cardiaca",
@@ -139,11 +130,11 @@
       "antecedentes": [
         {
           "variable": "edad",
-          "etiqueta_linguistica": "avanzada"
+          "etiqueta_linguistica": "muy_avanzada"
         },
         {
           "variable": "presion_sistolica",
-          "etiqueta_linguistica": "hipertension"
+          "etiqueta_linguistica": "elevada"
         },
         {
           "variable": "presion_diastolica",
@@ -165,10 +156,5 @@
       "consecuente": "high risk",
       "origen": "PRISM_ESTOCASTICO"
     }
-  ],
-  "tiempos": {
-    "entrenamiento_ms": 243,
-    "inferencia_ms": 44,
-    "total_ms": 287
-  }
+  ]
 }

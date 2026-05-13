@@ -1,7 +1,7 @@
 {
   "tabla_resumen": [
     {
-      "algoritmo": "AG_PITTSBURGH_MICHIGAN",
+      "algoritmo": "AG_MICHIGAN_BINARIO",
       "accuracy_promedio": 0.33201581027667987,
       "accuracy_desviacion_estandar": 0.0,
       "error_promedio": 0.6679841897233201,
@@ -12,81 +12,96 @@
       "balanced_accuracy_desviacion_estandar": 0.0,
       "fitness_promedio": 0.32666666666666666,
       "fitness_desviacion_estandar": 0.0,
-      "reglas_promedio": 5.0,
+      "reglas_promedio": 10.0,
       "duplicados_promedio": 0.0,
-      "tiempo_total_ms_promedio": 340.5
+      "mejor_iteracion": 1,
+      "mejor_balanced_accuracy": 0.3333333333333333,
+      "mejor_accuracy": 0.33201581027667987,
+      "mejor_fitness": 0.32666666666666666
     },
     {
       "algoritmo": "PRISM_ESTOCASTICO",
-      "accuracy_promedio": 0.35177865612648224,
+      "accuracy_promedio": 0.383399209486166,
       "accuracy_desviacion_estandar": 0.0,
-      "error_promedio": 0.6482213438735178,
+      "error_promedio": 0.616600790513834,
       "error_desviacion_estandar": 0.0,
-      "error_balanceado_promedio": 0.6429576781207533,
+      "error_balanceado_promedio": 0.6010073171182664,
       "error_balanceado_desviacion_estandar": 0.0,
-      "balanced_accuracy_promedio": 0.3570423218792467,
+      "balanced_accuracy_promedio": 0.39899268288173356,
       "balanced_accuracy_desviacion_estandar": 0.0,
-      "fitness_promedio": 0.3499014754416618,
+      "fitness_promedio": 0.39101282922409886,
       "fitness_desviacion_estandar": 0.0,
       "reglas_promedio": 3.0,
       "duplicados_promedio": 0.0,
-      "tiempo_total_ms_promedio": 327.5
+      "mejor_iteracion": 1,
+      "mejor_balanced_accuracy": 0.39899268288173356,
+      "mejor_accuracy": 0.383399209486166,
+      "mejor_fitness": 0.39101282922409886
     },
     {
       "algoritmo": "RIPPER",
-      "accuracy_promedio": 0.5059288537549407,
-      "accuracy_desviacion_estandar": 0.006987221157969875,
-      "error_promedio": 0.49407114624505927,
-      "error_desviacion_estandar": 0.006987221157969875,
-      "error_balanceado_promedio": 0.4969073850662378,
-      "error_balanceado_desviacion_estandar": 0.0018609836441286992,
-      "balanced_accuracy_promedio": 0.5030926149337622,
-      "balanced_accuracy_desviacion_estandar": 0.0018609836441286992,
-      "fitness_promedio": 0.49014077905544823,
-      "fitness_desviacion_estandar": 0.004563947885203843,
-      "reglas_promedio": 25.0,
-      "duplicados_promedio": 4.0,
-      "tiempo_total_ms_promedio": 1606.0
+      "accuracy_promedio": 0.5335968379446641,
+      "accuracy_desviacion_estandar": 0.0,
+      "error_promedio": 0.46640316205533594,
+      "error_desviacion_estandar": 0.0,
+      "error_balanceado_promedio": 0.4592208170396872,
+      "error_balanceado_desviacion_estandar": 0.0,
+      "balanced_accuracy_promedio": 0.5407791829603128,
+      "balanced_accuracy_desviacion_estandar": 0.0,
+      "fitness_promedio": 0.5299635993011065,
+      "fitness_desviacion_estandar": 0.0,
+      "reglas_promedio": 24.0,
+      "duplicados_promedio": 2.0,
+      "mejor_iteracion": 1,
+      "mejor_balanced_accuracy": 0.5407791829603128,
+      "mejor_accuracy": 0.5335968379446641,
+      "mejor_fitness": 0.5299635993011065
     }
   ],
   "mejores_iteraciones": {
-    "AG_PITTSBURGH_MICHIGAN": {
+    "AG_MICHIGAN_BINARIO": {
       "iteracion": 1,
       "accuracy": 0.33201581027667987,
+      "balanced_accuracy": 0.3333333333333333,
       "error_clasificacion": 0.6679841897233201,
       "fitness": 0.32666666666666666
     },
     "PRISM_ESTOCASTICO": {
       "iteracion": 1,
-      "accuracy": 0.35177865612648224,
-      "error_clasificacion": 0.6482213438735178,
-      "fitness": 0.3499014754416618
+      "accuracy": 0.383399209486166,
+      "balanced_accuracy": 0.39899268288173356,
+      "error_clasificacion": 0.616600790513834,
+      "fitness": 0.39101282922409886
     },
     "RIPPER": {
       "iteracion": 1,
-      "accuracy": 0.5108695652173914,
-      "error_clasificacion": 0.48913043478260865,
-      "fitness": 0.4869135805568386
+      "accuracy": 0.5335968379446641,
+      "balanced_accuracy": 0.5407791829603128,
+      "error_clasificacion": 0.46640316205533594,
+      "fitness": 0.5299635993011065
     }
   },
   "peores_iteraciones": {
-    "AG_PITTSBURGH_MICHIGAN": {
+    "AG_MICHIGAN_BINARIO": {
       "iteracion": 1,
       "accuracy": 0.33201581027667987,
+      "balanced_accuracy": 0.3333333333333333,
       "error_clasificacion": 0.6679841897233201,
       "fitness": 0.32666666666666666
     },
     "PRISM_ESTOCASTICO": {
       "iteracion": 1,
-      "accuracy": 0.35177865612648224,
-      "error_clasificacion": 0.6482213438735178,
-      "fitness": 0.3499014754416618
+      "accuracy": 0.383399209486166,
+      "balanced_accuracy": 0.39899268288173356,
+      "error_clasificacion": 0.616600790513834,
+      "fitness": 0.39101282922409886
     },
     "RIPPER": {
-      "iteracion": 2,
-      "accuracy": 0.5009881422924901,
-      "error_clasificacion": 0.4990118577075099,
-      "fitness": 0.49336797755405787
+      "iteracion": 1,
+      "accuracy": 0.5335968379446641,
+      "balanced_accuracy": 0.5407791829603128,
+      "error_clasificacion": 0.46640316205533594,
+      "fitness": 0.5299635993011065
     }
   }
 }
