@@ -1,5 +1,5 @@
 {
-  "id_experimento": "comparacion_reglas_riesgo_materno_dataset_completo",
+  "id_experimento": "prueba_guardado_rapida",
   "iteracion": 2,
   "algoritmo": "PRISM_ESTOCASTICO",
   "datos": {
@@ -8,16 +8,16 @@
   },
   "hiperparametros": {
     "modo": "prism_bootstrap",
-    "fraccion_bootstrap": 1.0,
-    "cobertura_minima_regla": 2,
+    "fraccion_bootstrap": 0.2,
+    "cobertura_minima_regla": 1,
     "orden_clases": [
       "low risk",
       "mid risk",
       "high risk"
     ],
-    "maximo_condiciones_por_regla": 6,
-    "maximo_reglas_por_clase": 20,
-    "eliminar_positivos_cubiertos": false
+    "maximo_condiciones_por_regla": 2,
+    "maximo_reglas_por_clase": 1,
+    "eliminar_positivos_cubiertos": true
   },
   "resumen_reglas": {
     "total_reglas": 3,
@@ -41,9 +41,10 @@
     "aciertos": 356,
     "total": 1012,
     "balanced_accuracy": 0.3570423218792467,
-    "desviacion_estandar_puntajes": 4.443716581066292,
-    "cobertura": 0.02371541501976282,
-    "instancias_sin_activacion": 988,
+    "error_balanceado": 0.6429576781207533,
+    "desviacion_estandar_puntajes": 4.921941046357839,
+    "cobertura": 0.03063241106719372,
+    "instancias_sin_activacion": 981,
     "fitness": 0.3499014754416618
   },
   "matriz_confusion": {
@@ -76,7 +77,7 @@
       "antecedentes": [
         {
           "variable": "edad",
-          "etiqueta_linguistica": "adolescente"
+          "etiqueta_linguistica": "avanzada"
         },
         {
           "variable": "presion_sistolica",
@@ -92,7 +93,7 @@
         },
         {
           "variable": "temperatura_corporal",
-          "etiqueta_linguistica": "febricular"
+          "etiqueta_linguistica": "normal"
         },
         {
           "variable": "frecuencia_cardiaca",
@@ -115,7 +116,7 @@
         },
         {
           "variable": "presion_diastolica",
-          "etiqueta_linguistica": "elevada"
+          "etiqueta_linguistica": "normal"
         },
         {
           "variable": "azucar_sangre",
@@ -166,8 +167,8 @@
     }
   ],
   "tiempos": {
-    "entrenamiento_ms": 37985,
-    "inferencia_ms": 77,
-    "total_ms": 38062
+    "entrenamiento_ms": 320,
+    "inferencia_ms": 48,
+    "total_ms": 368
   }
 }

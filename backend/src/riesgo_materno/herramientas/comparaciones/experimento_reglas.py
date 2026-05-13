@@ -37,40 +37,43 @@ CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "al
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 
 CONFIGURACION_EXPERIMENTO = {
-    "id_experimento": "comparacion_reglas_riesgo_materno_dataset_completo",
-    "iteraciones": 5,
+    "id_experimento": "prueba_guardado_rapida",
+    "iteraciones": 2,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
     "metrica_principal": "accuracy",
+
     "fitness": {
         "peso_balanced_accuracy": 0.98,
         "penalizacion_duplicados": 0.02,
     },
+
     "ripper": {
-        "k": 2,
-        "tolerancia_longitud_descripcion": 64,
+        "k": 1,
+        "tolerancia_longitud_descripcion": 16,
     },
+
     "prism": {
         "modo": "prism_bootstrap",
-        "fraccion_bootstrap": 1.0,
-        "cobertura_minima_regla": 2,
+        "fraccion_bootstrap": 0.2,
+        "cobertura_minima_regla": 1,
         "orden_clases": CLASES,
-        "maximo_condiciones_por_regla": 6,
-        "maximo_reglas_por_clase": 20,
-        "eliminar_positivos_cubiertos": False,
+        "maximo_condiciones_por_regla": 2,
+        "maximo_reglas_por_clase": 1,
+        "eliminar_positivos_cubiertos": True,
     },
+
     "ag_pittsburgh_michigan": {
-        "reglas_por_individuo": 368,
-        "tamano_poblacion": 30,
-        "cantidad_padres": 15,
-        "maximo_generaciones": 180,
-        "paciencia": 60,
+        "reglas_por_individuo": 5,
+        "tamano_poblacion": 4,
+        "cantidad_padres": 2,
+        "maximo_generaciones": 1,
+        "paciencia": 1,
         "probabilidad_cruce": 0.90,
         "probabilidad_mutacion": 0.12,
-        "probabilidad_reemplazo": 0.85,
+        "probabilidad_reemplazo": 0.50,
         "fraccion_reemplazo": 0.10,
-        "elitismo": 3,
-        "tamano_torneo": 3,
+        "elitismo": 1,
         "peso_balanced_accuracy": 0.98,
         "penalizacion_duplicados": 0.02,
     },
