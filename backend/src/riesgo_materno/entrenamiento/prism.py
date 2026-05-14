@@ -35,7 +35,7 @@ def aprender_reglas_prism(tabla, config):
             cubiertos = indices_cubiertos(df, regla)
             positivos_cubiertos = {i for i in cubiertos if df.at[i, "riesgo"] == clase}
             if len(positivos_cubiertos) < config["cobertura_minima_regla"]:
-                continue
+                break
             if config["eliminar_positivos_cubiertos"]:
                 positivos_restantes -= positivos_cubiertos
             else:

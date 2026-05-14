@@ -2,6 +2,7 @@
 
 from .algoritmo import (
     BITS_POR_GEN,
+    BITS_POR_CONSECUENTE,
     BITS_POR_REGLA,
     ResultadoMichiganBinario,
     contar_duplicados,
@@ -10,6 +11,7 @@ from .algoritmo import (
 
 __all__ = [
     "BITS_POR_GEN",
+    "BITS_POR_CONSECUENTE",
     "BITS_POR_REGLA",
     "ResultadoMichiganBinario",
     "contar_duplicados",

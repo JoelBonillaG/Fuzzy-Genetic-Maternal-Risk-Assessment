@@ -1,10 +1,11 @@
 """AG Michigan binario con PyGAD.
 
 Cada individuo de PyGAD representa una regla difusa:
-    6 antecedentes * 3 bits fijos = 18 bits.
+    6 antecedentes * 3 bits fijos + 2 bits de consecuente = 20 bits.
 
-El consecuente se asigna aleatoriamente por posicion de la poblacion y no forma
-parte del cromosoma; por tanto, cruce y mutacion solo modifican antecedentes.
+La poblacion completa funciona como base de reglas. Cada regla conserva sus
+antecedentes y su consecuente dentro del cromosoma. La inicializacion es
+aleatoria y solo se reparan cromosomas invalidos.
 """
 
 from __future__ import annotations
@@ -23,7 +24,9 @@ from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES, ETIQUETAS_RIE
 
 
 BITS_POR_GEN = 3
-BITS_POR_REGLA = len(VARIABLES_ENTRADA) * BITS_POR_GEN
+BITS_POR_CONSECUENTE = 2
+BITS_ANTECEDENTES = len(VARIABLES_ENTRADA) * BITS_POR_GEN
+BITS_POR_REGLA = BITS_ANTECEDENTES + BITS_POR_CONSECUENTE
 FITNESS_MINIMO_RULETA = 1e-6
 CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "alto"}
 
@@ -60,7 +63,7 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
     cantidad_reglas = int(parametros["reglas_por_poblacion"])
     cantidad_padres = normalizar_cantidad_padres(parametros)
 
-    poblacion_inicial, clases_fijas, descartes_iniciales = inicializar_poblacion_pygad(
+    poblacion_inicial, descartes_iniciales = inicializar_poblacion_pygad(
         cantidad=cantidad_reglas,
         codificacion=codificacion,
     )
@@ -70,20 +73,45 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
         "mejor_resultado": None,
         "generaciones_sin_mejora": 0,
         "historial": [],
+        "cache_fitness": {},
     }
 
     def fitness_func(instancia_ga, solucion, indice_solucion):
-        individuo = IndividuoRegla(
-            cromosoma=np.asarray(solucion, dtype=int),
-            clase=clases_fijas[int(indice_solucion)],
-        )
-        evaluacion = evaluar_regla_local(
-            individuo=individuo,
-            df_discretizado=df_discretizado,
-            codificacion=codificacion,
-            penalizacion_error=float(parametros["penalizacion_error_regla"]),
-        )
-        return evaluacion.fitness
+        poblacion_actual = obtener_poblacion_actual(instancia_ga, poblacion_inicial)
+        clave = poblacion_actual.astype(int).tobytes()
+        if clave not in estado["cache_fitness"]:
+            estado["cache_fitness"][clave] = evaluar_poblacion_por_contribucion(
+                poblacion=poblacion_actual,
+                tabla=tabla,
+                membresias=membresias,
+                codificacion=codificacion,
+                df_discretizado=df_discretizado,
+                penalizacion_error=float(parametros["penalizacion_error_regla"]),
+            )
+        return estado["cache_fitness"][clave][int(indice_solucion)].fitness
+
+    def obtener_evaluaciones_generacion(poblacion):
+        clave = np.asarray(poblacion, dtype=int).tobytes()
+        if clave not in estado["cache_fitness"]:
+            estado["cache_fitness"][clave] = evaluar_poblacion_por_contribucion(
+                poblacion=poblacion,
+                tabla=tabla,
+                membresias=membresias,
+                codificacion=codificacion,
+                df_discretizado=df_discretizado,
+                penalizacion_error=float(parametros["penalizacion_error_regla"]),
+            )
+        return estado["cache_fitness"][clave]
+
+    def obtener_poblacion_actual(instancia_ga, poblacion_respaldo):
+        poblacion = getattr(instancia_ga, "population", None)
+        if poblacion is None:
+            return np.asarray(poblacion_respaldo, dtype=int)
+        return np.asarray(poblacion, dtype=int)
+
+    def limitar_cache_fitness(maximo=3):
+        while len(estado["cache_fitness"]) > maximo:
+            estado["cache_fitness"].pop(next(iter(estado["cache_fitness"])))
 
     def crossover_single_point(padres, tamano_descendencia, instancia_ga):
         descendencia = np.empty(tamano_descendencia, dtype=int)
@@ -101,24 +129,30 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
         descendencia = np.asarray(descendencia, dtype=int).copy()
         descartes = 0
         for indice_hijo in range(descendencia.shape[0]):
-            mascara = np.random.random(size=BITS_POR_REGLA) < float(parametros["probabilidad_mutacion"])
+            mascara = np.zeros(BITS_POR_REGLA, dtype=bool)
+            mascara[:BITS_ANTECEDENTES] = (
+                np.random.random(size=BITS_ANTECEDENTES) < float(parametros["probabilidad_mutacion"])
+            )
             descendencia[indice_hijo, mascara] = 1 - descendencia[indice_hijo, mascara]
             if decodificar_antecedentes(descendencia[indice_hijo], codificacion) is None:
                 descartes += 1
-                descendencia[indice_hijo], extra_descartes = generar_cromosoma_valido(codificacion)
-                descartes += extra_descartes
+                descendencia[indice_hijo] = generar_cromosoma_valido_directo(
+                    codificacion,
+                )
+                continue
+            if decodificar_clase(descendencia[indice_hijo], codificacion) is None:
+                descartes += 1
+                descendencia[indice_hijo] = reparar_consecuente(
+                    descendencia[indice_hijo],
+                    codificacion,
+                )
         estado["descartes_generacion"] = int(descartes)
         return descendencia
 
     def registrar_generacion(generacion, poblacion):
-        evaluaciones = evaluar_poblacion_local(
-            poblacion=poblacion,
-            clases_fijas=clases_fijas,
-            df_discretizado=df_discretizado,
-            codificacion=codificacion,
-            penalizacion_error=float(parametros["penalizacion_error_regla"]),
-        )
-        individuos = construir_individuos(poblacion, clases_fijas)
+        poblacion = np.asarray(poblacion, dtype=int)
+        evaluaciones = obtener_evaluaciones_generacion(poblacion)
+        individuos = construir_individuos(poblacion, codificacion)
         reglas = decodificar_poblacion(individuos, codificacion)
         balanced_accuracy = evaluar_balanced_accuracy_global(reglas, tabla, membresias)
         fila = construir_fila_historial(
@@ -151,6 +185,7 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
             estado["generaciones_sin_mejora"] = 0
         else:
             estado["generaciones_sin_mejora"] += 1
+        limitar_cache_fitness()
 
     def on_generation(instancia_ga):
         registrar_generacion(instancia_ga.generations_completed, instancia_ga.population)
@@ -194,35 +229,12 @@ def construir_codificacion():
 
 def inicializar_poblacion_pygad(cantidad, codificacion):
     poblacion = []
-    clases = generar_clases_balanceadas(cantidad, codificacion["clases"])
     descartes = 0
     while len(poblacion) < cantidad:
-        cromosoma, intentos_invalidos = generar_cromosoma_valido(codificacion)
+        cromosoma = generar_cromosoma_valido_directo(codificacion)
         poblacion.append(cromosoma)
-        descartes += intentos_invalidos
-    return np.asarray(poblacion, dtype=int), clases, descartes
-
-
-def generar_clases_balanceadas(cantidad, clases):
-    clases = list(clases)
-    base = cantidad // len(clases)
-    sobrantes = cantidad % len(clases)
-    salida = []
-    for indice, clase in enumerate(clases):
-        repeticiones = base + (1 if indice < sobrantes else 0)
-        salida.extend([str(clase)] * repeticiones)
-    np.random.shuffle(salida)
-    return salida
-
-
-def generar_cromosoma_valido(codificacion, max_intentos=10000):
-    descartes = 0
-    for _ in range(max_intentos):
-        cromosoma = np.random.randint(0, 2, size=BITS_POR_REGLA, dtype=int)
-        if decodificar_antecedentes(cromosoma, codificacion) is not None:
-            return cromosoma, descartes
-        descartes += 1
-    return generar_cromosoma_valido_directo(codificacion), descartes
+    np.random.shuffle(poblacion)
+    return np.asarray(poblacion, dtype=int), descartes
 
 
 def generar_cromosoma_valido_directo(codificacion):
@@ -231,11 +243,17 @@ def generar_cromosoma_valido_directo(codificacion):
         categorias = codificacion["categorias_por_variable"][variable]
         indice = int(np.random.randint(0, len(categorias)))
         bits.extend(indice_a_bits(indice))
+    clase = str(np.random.choice(codificacion["clases"]))
+    bits.extend(indice_a_bits_clase(codificacion["clases"].index(clase)))
     return np.asarray(bits, dtype=int)
 
 
 def indice_a_bits(indice):
     return [int(bit) for bit in f"{indice:0{BITS_POR_GEN}b}"]
+
+
+def indice_a_bits_clase(indice):
+    return [int(bit) for bit in f"{indice:0{BITS_POR_CONSECUENTE}b}"]
 
 
 def decodificar_antecedentes(cromosoma, codificacion):
@@ -251,15 +269,28 @@ def decodificar_antecedentes(cromosoma, codificacion):
     return antecedentes
 
 
+def decodificar_clase(cromosoma, codificacion):
+    bloque = cromosoma[BITS_ANTECEDENTES:BITS_POR_REGLA]
+    indice_clase = bits_a_indice(bloque)
+    clases = codificacion["clases"]
+    if indice_clase >= len(clases):
+        return None
+    return clases[indice_clase]
+
+
 def bits_a_indice(bits):
     return int("".join(str(int(bit)) for bit in bits), 2)
 
 
-def construir_individuos(poblacion, clases_fijas):
-    return [
-        IndividuoRegla(cromosoma=np.asarray(cromosoma, dtype=int).copy(), clase=clases_fijas[indice])
-        for indice, cromosoma in enumerate(poblacion)
-    ]
+def construir_individuos(poblacion, codificacion):
+    individuos = []
+    for cromosoma in poblacion:
+        cromosoma = np.asarray(cromosoma, dtype=int).copy()
+        clase = decodificar_clase(cromosoma, codificacion)
+        if clase is None:
+            continue
+        individuos.append(IndividuoRegla(cromosoma=cromosoma, clase=clase))
+    return individuos
 
 
 def decodificar_poblacion(poblacion, codificacion):
@@ -279,12 +310,56 @@ def decodificar_poblacion(poblacion, codificacion):
     return reglas
 
 
-def evaluar_poblacion_local(poblacion, clases_fijas, df_discretizado, codificacion, penalizacion_error):
+def evaluar_poblacion_por_contribucion(
+    poblacion,
+    tabla,
+    membresias,
+    codificacion,
+    df_discretizado,
+    penalizacion_error,
+):
+    """Evalua cada regla por su aporte al BA global de la poblacion."""
+    individuos = construir_individuos(poblacion, codificacion)
+    reglas = decodificar_poblacion(individuos, codificacion)
+    ba_completo = evaluar_balanced_accuracy_global(reglas, tabla, membresias)
+    evaluaciones_locales = evaluar_poblacion_local(
+        poblacion=poblacion,
+        df_discretizado=df_discretizado,
+        codificacion=codificacion,
+        penalizacion_error=penalizacion_error,
+    )
+
     evaluaciones = []
-    for indice, cromosoma in enumerate(poblacion):
+    for indice, evaluacion_local in enumerate(evaluaciones_locales):
+        reglas_sin_individuo = reglas[:indice] + reglas[indice + 1 :]
+        ba_sin_individuo = evaluar_balanced_accuracy_global(
+            reglas_sin_individuo,
+            tabla,
+            membresias,
+        )
+        contribucion = ba_completo - ba_sin_individuo
+        fitness = max(FITNESS_MINIMO_RULETA, float(contribucion))
+        evaluaciones.append(
+            EvaluacionRegla(
+                fitness=fitness,
+                aciertos=evaluacion_local.aciertos,
+                errores=evaluacion_local.errores,
+                cobertura=evaluacion_local.cobertura,
+            )
+        )
+    return evaluaciones
+
+
+def evaluar_poblacion_local(poblacion, df_discretizado, codificacion, penalizacion_error):
+    evaluaciones = []
+    for cromosoma in poblacion:
+        clase = decodificar_clase(cromosoma, codificacion)
+        if clase is None:
+            evaluaciones.append(EvaluacionRegla(FITNESS_MINIMO_RULETA, 0, 0, 0))
+            continue
         individuo = IndividuoRegla(
             cromosoma=np.asarray(cromosoma, dtype=int),
-            clase=clases_fijas[indice],
+            clase=clase,
         )
         evaluaciones.append(
             evaluar_regla_local(individuo, df_discretizado, codificacion, penalizacion_error)
@@ -355,6 +430,13 @@ def clonar_individuo(individuo):
 
 def clonar_poblacion(poblacion):
     return [clonar_individuo(individuo) for individuo in poblacion]
+
+
+def reparar_consecuente(cromosoma, codificacion):
+    cromosoma = np.asarray(cromosoma, dtype=int).copy()
+    clase = str(np.random.choice(codificacion["clases"]))
+    cromosoma[BITS_ANTECEDENTES:BITS_POR_REGLA] = indice_a_bits_clase(codificacion["clases"].index(clase))
+    return cromosoma
 
 
 def contar_duplicados(reglas):

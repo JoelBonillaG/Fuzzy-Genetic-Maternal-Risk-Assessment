@@ -1,7 +1,7 @@
 """Comparacion experimental de RIPPER, PRISM y AG Michigan binario.
 
-El experimento usa el dataset completo, sin particiones train/test. PRISM y
-RIPPER conservan su longitud original; el AG usa seis antecedentes clinicos.
+El experimento usa el dataset completo, sin particiones train/test. En esta
+rama las reglas conservan seis antecedentes clinicos.
 
 Uso:
     python -m riesgo_materno.herramientas.comparaciones.experimento_reglas
@@ -26,6 +26,7 @@ from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES
 from ...optimizacion.michigan_binario import (
     BITS_POR_GEN,
     BITS_POR_REGLA,
+    BITS_POR_CONSECUENTE,
     contar_duplicados,
     ejecutar_ag_michigan_binario,
 )
@@ -37,41 +38,41 @@ RUTA_RESULTADOS = RUTA_BASE / "resultados"
 CLASES = ["low risk", "mid risk", "high risk"]
 CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "alto"}
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
-
 CONFIGURACION_EXPERIMENTO = {
-    "id_experimento": "comparacion_michigan_binario_laptop_2_3h",
-    "iteraciones": 5,
+    "id_experimento": "prueba_michigan_binario_contribucion_laptop",
+    "iteraciones": 2,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
     "metrica_principal": "accuracy",
 
     "ripper": {
-        "k": 3,
-        "tolerancia_longitud_descripcion": 64,
+        "k": 2,
+        "tolerancia_longitud_descripcion": 32,
     },
 
     "prism": {
         "modo": "prism_bootstrap",
-        "fraccion_bootstrap": 1.0,
+        "fraccion_bootstrap": 0.5,
         "cobertura_minima_regla": 2,
         "orden_clases": CLASES,
         "maximo_condiciones_por_regla": 6,
-        "maximo_reglas_por_clase": 60,
-        "eliminar_positivos_cubiertos": True,
+        "maximo_reglas_por_clase": 10,
+        "eliminar_positivos_cubiertos": False,
     },
 
     "ag_michigan_binario": {
-        "reglas_por_poblacion": 368,
+        "reglas_por_poblacion": 80,
         "bits_por_gen": 3,
-        "cantidad_padres": 80,
-        "maximo_generaciones": 800,
-        "paciencia": 300,
+        "cantidad_padres": 30,
+        "maximo_generaciones": 80,
+        "paciencia": 25,
         "probabilidad_cruce": 0.90,
-        "probabilidad_mutacion": 0.03,
-        "elitismo": 10,
+        "probabilidad_mutacion": 0.10,
+        "elitismo": 4,
         "penalizacion_error_regla": 0.10,
     },
 }
+
 
 
 
@@ -183,13 +184,14 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
             "historial_ag": resumir_historial_ag(historial),
             "mejor_poblacion_ag": {
                 "bits_por_gen": BITS_POR_GEN,
+                "bits_por_consecuente": BITS_POR_CONSECUENTE,
                 "bits_por_regla": BITS_POR_REGLA,
                 "intentos_invalidos_descartados_generacion": mejor.intentos_invalidos_descartados_generacion,
                 "cromosomas": [
                     {
                         "id": f"R{indice:03d}",
                         "bits": "".join(str(int(bit)) for bit in individuo.cromosoma.tolist()),
-                        "clase_fija": individuo.clase,
+                        "consecuente": individuo.clase,
                     }
                     for indice, individuo in enumerate(mejor.individuos, start=1)
                 ],
