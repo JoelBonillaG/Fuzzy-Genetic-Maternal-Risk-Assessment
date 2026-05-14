@@ -1,0 +1,39 @@
+{
+  "id_experimento": "prueba_michigan_binario_contribucion_laptop",
+  "iteraciones": 2,
+  "clases": [
+    "low risk",
+    "mid risk",
+    "high risk"
+  ],
+  "estrategia_datos": "dataset_completo_sin_splits",
+  "metrica_principal": "accuracy",
+  "ripper": {
+    "k": 2,
+    "tolerancia_longitud_descripcion": 32
+  },
+  "prism": {
+    "modo": "prism_bootstrap",
+    "fraccion_bootstrap": 0.5,
+    "cobertura_minima_regla": 2,
+    "orden_clases": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "maximo_condiciones_por_regla": 6,
+    "maximo_reglas_por_clase": 10,
+    "eliminar_positivos_cubiertos": false
+  },
+  "ag_michigan_binario": {
+    "reglas_por_poblacion": 80,
+    "bits_por_gen": 3,
+    "cantidad_padres": 30,
+    "maximo_generaciones": 80,
+    "paciencia": 25,
+    "probabilidad_cruce": 0.9,
+    "probabilidad_mutacion": 0.1,
+    "elitismo": 4,
+    "penalizacion_error_regla": 0.1
+  }
+}

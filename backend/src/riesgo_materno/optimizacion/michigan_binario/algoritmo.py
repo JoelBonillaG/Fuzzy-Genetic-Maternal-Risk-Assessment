@@ -1,7 +1,7 @@
 """AG Michigan binario con PyGAD.
 
 Cada individuo de PyGAD representa una regla difusa:
-    6 antecedentes * 3 bits fijos + 2 bits de consecuente = 20 bits.
+    6 antecedentes * 3 bits fijos + 3 bits de consecuente = 21 bits.
 
 La poblacion completa funciona como base de reglas. Cada regla conserva sus
 antecedentes y su consecuente dentro del cromosoma. La inicializacion es
@@ -24,7 +24,7 @@ from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES, ETIQUETAS_RIE
 
 
 BITS_POR_GEN = 3
-BITS_POR_CONSECUENTE = 2
+BITS_POR_CONSECUENTE = 3
 BITS_ANTECEDENTES = len(VARIABLES_ENTRADA) * BITS_POR_GEN
 BITS_POR_REGLA = BITS_ANTECEDENTES + BITS_POR_CONSECUENTE
 FITNESS_MINIMO_RULETA = 1e-6
