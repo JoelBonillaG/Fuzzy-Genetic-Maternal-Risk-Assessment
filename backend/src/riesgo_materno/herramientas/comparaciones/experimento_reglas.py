@@ -39,46 +39,40 @@ CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "al
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 
 CONFIGURACION_EXPERIMENTO = {
-    "id_experimento": "prueba_rapida_michigan_binario",
-    "iteraciones": 1,
+    "id_experimento": "comparacion_michigan_binario_laptop_2_3h",
+    "iteraciones": 5,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
     "metrica_principal": "accuracy",
 
-    "fitness": {
-        "peso_balanced_accuracy": 0.98,
-        "penalizacion_duplicados": 0.0,
-    },
-
     "ripper": {
-        "k": 1,
-        "tolerancia_longitud_descripcion": 16,
+        "k": 3,
+        "tolerancia_longitud_descripcion": 64,
     },
 
     "prism": {
         "modo": "prism_bootstrap",
-        "fraccion_bootstrap": 0.2,
-        "cobertura_minima_regla": 1,
+        "fraccion_bootstrap": 1.0,
+        "cobertura_minima_regla": 2,
         "orden_clases": CLASES,
-        "maximo_condiciones_por_regla": 2,
-        "maximo_reglas_por_clase": 1,
+        "maximo_condiciones_por_regla": 6,
+        "maximo_reglas_por_clase": 60,
         "eliminar_positivos_cubiertos": True,
     },
 
     "ag_michigan_binario": {
-        "reglas_por_poblacion": 10,
+        "reglas_por_poblacion": 368,
         "bits_por_gen": 3,
-        "cantidad_padres": 4,
-        "maximo_generaciones": 3,
-        "paciencia": 2,
+        "cantidad_padres": 80,
+        "maximo_generaciones": 800,
+        "paciencia": 300,
         "probabilidad_cruce": 0.90,
         "probabilidad_mutacion": 0.03,
-        "elitismo": 1,
+        "elitismo": 10,
         "penalizacion_error_regla": 0.10,
-        "peso_balanced_accuracy": 0.98,
-        "penalizacion_duplicados": 0.0,
     },
 }
+
 
 
 def principal():
@@ -126,15 +120,13 @@ def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
         tabla=tabla,
         ruta=ruta_iteracion / "ripper.json",
         hiperparametros=config["ripper"],
-        config_fitness=config["fitness"],
     )
     print(
         f"  RIPPER | reglas={len(reglas)} | "
         f"accuracy={resultado['metricas']['accuracy']:.4f} | "
         f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
         f"error={resultado['metricas']['error_clasificacion']:.4f} | "
-        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
-        f"fitness={resultado['metricas']['fitness']:.4f}"
+        f"error_ba={resultado['metricas']['error_balanceado']:.4f}"
     )
     return resultado
 
@@ -149,15 +141,13 @@ def ejecutar_prism(iteracion, tabla, ruta_iteracion, config):
         tabla=tabla,
         ruta=ruta_iteracion / "prism.json",
         hiperparametros=config["prism"],
-        config_fitness=config["fitness"],
     )
     print(
         f"  PRISM  | modo=bootstrap | reglas={len(reglas)} | "
         f"accuracy={resultado['metricas']['accuracy']:.4f} | "
         f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
         f"error={resultado['metricas']['error_clasificacion']:.4f} | "
-        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
-        f"fitness={resultado['metricas']['fitness']:.4f}"
+        f"error_ba={resultado['metricas']['error_balanceado']:.4f}"
     )
     return resultado
 
@@ -189,7 +179,6 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
         tabla=tabla,
         ruta=ruta_iteracion / "genetic_algorithm.json",
         hiperparametros=config["ag_michigan_binario"],
-        config_fitness=config["fitness"],
         extra={
             "historial_ag": resumir_historial_ag(historial),
             "mejor_poblacion_ag": {
@@ -213,7 +202,6 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
         f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
         f"error={resultado['metricas']['error_clasificacion']:.4f} | "
         f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
-        f"fitness={resultado['metricas']['fitness']:.4f} | "
         f"duplicados={resultado['resumen_reglas']['reglas_duplicadas']}"
     )
     return resultado
@@ -226,17 +214,10 @@ def evaluar_y_guardar(
     tabla,
     ruta,
     hiperparametros,
-    config_fitness,
     extra=None,
 ):
     metricas = evaluar_reglas(reglas, tabla)
     resumen_reglas = resumir_reglas(reglas)
-    metricas["fitness"] = calcular_fitness(
-        balanced_accuracy=metricas["balanced_accuracy"],
-        duplicados=resumen_reglas["reglas_duplicadas"],
-        total_reglas=resumen_reglas["total_reglas"],
-        config_fitness=config_fitness,
-    )
     resultado = {
         "id_experimento": CONFIGURACION_EXPERIMENTO["id_experimento"],
         "iteracion": int(iteracion),
@@ -313,14 +294,6 @@ def resumir_reglas(reglas):
     }
 
 
-def calcular_fitness(balanced_accuracy, duplicados, total_reglas, config_fitness):
-    proporcion_duplicados = duplicados / total_reglas if total_reglas else 0.0
-    return float(
-        config_fitness["peso_balanced_accuracy"] * balanced_accuracy
-        - config_fitness["penalizacion_duplicados"] * proporcion_duplicados
-    )
-
-
 def traducir_parametros_ripper(parametros):
     return {
         "k": parametros["k"],
@@ -335,7 +308,6 @@ def construir_resumen_final(resultados):
         accuracies = [r["metricas"]["accuracy"] for r in grupo]
         errores = [r["metricas"]["error_clasificacion"] for r in grupo]
         errores_balanceados = [r["metricas"]["error_balanceado"] for r in grupo]
-        fitness = [r["metricas"]["fitness"] for r in grupo]
         ba = [r["metricas"]["balanced_accuracy"] for r in grupo]
         filas.append(
             {
@@ -348,8 +320,6 @@ def construir_resumen_final(resultados):
                 "error_balanceado_desviacion_estandar": desviacion(errores_balanceados),
                 "balanced_accuracy_promedio": promedio(ba),
                 "balanced_accuracy_desviacion_estandar": desviacion(ba),
-                "fitness_promedio": promedio(fitness),
-                "fitness_desviacion_estandar": desviacion(fitness),
             }
         )
     return {
