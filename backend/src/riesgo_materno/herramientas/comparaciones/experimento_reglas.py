@@ -24,6 +24,9 @@ from ...entrenamiento.ripper import aprender_reglas_ripper as aprender_ripper
 from ...logica_difusa.motor import SistemaDifusoMamdani
 from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES
 from ...optimizacion.pittsburgh_michigan import (
+    BITS_POR_CAMPO,
+    BITS_POR_REGLA,
+    CAMPOS_POR_REGLA,
     contar_duplicados,
     ejecutar_ag_pittsburgh_michigan,
 )
@@ -57,10 +60,10 @@ CONFIGURACION_EXPERIMENTO = {
         "orden_clases": CLASES,
         "maximo_condiciones_por_regla": 6,
         "maximo_reglas_por_clase": 20,
-        "eliminar_positivos_cubiertos": False,
+        "eliminar_positivos_cubiertos": True,
     },
     "ag_pittsburgh_michigan": {
-        "reglas_por_individuo": 368,
+        "reglas_por_individuo": 30,
         "tamano_poblacion": 30,
         "cantidad_padres": 15,
         "maximo_generaciones": 180,
@@ -199,7 +202,9 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
             "mejor_individuo_ag": {
                 "cromosoma": [int(gene) for gene in mejor.cromosoma.tolist()],
                 "longitud_cromosoma": int(len(mejor.cromosoma)),
-                "genes_por_regla": 7,
+                "campos_por_regla": CAMPOS_POR_REGLA,
+                "bits_por_campo": BITS_POR_CAMPO,
+                "bits_por_regla": BITS_POR_REGLA,
                 "fitness": mejor.fitness,
                 "balanced_accuracy": mejor.balanced_accuracy,
                 "duplicados": mejor.duplicados,

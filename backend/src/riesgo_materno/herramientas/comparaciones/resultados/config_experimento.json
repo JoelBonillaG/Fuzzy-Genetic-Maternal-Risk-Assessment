@@ -27,10 +27,10 @@
     ],
     "maximo_condiciones_por_regla": 6,
     "maximo_reglas_por_clase": 20,
-    "eliminar_positivos_cubiertos": false
+    "eliminar_positivos_cubiertos": true
   },
   "ag_pittsburgh_michigan": {
-    "reglas_por_individuo": 368,
+    "reglas_por_individuo": 30,
     "tamano_poblacion": 30,
     "cantidad_padres": 15,
     "maximo_generaciones": 180,

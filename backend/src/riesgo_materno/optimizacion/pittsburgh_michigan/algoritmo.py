@@ -1,9 +1,9 @@
-"""AG Pittsburgh-Michigan con cromosoma numerico usando PyGAD.
+"""AG Pittsburgh-Michigan con cromosoma binario usando PyGAD.
 
 Genotipo:
-    Cromosoma plano de longitud reglas_por_individuo * 7.
-    Cada bloque de 7 genes representa una regla:
-    [edad, sistolica, diastolica, glucosa, temperatura, frecuencia, clase]
+    Cromosoma plano de longitud reglas_por_individuo * 21.
+    Cada bloque de 21 bits representa una regla:
+    6 antecedentes * 3 bits + clase * 3 bits.
 
 Fenotipo:
     Base completa de reglas difusas consumida por el motor Mamdani.
@@ -24,7 +24,9 @@ from ...logica_difusa.motor import SistemaDifusoMamdani
 from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES, ETIQUETAS_RIESGO, VARIABLES_ENTRADA
 
 
-GENES_POR_REGLA = 7
+BITS_POR_CAMPO = 3
+CAMPOS_POR_REGLA = 7
+BITS_POR_REGLA = CAMPOS_POR_REGLA * BITS_POR_CAMPO
 CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "alto"}
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 
@@ -49,7 +51,6 @@ def ejecutar_ag_pittsburgh_michigan(
     df_discretizado = pd.DataFrame(_discretizar(tabla)).rename(columns={"clase": "riesgo"})
     codificacion = construir_codificacion()
     poblacion_inicial = inicializar_poblacion(df_discretizado, parametros, codificacion)
-    gene_space = construir_gene_space(parametros["reglas_por_individuo"], codificacion)
     cache_evaluaciones = {}
     historial = []
     mejor_resultado = None
@@ -131,7 +132,7 @@ def ejecutar_ag_pittsburgh_michigan(
         crossover_type=crossover_por_bloques_regla,
         mutation_type=mutacion_michigan,
         gene_type=int,
-        gene_space=gene_space,
+        gene_space=[0, 1],
         on_generation=on_generation,
         save_solutions=False,
         suppress_warnings=True,
@@ -179,16 +180,6 @@ def construir_codificacion():
     }
 
 
-def construir_gene_space(reglas_por_individuo, codificacion):
-    espacios_regla = []
-    for variable in VARIABLES_ENTRADA:
-        espacios_regla.append(
-            list(range(len(codificacion["categorias_por_variable"][variable])))
-        )
-    espacios_regla.append(list(range(len(codificacion["clases"]))))
-    return espacios_regla * reglas_por_individuo
-
-
 def inicializar_poblacion(df_discretizado, parametros, codificacion):
     poblacion = []
     for _ in range(parametros["tamano_poblacion"]):
@@ -197,15 +188,12 @@ def inicializar_poblacion(df_discretizado, parametros, codificacion):
 
 
 def generar_cromosoma_inicial(parametros, codificacion):
-    """Genera un cromosoma 100% aleatorio dentro de rangos linguisticos validos."""
+    """Genera un cromosoma binario 100% aleatorio con reglas validas."""
     genes = []
     cantidad_reglas = parametros["reglas_por_individuo"]
 
     for _ in range(cantidad_reglas):
-        for variable in VARIABLES_ENTRADA:
-            cantidad_categorias = len(codificacion["categorias_por_variable"][variable])
-            genes.append(int(np.random.randint(0, cantidad_categorias)))
-        genes.append(int(np.random.randint(0, len(codificacion["clases"]))))
+        genes.extend(generar_regla_binaria_valida(codificacion).tolist())
 
     return np.asarray(genes, dtype=int)
 
@@ -223,8 +211,8 @@ def cruzar_por_bloques_regla(padres, tamano_descendencia, probabilidad_cruce, re
         corte_1, corte_2 = sorted(
             np.random.choice(np.arange(1, reglas_por_individuo), size=2, replace=False)
         )
-        gen_1 = corte_1 * GENES_POR_REGLA
-        gen_2 = corte_2 * GENES_POR_REGLA
+        gen_1 = corte_1 * BITS_POR_REGLA
+        gen_2 = corte_2 * BITS_POR_REGLA
         descendencia[indice_hijo] = np.concatenate([
             padre_a[:gen_1],
             padre_b[gen_1:gen_2],
@@ -238,11 +226,13 @@ def mutar_descendencia_michigan(descendencia, df_discretizado, parametros, codif
     cantidad_reglas = parametros["reglas_por_individuo"]
 
     for indice_hijo in range(descendencia.shape[0]):
-        matriz = descendencia[indice_hijo].reshape(cantidad_reglas, GENES_POR_REGLA).copy()
+        matriz = descendencia[indice_hijo].reshape(cantidad_reglas, BITS_POR_REGLA).copy()
 
         for indice_regla in range(cantidad_reglas):
             if np.random.random() < parametros["probabilidad_mutacion"]:
                 mutar_gen_regla(matriz[indice_regla], codificacion, forzar=False)
+                if decodificar_regla_binaria(matriz[indice_regla], codificacion) is None:
+                    matriz[indice_regla] = generar_regla_binaria_valida(codificacion)
 
         if np.random.random() < parametros["probabilidad_reemplazo"]:
             reemplazar_reglas_malas(
@@ -267,41 +257,40 @@ def reemplazar_reglas_malas(matriz, df_discretizado, parametros, codificacion):
         indice_bueno = int(np.random.choice(mejores))
         matriz[indice_malo] = matriz[indice_bueno].copy()
         mutar_gen_regla(matriz[indice_malo], codificacion, forzar=True)
+        if decodificar_regla_binaria(matriz[indice_malo], codificacion) is None:
+            matriz[indice_malo] = generar_regla_binaria_valida(codificacion)
 
 
 def mutar_gen_regla(regla_codificada, codificacion, forzar=False):
-    mutar_consecuente = np.random.random() < 0.25
-    if forzar and np.random.random() < 0.50:
-        mutar_consecuente = True
-
-    if mutar_consecuente:
-        opciones = list(range(len(codificacion["clases"])))
-        regla_codificada[-1] = elegir_distinto(opciones, int(regla_codificada[-1]))
-        return
-
+    """Muta solo antecedentes; el consecuente no se modifica por mutacion."""
     indice_variable = int(np.random.randint(0, len(VARIABLES_ENTRADA)))
-    variable = VARIABLES_ENTRADA[indice_variable]
-    opciones = list(range(len(codificacion["categorias_por_variable"][variable])))
-    regla_codificada[indice_variable] = elegir_distinto(
-        opciones,
-        int(regla_codificada[indice_variable]),
-    )
+    inicio = indice_variable * BITS_POR_CAMPO
+    fin = inicio + BITS_POR_CAMPO
+    mutar_bloque_bits(regla_codificada[inicio:fin], forzar=forzar)
 
 
-def elegir_distinto(opciones, actual):
-    opciones = [opcion for opcion in opciones if opcion != actual]
-    return int(np.random.choice(opciones))
-
+def mutar_bloque_bits(bloque, forzar=False):
+    if forzar:
+        posicion = int(np.random.randint(0, len(bloque)))
+        bloque[posicion] = 1 - bloque[posicion]
+        return
+    mascara = np.random.random(size=len(bloque)) < (1.0 / len(bloque))
+    if not mascara.any():
+        mascara[int(np.random.randint(0, len(bloque)))] = True
+    bloque[mascara] = 1 - bloque[mascara]
 
 def evaluar_calidad_reglas_codificadas(matriz, df_discretizado, codificacion):
     calidades = []
     for regla_codificada in matriz:
+        regla_decodificada = decodificar_regla_binaria(regla_codificada, codificacion)
+        if regla_decodificada is None:
+            calidades.append(0.0)
+            continue
         cubiertos = df_discretizado
-        for indice_variable, variable in enumerate(VARIABLES_ENTRADA):
-            categoria = decodificar_categoria(variable, regla_codificada[indice_variable], codificacion)
+        antecedentes, clase = regla_decodificada
+        for variable, categoria in antecedentes:
             cubiertos = cubiertos[cubiertos[variable] == categoria]
 
-        clase = codificacion["clases"][int(regla_codificada[-1])]
         cobertura = int(len(cubiertos))
         if cobertura == 0:
             precision = 0.0
@@ -335,16 +324,13 @@ def evaluar_cromosoma(cromosoma, tabla, membresias, parametros, codificacion):
 
 
 def decodificar_cromosoma(cromosoma, codificacion):
-    matriz = np.asarray(cromosoma, dtype=int).reshape(-1, GENES_POR_REGLA)
+    matriz = np.asarray(cromosoma, dtype=int).reshape(-1, BITS_POR_REGLA)
     reglas = []
     for numero, regla_codificada in enumerate(matriz, start=1):
-        antecedentes = []
-        for indice_variable, variable in enumerate(VARIABLES_ENTRADA):
-            antecedentes.append((
-                variable,
-                decodificar_categoria(variable, regla_codificada[indice_variable], codificacion),
-            ))
-        clase = codificacion["clases"][int(regla_codificada[-1])]
+        regla_decodificada = decodificar_regla_binaria(regla_codificada, codificacion)
+        if regla_decodificada is None:
+            continue
+        antecedentes, clase = regla_decodificada
         reglas.append({
             "numero": numero,
             "antecedentes": antecedentes,
@@ -354,11 +340,41 @@ def decodificar_cromosoma(cromosoma, codificacion):
     return reglas
 
 
-def decodificar_categoria(variable, indice_categoria, codificacion):
-    categorias = codificacion["categorias_por_variable"][variable]
-    indice = int(indice_categoria)
-    return categorias[indice]
+def generar_regla_binaria_valida(codificacion):
+    bits = []
+    for variable in VARIABLES_ENTRADA:
+        indice = int(np.random.randint(0, len(codificacion["categorias_por_variable"][variable])))
+        bits.extend(indice_a_bits(indice))
+    indice_clase = int(np.random.randint(0, len(codificacion["clases"])))
+    bits.extend(indice_a_bits(indice_clase))
+    return np.asarray(bits, dtype=int)
 
+
+def decodificar_regla_binaria(regla_codificada, codificacion):
+    regla_codificada = np.asarray(regla_codificada, dtype=int)
+    antecedentes = []
+    for indice_variable, variable in enumerate(VARIABLES_ENTRADA):
+        inicio = indice_variable * BITS_POR_CAMPO
+        fin = inicio + BITS_POR_CAMPO
+        indice_categoria = bits_a_indice(regla_codificada[inicio:fin])
+        categorias = codificacion["categorias_por_variable"][variable]
+        if indice_categoria >= len(categorias):
+            return None
+        antecedentes.append((variable, categorias[indice_categoria]))
+
+    inicio_clase = len(VARIABLES_ENTRADA) * BITS_POR_CAMPO
+    indice_clase = bits_a_indice(regla_codificada[inicio_clase : inicio_clase + BITS_POR_CAMPO])
+    if indice_clase >= len(codificacion["clases"]):
+        return None
+    return antecedentes, codificacion["clases"][indice_clase]
+
+
+def indice_a_bits(indice):
+    return [int(bit) for bit in f"{int(indice):0{BITS_POR_CAMPO}b}"]
+
+
+def bits_a_indice(bits):
+    return int("".join(str(int(bit)) for bit in bits), 2)
 
 def contar_duplicados(reglas):
     claves = []
