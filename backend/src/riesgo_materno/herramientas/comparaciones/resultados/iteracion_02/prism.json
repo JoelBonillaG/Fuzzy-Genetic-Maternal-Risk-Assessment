@@ -1,6 +1,6 @@
 {
   "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
-  "iteracion": 1,
+  "iteracion": 2,
   "algoritmo": "PRISM_ESTOCASTICO",
   "datos": {
     "estrategia": "dataset_completo_sin_splits",
@@ -75,7 +75,7 @@
         },
         {
           "variable": "presion_diastolica",
-          "etiqueta_linguistica": "elevada"
+          "etiqueta_linguistica": "normal"
         },
         {
           "variable": "azucar_sangre",

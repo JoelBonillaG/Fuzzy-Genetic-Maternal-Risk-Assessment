@@ -80,26 +80,20 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
         poblacion_actual = obtener_poblacion_actual(instancia_ga, poblacion_inicial)
         clave = poblacion_actual.astype(int).tobytes()
         if clave not in estado["cache_fitness"]:
-            estado["cache_fitness"][clave] = evaluar_poblacion_por_contribucion(
+            estado["cache_fitness"][clave] = evaluar_poblacion_por_recall_precision(
                 poblacion=poblacion_actual,
-                tabla=tabla,
-                membresias=membresias,
                 codificacion=codificacion,
                 df_discretizado=df_discretizado,
-                penalizacion_error=float(parametros["penalizacion_error_regla"]),
             )
         return estado["cache_fitness"][clave][int(indice_solucion)].fitness
 
     def obtener_evaluaciones_generacion(poblacion):
         clave = np.asarray(poblacion, dtype=int).tobytes()
         if clave not in estado["cache_fitness"]:
-            estado["cache_fitness"][clave] = evaluar_poblacion_por_contribucion(
+            estado["cache_fitness"][clave] = evaluar_poblacion_por_recall_precision(
                 poblacion=poblacion,
-                tabla=tabla,
-                membresias=membresias,
                 codificacion=codificacion,
                 df_discretizado=df_discretizado,
-                penalizacion_error=float(parametros["penalizacion_error_regla"]),
             )
         return estado["cache_fitness"][clave]
 
@@ -310,47 +304,20 @@ def decodificar_poblacion(poblacion, codificacion):
     return reglas
 
 
-def evaluar_poblacion_por_contribucion(
+def evaluar_poblacion_por_recall_precision(
     poblacion,
-    tabla,
-    membresias,
     codificacion,
     df_discretizado,
-    penalizacion_error,
 ):
-    """Evalua cada regla por su aporte al BA global de la poblacion."""
-    individuos = construir_individuos(poblacion, codificacion)
-    reglas = decodificar_poblacion(individuos, codificacion)
-    ba_completo = evaluar_balanced_accuracy_global(reglas, tabla, membresias)
-    evaluaciones_locales = evaluar_poblacion_local(
+    """Evalua cada regla como recall_de_su_clase * precision."""
+    return evaluar_poblacion_local(
         poblacion=poblacion,
         df_discretizado=df_discretizado,
         codificacion=codificacion,
-        penalizacion_error=penalizacion_error,
     )
 
-    evaluaciones = []
-    for indice, evaluacion_local in enumerate(evaluaciones_locales):
-        reglas_sin_individuo = reglas[:indice] + reglas[indice + 1 :]
-        ba_sin_individuo = evaluar_balanced_accuracy_global(
-            reglas_sin_individuo,
-            tabla,
-            membresias,
-        )
-        contribucion = ba_completo - ba_sin_individuo
-        fitness = max(FITNESS_MINIMO_RULETA, float(contribucion))
-        evaluaciones.append(
-            EvaluacionRegla(
-                fitness=fitness,
-                aciertos=evaluacion_local.aciertos,
-                errores=evaluacion_local.errores,
-                cobertura=evaluacion_local.cobertura,
-            )
-        )
-    return evaluaciones
 
-
-def evaluar_poblacion_local(poblacion, df_discretizado, codificacion, penalizacion_error):
+def evaluar_poblacion_local(poblacion, df_discretizado, codificacion):
     evaluaciones = []
     for cromosoma in poblacion:
         clase = decodificar_clase(cromosoma, codificacion)
@@ -362,12 +329,12 @@ def evaluar_poblacion_local(poblacion, df_discretizado, codificacion, penalizaci
             clase=clase,
         )
         evaluaciones.append(
-            evaluar_regla_local(individuo, df_discretizado, codificacion, penalizacion_error)
+            evaluar_regla_local(individuo, df_discretizado, codificacion)
         )
     return evaluaciones
 
 
-def evaluar_regla_local(individuo, df_discretizado, codificacion, penalizacion_error):
+def evaluar_regla_local(individuo, df_discretizado, codificacion):
     antecedentes = decodificar_antecedentes(individuo.cromosoma, codificacion)
     if antecedentes is None:
         return EvaluacionRegla(FITNESS_MINIMO_RULETA, 0, 0, 0)
@@ -379,8 +346,10 @@ def evaluar_regla_local(individuo, df_discretizado, codificacion, penalizacion_e
     cobertura = int(len(cubiertos))
     aciertos = int((cubiertos["riesgo"] == individuo.clase).sum()) if cobertura else 0
     errores = int(cobertura - aciertos)
-    fitness_crudo = aciertos - penalizacion_error * errores
-    fitness = max(FITNESS_MINIMO_RULETA, float(fitness_crudo))
+    total_clase = int((df_discretizado["riesgo"] == individuo.clase).sum())
+    recall = aciertos / total_clase if total_clase else 0.0
+    precision = aciertos / cobertura if cobertura else 0.0
+    fitness = max(FITNESS_MINIMO_RULETA, float(recall * precision))
     return EvaluacionRegla(
         fitness=fitness,
         aciertos=aciertos,

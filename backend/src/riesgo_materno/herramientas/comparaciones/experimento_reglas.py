@@ -39,7 +39,7 @@ CLASES = ["low risk", "mid risk", "high risk"]
 CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "alto"}
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 CONFIGURACION_EXPERIMENTO = {
-    "id_experimento": "prueba_michigan_binario_contribucion_laptop",
+    "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
     "iteraciones": 2,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
@@ -52,12 +52,12 @@ CONFIGURACION_EXPERIMENTO = {
 
     "prism": {
         "modo": "prism_bootstrap",
-        "fraccion_bootstrap": 0.5,
+        "fraccion_bootstrap": 0.30,
         "cobertura_minima_regla": 2,
         "orden_clases": CLASES,
-        "maximo_condiciones_por_regla": 6,
-        "maximo_reglas_por_clase": 10,
-        "eliminar_positivos_cubiertos": False,
+        "maximo_condiciones_por_regla": 4,
+        "maximo_reglas_por_clase": 6,
+        "eliminar_positivos_cubiertos": True,
     },
 
     "ag_michigan_binario": {
@@ -67,9 +67,8 @@ CONFIGURACION_EXPERIMENTO = {
         "maximo_generaciones": 80,
         "paciencia": 25,
         "probabilidad_cruce": 0.90,
-        "probabilidad_mutacion": 0.10,
+        "probabilidad_mutacion": 0.08,
         "elitismo": 4,
-        "penalizacion_error_regla": 0.10,
     },
 }
 

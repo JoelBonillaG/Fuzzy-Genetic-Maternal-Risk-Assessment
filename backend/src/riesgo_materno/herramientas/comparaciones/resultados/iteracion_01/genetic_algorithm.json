@@ -1,0 +1,3333 @@
+{
+  "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
+  "iteracion": 1,
+  "algoritmo": "AG_MICHIGAN_BINARIO",
+  "datos": {
+    "estrategia": "dataset_completo_sin_splits",
+    "total_instancias": 1012
+  },
+  "hiperparametros": {
+    "reglas_por_poblacion": 80,
+    "bits_por_gen": 3,
+    "cantidad_padres": 30,
+    "maximo_generaciones": 80,
+    "paciencia": 25,
+    "probabilidad_cruce": 0.9,
+    "probabilidad_mutacion": 0.08,
+    "elitismo": 4
+  },
+  "resumen_reglas": {
+    "total_reglas": 80,
+    "reglas_duplicadas": 27,
+    "reglas_por_clase": {
+      "low risk": 13,
+      "mid risk": 15,
+      "high risk": 52
+    }
+  },
+  "metricas": {
+    "accuracy": 0.4407114624505929,
+    "error_clasificacion": 0.5592885375494071,
+    "errores": 566,
+    "aciertos": 446,
+    "total": 1012,
+    "balanced_accuracy": 0.47443977591036407,
+    "error_balanceado": 0.525560224089636
+  },
+  "matriz_confusion": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "matriz": [
+      [
+        0,
+        389,
+        15
+      ],
+      [
+        0,
+        309,
+        27
+      ],
+      [
+        5,
+        130,
+        137
+      ]
+    ]
+  },
+  "reglas_finales": [
+    {
+      "id": "R001",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R002",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R003",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R004",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R005",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R006",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R007",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R008",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R009",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R010",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "adolescente"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R011",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R012",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R013",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R014",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R015",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R016",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R017",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R018",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R019",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R020",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R021",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R022",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R023",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R024",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "taquicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R025",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R026",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R027",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R028",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "adolescente"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R029",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R030",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R031",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R032",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R033",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R034",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R035",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R036",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "taquicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R037",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R038",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R039",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R040",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R041",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "adolescente"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "taquicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R042",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R043",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "taquicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R044",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R045",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "adolescente"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R046",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R047",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R048",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R049",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R050",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R051",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R052",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R053",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R054",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R055",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R056",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "taquicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R057",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R058",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R059",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R060",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R061",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R062",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R063",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R064",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "taquicardia"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R065",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R066",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R067",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R068",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R069",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R070",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R071",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R072",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "taquicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R073",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension_severa"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "taquicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R074",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R075",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R076",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R077",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "adolescente"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R078",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "adolescente"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R079",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    },
+    {
+      "id": "R080",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "AG_MICHIGAN_BINARIO"
+    }
+  ],
+  "historial_ag": {
+    "historial": [
+      {
+        "generacion": 0,
+        "balanced_accuracy_global": 0.334983498349835,
+        "fitness_promedio_reglas": 1.0000000000000002e-06,
+        "fitness_mejor_regla": 1e-06,
+        "aciertos_promedio_regla": 0.0,
+        "errores_promedio_regla": 0.0,
+        "intentos_invalidos_descartados_generacion": 0
+      },
+      {
+        "generacion": 1,
+        "balanced_accuracy_global": 0.3266870279464921,
+        "fitness_promedio_reglas": 6.286868811881189e-05,
+        "fitness_mejor_regla": 0.0049504950495049506,
+        "aciertos_promedio_regla": 0.025,
+        "errores_promedio_regla": 0.3875,
+        "intentos_invalidos_descartados_generacion": 33
+      },
+      {
+        "generacion": 2,
+        "balanced_accuracy_global": 0.4402005851845689,
+        "fitness_promedio_reglas": 0.0033714805413270392,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 1.3,
+        "errores_promedio_regla": 0.4125,
+        "intentos_invalidos_descartados_generacion": 34
+      },
+      {
+        "generacion": 3,
+        "balanced_accuracy_global": 0.32284819868541476,
+        "fitness_promedio_reglas": 0.010361895780117114,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 3.825,
+        "errores_promedio_regla": 2.4875,
+        "intentos_invalidos_descartados_generacion": 31
+      },
+      {
+        "generacion": 4,
+        "balanced_accuracy_global": 0.3516654186427046,
+        "fitness_promedio_reglas": 0.020949920192289622,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 6.7875,
+        "errores_promedio_regla": 3.65,
+        "intentos_invalidos_descartados_generacion": 36
+      },
+      {
+        "generacion": 5,
+        "balanced_accuracy_global": 0.420990260790785,
+        "fitness_promedio_reglas": 0.02499542880518703,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 7.775,
+        "errores_promedio_regla": 2.2625,
+        "intentos_invalidos_descartados_generacion": 35
+      },
+      {
+        "generacion": 6,
+        "balanced_accuracy_global": 0.43208727385343576,
+        "fitness_promedio_reglas": 0.028945924999999994,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.9125,
+        "errores_promedio_regla": 1.3125,
+        "intentos_invalidos_descartados_generacion": 31
+      },
+      {
+        "generacion": 7,
+        "balanced_accuracy_global": 0.44607843137254904,
+        "fitness_promedio_reglas": 0.03292473214285714,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 10.0625,
+        "errores_promedio_regla": 1.3375,
+        "intentos_invalidos_descartados_generacion": 30
+      },
+      {
+        "generacion": 8,
+        "balanced_accuracy_global": 0.4392316332473583,
+        "fitness_promedio_reglas": 0.0322679757002801,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.9125,
+        "errores_promedio_regla": 1.4375,
+        "intentos_invalidos_descartados_generacion": 33
+      },
+      {
+        "generacion": 9,
+        "balanced_accuracy_global": 0.4402005851845689,
+        "fitness_promedio_reglas": 0.025261992016806716,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 7.7125,
+        "errores_promedio_regla": 0.95,
+        "intentos_invalidos_descartados_generacion": 33
+      },
+      {
+        "generacion": 10,
+        "balanced_accuracy_global": 0.4520891690009337,
+        "fitness_promedio_reglas": 0.031400600630252094,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.6125,
+        "errores_promedio_regla": 1.3125,
+        "intentos_invalidos_descartados_generacion": 31
+      },
+      {
+        "generacion": 11,
+        "balanced_accuracy_global": 0.4315909532129683,
+        "fitness_promedio_reglas": 0.02905124835434173,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.9125,
+        "errores_promedio_regla": 1.1875,
+        "intentos_invalidos_descartados_generacion": 39
+      },
+      {
+        "generacion": 12,
+        "balanced_accuracy_global": 0.4542136986807925,
+        "fitness_promedio_reglas": 0.03203436663165265,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.8125,
+        "errores_promedio_regla": 1.525,
+        "intentos_invalidos_descartados_generacion": 39
+      },
+      {
+        "generacion": 13,
+        "balanced_accuracy_global": 0.46397428608407054,
+        "fitness_promedio_reglas": 0.02002136764705882,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 6.175,
+        "errores_promedio_regla": 0.9625,
+        "intentos_invalidos_descartados_generacion": 42
+      },
+      {
+        "generacion": 14,
+        "balanced_accuracy_global": 0.45920868347338933,
+        "fitness_promedio_reglas": 0.01805112331932773,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 5.5375,
+        "errores_promedio_regla": 0.9625,
+        "intentos_invalidos_descartados_generacion": 36
+      },
+      {
+        "generacion": 15,
+        "balanced_accuracy_global": 0.4410597572362278,
+        "fitness_promedio_reglas": 0.020745064402427633,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 6.325,
+        "errores_promedio_regla": 0.85,
+        "intentos_invalidos_descartados_generacion": 41
+      },
+      {
+        "generacion": 16,
+        "balanced_accuracy_global": 0.47443977591036407,
+        "fitness_promedio_reglas": 0.029514599334733892,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.075,
+        "errores_promedio_regla": 1.3375,
+        "intentos_invalidos_descartados_generacion": 35
+      },
+      {
+        "generacion": 17,
+        "balanced_accuracy_global": 0.42827964519140993,
+        "fitness_promedio_reglas": 0.02717404865633753,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.35,
+        "errores_promedio_regla": 1.45,
+        "intentos_invalidos_descartados_generacion": 37
+      },
+      {
+        "generacion": 18,
+        "balanced_accuracy_global": 0.44143416442484584,
+        "fitness_promedio_reglas": 0.023251531582633052,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 7.15,
+        "errores_promedio_regla": 1.025,
+        "intentos_invalidos_descartados_generacion": 46
+      },
+      {
+        "generacion": 19,
+        "balanced_accuracy_global": 0.4492296918767507,
+        "fitness_promedio_reglas": 0.021710186904761904,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 6.65,
+        "errores_promedio_regla": 0.9125,
+        "intentos_invalidos_descartados_generacion": 38
+      },
+      {
+        "generacion": 20,
+        "balanced_accuracy_global": 0.4506123406458293,
+        "fitness_promedio_reglas": 0.031875503081232485,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.725,
+        "errores_promedio_regla": 1.2375,
+        "intentos_invalidos_descartados_generacion": 37
+      },
+      {
+        "generacion": 21,
+        "balanced_accuracy_global": 0.4385504201680672,
+        "fitness_promedio_reglas": 0.03474944642857143,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 10.7125,
+        "errores_promedio_regla": 1.5625,
+        "intentos_invalidos_descartados_generacion": 32
+      },
+      {
+        "generacion": 22,
+        "balanced_accuracy_global": 0.44677871148459386,
+        "fitness_promedio_reglas": 0.024856132808123245,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 7.55,
+        "errores_promedio_regla": 0.975,
+        "intentos_invalidos_descartados_generacion": 30
+      },
+      {
+        "generacion": 23,
+        "balanced_accuracy_global": 0.45909197012138186,
+        "fitness_promedio_reglas": 0.029560664635854335,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.9625,
+        "errores_promedio_regla": 1.0875,
+        "intentos_invalidos_descartados_generacion": 34
+      },
+      {
+        "generacion": 24,
+        "balanced_accuracy_global": 0.41678338001867415,
+        "fitness_promedio_reglas": 0.028111134803921557,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.6125,
+        "errores_promedio_regla": 1.1375,
+        "intentos_invalidos_descartados_generacion": 41
+      },
+      {
+        "generacion": 25,
+        "balanced_accuracy_global": 0.44724556489262374,
+        "fitness_promedio_reglas": 0.030923311124904502,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.45,
+        "errores_promedio_regla": 1.2875,
+        "intentos_invalidos_descartados_generacion": 35
+      },
+      {
+        "generacion": 26,
+        "balanced_accuracy_global": 0.43604917214410516,
+        "fitness_promedio_reglas": 0.020458264368569207,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 6.225,
+        "errores_promedio_regla": 0.7875,
+        "intentos_invalidos_descartados_generacion": 43
+      },
+      {
+        "generacion": 27,
+        "balanced_accuracy_global": 0.44012605042016806,
+        "fitness_promedio_reglas": 0.022194618207282905,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 6.7375,
+        "errores_promedio_regla": 0.9,
+        "intentos_invalidos_descartados_generacion": 35
+      },
+      {
+        "generacion": 28,
+        "balanced_accuracy_global": 0.4385504201680672,
+        "fitness_promedio_reglas": 0.030104341491596624,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.1625,
+        "errores_promedio_regla": 1.1,
+        "intentos_invalidos_descartados_generacion": 36
+      },
+      {
+        "generacion": 29,
+        "balanced_accuracy_global": 0.41509103641456585,
+        "fitness_promedio_reglas": 0.027421771568627445,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.425,
+        "errores_promedio_regla": 1.1375,
+        "intentos_invalidos_descartados_generacion": 39
+      },
+      {
+        "generacion": 30,
+        "balanced_accuracy_global": 0.4474789915966386,
+        "fitness_promedio_reglas": 0.03492562314425769,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 10.6875,
+        "errores_promedio_regla": 1.3875,
+        "intentos_invalidos_descartados_generacion": 32
+      },
+      {
+        "generacion": 31,
+        "balanced_accuracy_global": 0.430296128352331,
+        "fitness_promedio_reglas": 0.03161695903361343,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.6625,
+        "errores_promedio_regla": 1.2,
+        "intentos_invalidos_descartados_generacion": 40
+      },
+      {
+        "generacion": 32,
+        "balanced_accuracy_global": 0.40580250251915945,
+        "fitness_promedio_reglas": 0.023693953910475074,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 7.2625,
+        "errores_promedio_regla": 1.0375,
+        "intentos_invalidos_descartados_generacion": 40
+      },
+      {
+        "generacion": 33,
+        "balanced_accuracy_global": 0.4439192343604108,
+        "fitness_promedio_reglas": 0.02154743119747899,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 6.525,
+        "errores_promedio_regla": 0.775,
+        "intentos_invalidos_descartados_generacion": 38
+      },
+      {
+        "generacion": 34,
+        "balanced_accuracy_global": 0.4725995183551969,
+        "fitness_promedio_reglas": 0.02625128253968253,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.0375,
+        "errores_promedio_regla": 1.0625,
+        "intentos_invalidos_descartados_generacion": 33
+      },
+      {
+        "generacion": 35,
+        "balanced_accuracy_global": 0.40391544406541496,
+        "fitness_promedio_reglas": 0.027521786073439268,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.4125,
+        "errores_promedio_regla": 1.7125,
+        "intentos_invalidos_descartados_generacion": 39
+      },
+      {
+        "generacion": 36,
+        "balanced_accuracy_global": 0.4283570689001673,
+        "fitness_promedio_reglas": 0.026765496052430865,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.1625,
+        "errores_promedio_regla": 1.0875,
+        "intentos_invalidos_descartados_generacion": 39
+      },
+      {
+        "generacion": 37,
+        "balanced_accuracy_global": 0.4378663181444195,
+        "fitness_promedio_reglas": 0.025966611379551818,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.05,
+        "errores_promedio_regla": 1.5,
+        "intentos_invalidos_descartados_generacion": 38
+      },
+      {
+        "generacion": 38,
+        "balanced_accuracy_global": 0.44683706816059754,
+        "fitness_promedio_reglas": 0.02398681320028011,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 7.35,
+        "errores_promedio_regla": 1.1125,
+        "intentos_invalidos_descartados_generacion": 39
+      },
+      {
+        "generacion": 39,
+        "balanced_accuracy_global": 0.43907563025210083,
+        "fitness_promedio_reglas": 0.023824010574229688,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 7.35,
+        "errores_promedio_regla": 1.075,
+        "intentos_invalidos_descartados_generacion": 38
+      },
+      {
+        "generacion": 40,
+        "balanced_accuracy_global": 0.4398342670401494,
+        "fitness_promedio_reglas": 0.02730883890056022,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 8.35,
+        "errores_promedio_regla": 1.1125,
+        "intentos_invalidos_descartados_generacion": 32
+      },
+      {
+        "generacion": 41,
+        "balanced_accuracy_global": 0.42635387488328663,
+        "fitness_promedio_reglas": 0.030998511659663858,
+        "fitness_mejor_regla": 0.10094537815126049,
+        "aciertos_promedio_regla": 9.45,
+        "errores_promedio_regla": 1.3625,
+        "intentos_invalidos_descartados_generacion": 32
+      }
+    ]
+  },
+  "mejor_poblacion_ag": {
+    "bits_por_gen": 3,
+    "bits_por_consecuente": 3,
+    "bits_por_regla": 21,
+    "intentos_invalidos_descartados_generacion": 35,
+    "cromosomas": [
+      {
+        "id": "R001",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R002",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R003",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R004",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R005",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R006",
+        "bits": "011011010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R007",
+        "bits": "001010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R008",
+        "bits": "011010011000001000001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R009",
+        "bits": "011000010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R010",
+        "bits": "000010001000011000001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R011",
+        "bits": "011000010010001001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R012",
+        "bits": "011010001000001001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R013",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R014",
+        "bits": "001011001010010000001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R015",
+        "bits": "001001011010001000000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R016",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R017",
+        "bits": "010010000001001001000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R018",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R019",
+        "bits": "010000010000010001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R020",
+        "bits": "011010010010001001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R021",
+        "bits": "011010011001000000010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R022",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R023",
+        "bits": "010000000001000000001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R024",
+        "bits": "010000011010010010001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R025",
+        "bits": "011010010010010001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R026",
+        "bits": "001100000001011000000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R027",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R028",
+        "bits": "000010001001011000000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R029",
+        "bits": "011100011001011000001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R030",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R031",
+        "bits": "010010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R032",
+        "bits": "010010011001010001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R033",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R034",
+        "bits": "011011010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R035",
+        "bits": "011010000010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R036",
+        "bits": "011100011001011010001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R037",
+        "bits": "001010010010000000010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R038",
+        "bits": "011010000010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R039",
+        "bits": "011010010000000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R040",
+        "bits": "011001010010001001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R041",
+        "bits": "000011011010011010000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R042",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R043",
+        "bits": "001100000010000010000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R044",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R045",
+        "bits": "000010011000000000000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R046",
+        "bits": "011100011000001001000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R047",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R048",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R049",
+        "bits": "001011011010001000001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R050",
+        "bits": "011011010000010001001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R051",
+        "bits": "001001011001010001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R052",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R053",
+        "bits": "001011010000000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R054",
+        "bits": "001010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R055",
+        "bits": "011000011010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R056",
+        "bits": "001100000001011010000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R057",
+        "bits": "011011000000010000010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R058",
+        "bits": "011010010010001001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R059",
+        "bits": "001100011001000000010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R060",
+        "bits": "010010010000001000001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R061",
+        "bits": "010010000010001001000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R062",
+        "bits": "001010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R063",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R064",
+        "bits": "001100010001001010010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R065",
+        "bits": "010010011010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R066",
+        "bits": "010010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R067",
+        "bits": "011100000000011000000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R068",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R069",
+        "bits": "001010001001011001001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R070",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R071",
+        "bits": "011010011010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R072",
+        "bits": "001010000001010010001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R073",
+        "bits": "011100001010011010001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R074",
+        "bits": "010000000001010001000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R075",
+        "bits": "011011000000010001001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R076",
+        "bits": "011001010000000000001",
+        "consecuente": "mid risk"
+      },
+      {
+        "id": "R077",
+        "bits": "000000001000011000010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R078",
+        "bits": "000011001000001001000",
+        "consecuente": "low risk"
+      },
+      {
+        "id": "R079",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      },
+      {
+        "id": "R080",
+        "bits": "011010010010000001010",
+        "consecuente": "high risk"
+      }
+    ]
+  }
+}
