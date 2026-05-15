@@ -1,1 +1,0 @@
-"""Controllers de FastAPI."""
