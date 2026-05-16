@@ -5,7 +5,7 @@ Cada individuo de PyGAD representa una regla difusa:
 
 La poblacion completa funciona como base de reglas. Cada regla conserva sus
 antecedentes y su consecuente dentro del cromosoma. La inicializacion es
-aleatoria y solo se reparan cromosomas invalidos.
+aleatoria y se reparan cromosomas invalidos o sin cobertura fuzzy.
 """
 
 from __future__ import annotations
@@ -273,18 +273,6 @@ def generar_cromosoma_valido_directo(codificacion):
     return np.asarray(bits, dtype=int)
 
 
-def generar_cromosoma_desde_fila_discretizada(fila, codificacion):
-    """Construye una regla valida desde un caso real discretizado y su clase."""
-    bits = []
-    for variable in VARIABLES_ENTRADA:
-        categorias = codificacion["categorias_por_variable"][variable]
-        categoria = fila[variable]
-        bits.extend(indice_a_bits(categorias.index(categoria)))
-    clase = fila["riesgo"]
-    bits.extend(indice_a_bits_clase(codificacion["clases"].index(clase)))
-    return np.asarray(bits, dtype=int)
-
-
 def indice_a_bits(indice):
     return [int(bit) for bit in f"{indice:0{BITS_POR_GEN}b}"]
 
@@ -407,15 +395,55 @@ def regla_tiene_cobertura_fuzzy(cromosoma, codificacion, pertenencias_fuzzy):
     return bool(np.any(activacion > 0.0))
 
 
+def regla_tiene_cobertura_discreta(cromosoma, codificacion, df_discretizado):
+    antecedentes = decodificar_antecedentes(cromosoma, codificacion)
+    if antecedentes is None:
+        return False
+
+    cubiertos = df_discretizado
+    for variable, categoria in antecedentes:
+        cubiertos = cubiertos[cubiertos[variable] == categoria]
+        if cubiertos.empty:
+            return False
+    return True
+
+
+def regla_tiene_cobertura(cromosoma, codificacion, pertenencias_fuzzy, df_discretizado):
+    return (
+        regla_tiene_cobertura_fuzzy(cromosoma, codificacion, pertenencias_fuzzy)
+        and regla_tiene_cobertura_discreta(cromosoma, codificacion, df_discretizado)
+    )
+
+
+def generar_cromosoma_aleatorio_con_cobertura(
+    codificacion,
+    pertenencias_fuzzy,
+    df_discretizado,
+    max_intentos=10000,
+):
+    """Genera una regla aleatoria valida con cobertura fuzzy y discreta."""
+    for _ in range(max_intentos):
+        cromosoma = generar_cromosoma_valido_directo(codificacion)
+        if regla_tiene_cobertura(cromosoma, codificacion, pertenencias_fuzzy, df_discretizado):
+            return cromosoma
+    raise RuntimeError(
+        "No se pudo generar una regla aleatoria con cobertura fuzzy y discreta "
+        f"despues de {max_intentos} intentos."
+    )
+
+
 def reparar_reglas_sin_cobertura(poblacion, codificacion, pertenencias_fuzzy, df_discretizado):
-    """Reemplaza reglas que no activan ningun caso por reglas basadas en casos reales."""
+    """Reemplaza reglas sin cobertura por nuevas reglas aleatorias con cobertura."""
     poblacion = np.asarray(poblacion, dtype=int).copy()
     reparadas = 0
     for indice, cromosoma in enumerate(poblacion):
-        if regla_tiene_cobertura_fuzzy(cromosoma, codificacion, pertenencias_fuzzy):
+        if regla_tiene_cobertura(cromosoma, codificacion, pertenencias_fuzzy, df_discretizado):
             continue
-        fila = df_discretizado.iloc[int(np.random.randint(0, len(df_discretizado)))]
-        poblacion[indice] = generar_cromosoma_desde_fila_discretizada(fila, codificacion)
+        poblacion[indice] = generar_cromosoma_aleatorio_con_cobertura(
+            codificacion,
+            pertenencias_fuzzy,
+            df_discretizado,
+        )
         reparadas += 1
     return poblacion, reparadas
 

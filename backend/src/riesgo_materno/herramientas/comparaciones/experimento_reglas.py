@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix
 
 from ...entrenamiento.datos import cargar_dataset, convertir_split_a_diccionario
 from ...entrenamiento.modelo import RUTA_CSV
@@ -36,6 +36,7 @@ RUTA_BASE = Path(__file__).resolve().parent
 RUTA_RESULTADOS = RUTA_BASE / "resultados"
 
 CLASES = ["low risk", "mid risk", "high risk"]
+CLASE_SIN_ACTIVACION = "__sin_activacion__"
 CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "alto"}
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 CONFIGURACION_EXPERIMENTO = {
@@ -120,6 +121,7 @@ def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
         tabla=tabla,
         ruta=ruta_iteracion / "ripper.json",
         hiperparametros=config["ripper"],
+        config=config,
     )
     print(
         f"  RIPPER | reglas={len(reglas)} | "
@@ -141,6 +143,7 @@ def ejecutar_prism(iteracion, tabla, ruta_iteracion, config):
         tabla=tabla,
         ruta=ruta_iteracion / "prism.json",
         hiperparametros=config["prism"],
+        config=config,
     )
     print(
         f"  PRISM  | modo=bootstrap | reglas={len(reglas)} | "
@@ -179,6 +182,7 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
         tabla=tabla,
         ruta=ruta_iteracion / "genetic_algorithm.json",
         hiperparametros=config["ag_michigan_binario"],
+        config=config,
         extra={
             "historial_ag": resumir_historial_ag(historial),
             "mejor_poblacion_ag": {
@@ -215,16 +219,17 @@ def evaluar_y_guardar(
     tabla,
     ruta,
     hiperparametros,
+    config,
     extra=None,
 ):
     metricas = evaluar_reglas(reglas, tabla)
     resumen_reglas = resumir_reglas(reglas)
     resultado = {
-        "id_experimento": CONFIGURACION_EXPERIMENTO["id_experimento"],
+        "id_experimento": config["id_experimento"],
         "iteracion": int(iteracion),
         "algoritmo": algoritmo,
         "datos": {
-            "estrategia": "dataset_completo_sin_splits",
+            "estrategia": config["estrategia_datos"],
             "total_instancias": int(len(tabla)),
         },
         "hiperparametros": hiperparametros,
@@ -241,33 +246,56 @@ def evaluar_y_guardar(
 
 def evaluar_reglas(reglas, tabla):
     datos = convertir_split_a_diccionario(tabla)
-    sistema = SistemaDifusoMamdani(construir_membresias_base(), reglas=reglas)
+    sistema = SistemaDifusoMamdani(
+        construir_membresias_base(),
+        reglas=reglas,
+        permitir_neutro=False,
+    )
     inferencia = sistema.inferir_lote(datos["entradas"])
     return construir_metricas_desde_predicciones(
         reales=datos["riesgos"],
         predichos=inferencia["riesgos"],
+        sin_activacion=inferencia["sin_activacion"],
     )
 
 
-def construir_metricas_desde_predicciones(reales, predichos):
+def construir_metricas_desde_predicciones(reales, predichos, sin_activacion=None):
+    predichos = np.asarray(predichos, dtype=object).copy()
+    if sin_activacion is not None:
+        predichos[np.asarray(sin_activacion, dtype=bool)] = CLASE_SIN_ACTIVACION
+
     correctas = int(np.sum(reales == predichos))
     total = int(len(reales))
+    etiquetas_matriz = CLASES + [CLASE_SIN_ACTIVACION]
     accuracy = float(accuracy_score(reales, predichos))
-    matriz = confusion_matrix(reales, predichos, labels=CLASES).tolist()
-    balanced_accuracy = float(balanced_accuracy_score(reales, predichos))
+    matriz = confusion_matrix(reales, predichos, labels=etiquetas_matriz).tolist()
+    balanced_accuracy = balanced_accuracy_con_clases_reales(reales, predichos)
     return {
         "accuracy": accuracy,
         "error_clasificacion": float(1.0 - accuracy),
         "errores": int(total - correctas),
         "aciertos": correctas,
         "total": total,
+        "sin_activacion": int(np.sum(predichos == CLASE_SIN_ACTIVACION)),
         "balanced_accuracy": balanced_accuracy,
         "error_balanceado": float(1.0 - balanced_accuracy),
         "matriz_confusion": {
-            "etiquetas": CLASES,
+            "etiquetas": etiquetas_matriz,
             "matriz": matriz,
         },
     }
+
+
+def balanced_accuracy_con_clases_reales(reales, predichos):
+    recalls = []
+    for clase in CLASES:
+        mascara_clase = reales == clase
+        total_clase = int(np.sum(mascara_clase))
+        if total_clase == 0:
+            continue
+        verdaderos_positivos = int(np.sum(predichos[mascara_clase] == clase))
+        recalls.append(verdaderos_positivos / total_clase)
+    return float(np.mean(recalls)) if recalls else 0.0
 
 
 def construir_membresias_base():
