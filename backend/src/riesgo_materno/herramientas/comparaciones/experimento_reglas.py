@@ -1,7 +1,7 @@
 """Comparacion experimental de RIPPER, PRISM y AG Michigan binario.
 
-El experimento usa el dataset completo, sin particiones train/test. En esta
-rama las reglas conservan seis antecedentes clinicos.
+El experimento usa particiones train/test estratificadas. Los algoritmos aprenden
+solo desde entrenamiento y las reglas finales se reportan en entrenamiento y prueba.
 
 Uso:
     python -m riesgo_materno.herramientas.comparaciones.experimento_reglas
@@ -17,7 +17,11 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, confusion_matrix
 
-from ...entrenamiento.datos import cargar_dataset, convertir_split_a_diccionario
+from ...entrenamiento.datos import (
+    cargar_dataset,
+    convertir_split_a_diccionario,
+    dividir_entrenamiento_prueba,
+)
 from ...entrenamiento.modelo import RUTA_CSV
 from ...entrenamiento.prism import aprender_reglas_prism as aprender_prism
 from ...entrenamiento.ripper import aprender_reglas_ripper as aprender_ripper
@@ -43,8 +47,9 @@ CONFIGURACION_EXPERIMENTO = {
     "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
     "iteraciones": 20,
     "clases": CLASES,
-    "estrategia_datos": "dataset_completo_sin_splits",
+    "estrategia_datos": "train_test_70_30_estratificado",
     "metrica_principal": "accuracy",
+    "semilla_base": 42,
 
     "ripper": {
         "k": 2,
@@ -89,16 +94,23 @@ def ejecutar_experimento(config):
 
     print("Dataset completo")
     print(f"  Instancias evaluadas: {len(tabla)}")
-    print("  Estrategia: sin split entrenamiento/prueba")
+    print("  Estrategia: train/test 70/30 estratificado")
 
     for iteracion in range(1, config["iteraciones"] + 1):
         print(f"\nIteracion {iteracion:02d}")
         ruta_iteracion = RUTA_RESULTADOS / f"iteracion_{iteracion:02d}"
         ruta_iteracion.mkdir(parents=True, exist_ok=True)
+        splits = crear_splits_iteracion(tabla, config, iteracion)
+        entrenamiento = splits["entrenamiento"]
+        prueba = splits["prueba"]
+        print(
+            f"  Split  | entrenamiento={len(entrenamiento)} | "
+            f"prueba={len(prueba)}"
+        )
 
-        resultados.append(ejecutar_ripper(iteracion, tabla, ruta_iteracion, config))
-        resultados.append(ejecutar_prism(iteracion, tabla, ruta_iteracion, config))
-        resultados.append(ejecutar_ag(iteracion, tabla, ruta_iteracion, config))
+        resultados.append(ejecutar_ripper(iteracion, entrenamiento, prueba, ruta_iteracion, config))
+        resultados.append(ejecutar_prism(iteracion, entrenamiento, prueba, ruta_iteracion, config))
+        resultados.append(ejecutar_ag(iteracion, entrenamiento, prueba, ruta_iteracion, config))
 
     resumen = construir_resumen_final(resultados)
     guardar_csv_seguro(pd.DataFrame(resumen["tabla_resumen"]), RUTA_RESULTADOS / "resumen_final.csv")
@@ -107,9 +119,14 @@ def ejecutar_experimento(config):
     return resumen
 
 
-def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
+def crear_splits_iteracion(tabla, config, iteracion):
+    semilla = int(config.get("semilla_base", 42)) + int(iteracion) - 1
+    return dividir_entrenamiento_prueba(tabla, semilla=semilla)
+
+
+def ejecutar_ripper(iteracion, entrenamiento, prueba, ruta_iteracion, config):
     reglas = aprender_ripper(
-        tabla,
+        entrenamiento,
         orden_clases=CLASES,
         parametros=traducir_parametros_ripper(config["ripper"]),
     )
@@ -118,39 +135,41 @@ def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
         iteracion=iteracion,
         algoritmo="RIPPER",
         reglas=reglas,
-        tabla=tabla,
+        entrenamiento=entrenamiento,
+        prueba=prueba,
         ruta=ruta_iteracion / "ripper.json",
         hiperparametros=config["ripper"],
         config=config,
     )
     print(
         f"  RIPPER | reglas={len(reglas)} | "
-        f"accuracy={resultado['metricas']['accuracy']:.4f} | "
-        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
-        f"error={resultado['metricas']['error_clasificacion']:.4f} | "
-        f"error_ba={resultado['metricas']['error_balanceado']:.4f}"
+        f"acc_test={resultado['metricas_prueba']['accuracy']:.4f} | "
+        f"ba_test={resultado['metricas_prueba']['balanced_accuracy']:.4f} | "
+        f"error_test={resultado['metricas_prueba']['error_clasificacion']:.4f} | "
+        f"error_ba_test={resultado['metricas_prueba']['error_balanceado']:.4f}"
     )
     return resultado
 
 
-def ejecutar_prism(iteracion, tabla, ruta_iteracion, config):
-    reglas = aprender_prism_estocastico(tabla, config["prism"])
+def ejecutar_prism(iteracion, entrenamiento, prueba, ruta_iteracion, config):
+    reglas = aprender_prism_estocastico(entrenamiento, config["prism"])
     asignar_origen(reglas, "PRISM_ESTOCASTICO")
     resultado = evaluar_y_guardar(
         iteracion=iteracion,
         algoritmo="PRISM_ESTOCASTICO",
         reglas=reglas,
-        tabla=tabla,
+        entrenamiento=entrenamiento,
+        prueba=prueba,
         ruta=ruta_iteracion / "prism.json",
         hiperparametros=config["prism"],
         config=config,
     )
     print(
         f"  PRISM  | modo=bootstrap | reglas={len(reglas)} | "
-        f"accuracy={resultado['metricas']['accuracy']:.4f} | "
-        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
-        f"error={resultado['metricas']['error_clasificacion']:.4f} | "
-        f"error_ba={resultado['metricas']['error_balanceado']:.4f}"
+        f"acc_test={resultado['metricas_prueba']['accuracy']:.4f} | "
+        f"ba_test={resultado['metricas_prueba']['balanced_accuracy']:.4f} | "
+        f"error_test={resultado['metricas_prueba']['error_clasificacion']:.4f} | "
+        f"error_ba_test={resultado['metricas_prueba']['error_balanceado']:.4f}"
     )
     return resultado
 
@@ -166,10 +185,10 @@ def aprender_prism_estocastico(tabla, config):
     return aprender_prism(muestra, config)
 
 
-def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
+def ejecutar_ag(iteracion, entrenamiento, prueba, ruta_iteracion, config):
     print("  AG-MB  | evolucionando poblacion de reglas binarias...")
     mejor, historial = ejecutar_ag_michigan_binario(
-        tabla=tabla,
+        tabla=entrenamiento,
         membresias=construir_membresias_base(),
         parametros=config["ag_michigan_binario"],
     )
@@ -179,7 +198,8 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
         iteracion=iteracion,
         algoritmo="AG_MICHIGAN_BINARIO",
         reglas=reglas,
-        tabla=tabla,
+        entrenamiento=entrenamiento,
+        prueba=prueba,
         ruta=ruta_iteracion / "genetic_algorithm.json",
         hiperparametros=config["ag_michigan_binario"],
         config=config,
@@ -203,10 +223,10 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
     )
     print(
         f"  AG-MB  | reglas={len(reglas)} | "
-        f"accuracy={resultado['metricas']['accuracy']:.4f} | "
-        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
-        f"error={resultado['metricas']['error_clasificacion']:.4f} | "
-        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
+        f"acc_test={resultado['metricas_prueba']['accuracy']:.4f} | "
+        f"ba_test={resultado['metricas_prueba']['balanced_accuracy']:.4f} | "
+        f"error_test={resultado['metricas_prueba']['error_clasificacion']:.4f} | "
+        f"error_ba_test={resultado['metricas_prueba']['error_balanceado']:.4f} | "
         f"duplicados={resultado['resumen_reglas']['reglas_duplicadas']}"
     )
     return resultado
@@ -216,13 +236,17 @@ def evaluar_y_guardar(
     iteracion,
     algoritmo,
     reglas,
-    tabla,
+    entrenamiento,
+    prueba,
     ruta,
     hiperparametros,
     config,
     extra=None,
 ):
-    metricas = evaluar_reglas(reglas, tabla)
+    metricas_entrenamiento = evaluar_reglas(reglas, entrenamiento)
+    matriz_entrenamiento = metricas_entrenamiento.pop("matriz_confusion")
+    metricas_prueba = evaluar_reglas(reglas, prueba)
+    matriz_prueba = metricas_prueba.pop("matriz_confusion")
     resumen_reglas = resumir_reglas(reglas)
     resultado = {
         "id_experimento": config["id_experimento"],
@@ -230,12 +254,18 @@ def evaluar_y_guardar(
         "algoritmo": algoritmo,
         "datos": {
             "estrategia": config["estrategia_datos"],
-            "total_instancias": int(len(tabla)),
+            "total_entrenamiento": int(len(entrenamiento)),
+            "total_prueba": int(len(prueba)),
+            "total_instancias": int(len(entrenamiento) + len(prueba)),
         },
         "hiperparametros": hiperparametros,
         "resumen_reglas": resumen_reglas,
-        "metricas": metricas,
-        "matriz_confusion": metricas.pop("matriz_confusion"),
+        "metricas_entrenamiento": metricas_entrenamiento,
+        "matriz_confusion_entrenamiento": matriz_entrenamiento,
+        "metricas_prueba": metricas_prueba,
+        "matriz_confusion_prueba": matriz_prueba,
+        "metricas": dict(metricas_prueba),
+        "matriz_confusion": matriz_prueba,
         "reglas_finales": [regla_a_formato_comun(regla, i) for i, regla in enumerate(reglas, start=1)],
     }
     if extra:
@@ -334,21 +364,33 @@ def construir_resumen_final(resultados):
     filas = []
     for algoritmo in sorted({r["algoritmo"] for r in resultados}):
         grupo = [r for r in resultados if r["algoritmo"] == algoritmo]
-        accuracies = [r["metricas"]["accuracy"] for r in grupo]
-        errores = [r["metricas"]["error_clasificacion"] for r in grupo]
-        errores_balanceados = [r["metricas"]["error_balanceado"] for r in grupo]
-        ba = [r["metricas"]["balanced_accuracy"] for r in grupo]
+        accuracies_train = [r["metricas_entrenamiento"]["accuracy"] for r in grupo]
+        errores_train = [r["metricas_entrenamiento"]["error_clasificacion"] for r in grupo]
+        errores_balanceados_train = [r["metricas_entrenamiento"]["error_balanceado"] for r in grupo]
+        ba_train = [r["metricas_entrenamiento"]["balanced_accuracy"] for r in grupo]
+        accuracies_test = [r["metricas_prueba"]["accuracy"] for r in grupo]
+        errores_test = [r["metricas_prueba"]["error_clasificacion"] for r in grupo]
+        errores_balanceados_test = [r["metricas_prueba"]["error_balanceado"] for r in grupo]
+        ba_test = [r["metricas_prueba"]["balanced_accuracy"] for r in grupo]
         filas.append(
             {
                 "algoritmo": algoritmo,
-                "accuracy_promedio": promedio(accuracies),
-                "accuracy_desviacion_estandar": desviacion(accuracies),
-                "error_promedio": promedio(errores),
-                "error_desviacion_estandar": desviacion(errores),
-                "error_balanceado_promedio": promedio(errores_balanceados),
-                "error_balanceado_desviacion_estandar": desviacion(errores_balanceados),
-                "balanced_accuracy_promedio": promedio(ba),
-                "balanced_accuracy_desviacion_estandar": desviacion(ba),
+                "accuracy_entrenamiento_promedio": promedio(accuracies_train),
+                "accuracy_entrenamiento_desviacion_estandar": desviacion(accuracies_train),
+                "error_entrenamiento_promedio": promedio(errores_train),
+                "error_entrenamiento_desviacion_estandar": desviacion(errores_train),
+                "error_balanceado_entrenamiento_promedio": promedio(errores_balanceados_train),
+                "error_balanceado_entrenamiento_desviacion_estandar": desviacion(errores_balanceados_train),
+                "balanced_accuracy_entrenamiento_promedio": promedio(ba_train),
+                "balanced_accuracy_entrenamiento_desviacion_estandar": desviacion(ba_train),
+                "accuracy_prueba_promedio": promedio(accuracies_test),
+                "accuracy_prueba_desviacion_estandar": desviacion(accuracies_test),
+                "error_prueba_promedio": promedio(errores_test),
+                "error_prueba_desviacion_estandar": desviacion(errores_test),
+                "error_balanceado_prueba_promedio": promedio(errores_balanceados_test),
+                "error_balanceado_prueba_desviacion_estandar": desviacion(errores_balanceados_test),
+                "balanced_accuracy_prueba_promedio": promedio(ba_test),
+                "balanced_accuracy_prueba_desviacion_estandar": desviacion(ba_test),
             }
         )
     return {
