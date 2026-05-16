@@ -1,0 +1,49 @@
+{
+  "ruta_reglas_unicas": "C:\\Users\\Joel\\Desktop\\Universidad\\Septimo Semestre\\Inteligencia Artificial\\Proyecto-Paper\\Fuzzy-Genetic-Maternal-Risk-Assessment\\backend\\limpieza\\resultados_limpieza\\reglas_unicas_por_iteracion",
+  "ruta_salida": "limpieza\\resultados_limpieza\\reglas_unicas_por_iteracion\\seleccion_top15_por_precision\\resultados",
+  "total_reglas_evaluadas": 2917,
+  "reglas_por_clase_objetivo": {
+    "low risk": 15,
+    "mid risk": 15,
+    "high risk": 15
+  },
+  "reglas_por_clase_final": {
+    "low risk": 15,
+    "mid risk": 15,
+    "high risk": 15
+  },
+  "metricas_finales": {
+    "accuracy": 0.5375494071146245,
+    "balanced_accuracy": 0.552796613694983,
+    "error_clasificacion": 0.4624505928853755,
+    "error_balanceado": 0.447203386305017,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk"
+      ],
+      "matriz": [
+        [
+          99,
+          305,
+          0
+        ],
+        [
+          18,
+          318,
+          0
+        ],
+        [
+          7,
+          138,
+          127
+        ]
+      ]
+    }
+  },
+  "archivos": {
+    "ranking_csv": "limpieza\\resultados_limpieza\\reglas_unicas_por_iteracion\\seleccion_top15_por_precision\\resultados\\ranking_reglas_por_precision.csv",
+    "conjunto_final": "limpieza\\resultados_limpieza\\reglas_unicas_por_iteracion\\seleccion_top15_por_precision\\resultados\\mejores_368_por_precision.json"
+  }
+}

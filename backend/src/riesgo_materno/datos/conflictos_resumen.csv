@@ -1,0 +1,36 @@
+Age,SystolicBP,DiastolicBP,BS,BodyTemp,HeartRate,clases_distintas,clases_lista,total_casos
+19,120,80,7.0,98.0,70,2,low risk | mid risk,34
+48,120,80,11.0,98.0,88,3,high risk | low risk | mid risk,24
+31,120,60,6.1,98.0,76,2,low risk | mid risk,20
+60,120,85,15.0,98.0,60,2,high risk | mid risk,9
+50,130,100,16.0,98.0,75,2,high risk | mid risk,9
+40,120,95,11.0,98.0,80,2,high risk | mid risk,9
+17,85,60,9.0,102.0,86,2,high risk | mid risk,7
+35,120,60,6.1,98.0,76,2,low risk | mid risk,5
+15,120,80,7.5,98.0,70,2,low risk | mid risk,5
+12,90,60,7.5,102.0,66,2,low risk | mid risk,4
+12,95,60,6.9,98.0,65,2,low risk | mid risk,4
+49,120,90,7.5,98.0,77,2,low risk | mid risk,4
+21,120,80,6.9,98.0,76,2,low risk | mid risk,4
+21,90,65,6.9,98.0,76,2,low risk | mid risk,4
+16,100,70,6.9,98.0,80,2,low risk | mid risk,4
+17,90,65,7.5,103.0,67,2,low risk | mid risk,4
+18,90,60,6.9,98.0,70,2,low risk | mid risk,4
+19,120,75,6.9,98.0,66,2,low risk | mid risk,4
+20,100,90,7.5,98.0,88,2,low risk | mid risk,4
+60,120,80,7.5,98.0,75,2,low risk | mid risk,4
+23,120,80,7.5,98.0,70,2,low risk | mid risk,4
+22,120,90,7.5,98.0,82,2,low risk | mid risk,4
+23,100,85,7.5,98.0,66,2,low risk | mid risk,4
+22,100,65,7.5,98.0,70,2,low risk | mid risk,4
+21,120,80,7.5,98.0,77,2,low risk | mid risk,4
+28,120,90,6.9,98.0,70,2,low risk | mid risk,4
+28,90,60,7.5,98.0,82,2,low risk | mid risk,4
+42,130,80,18.0,98.0,70,2,high risk | mid risk,4
+13,90,65,7.5,101.0,80,2,high risk | low risk,3
+22,90,60,6.8,98.0,77,2,low risk | mid risk,3
+25,120,100,6.8,98.0,60,2,low risk | mid risk,3
+40,120,90,6.9,98.0,80,2,high risk | low risk,2
+35,120,80,6.9,98.0,80,2,high risk | low risk,2
+25,100,90,6.9,98.0,76,2,high risk | low risk,2
+55,110,85,6.9,98.0,88,2,high risk | low risk,2

@@ -1,0 +1,440 @@
+[
+  {
+    "numero": 1,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "elevada"
+      ],
+      [
+        "presion_diastolica",
+        "alta"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "elevada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 2,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "alta"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 3,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "elevada"
+      ],
+      [
+        "presion_diastolica",
+        "alta"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 4,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "elevada"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 5,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "elevada"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "elevada"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 6,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "elevada"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "elevada"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 7,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "elevada"
+      ],
+      [
+        "presion_diastolica",
+        "elevada"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 8,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "edad",
+        "adulta"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 9,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "elevada"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "normal"
+      ],
+      [
+        "edad",
+        "adulta"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 10,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "elevada"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 11,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "normal"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 12,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "elevada"
+      ],
+      [
+        "azucar_sangre",
+        "elevada"
+      ],
+      [
+        "edad",
+        "joven"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 13,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "elevada"
+      ],
+      [
+        "azucar_sangre",
+        "normal"
+      ],
+      [
+        "presion_diastolica",
+        "elevada"
+      ],
+      [
+        "edad",
+        "adulta"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 14,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "elevada"
+      ],
+      [
+        "azucar_sangre",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "elevada"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 15,
+    "antecedentes": [
+      [
+        "edad",
+        "adulta"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 16,
+    "antecedentes": [
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 17,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "edad",
+        "adulta"
+      ],
+      [
+        "temperatura_corporal",
+        "elevada"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 18,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "elevada"
+      ],
+      [
+        "azucar_sangre",
+        "normal"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 19,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "edad",
+        "joven"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "elevada"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 20,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 21,
+    "antecedentes": [
+      [
+        "edad",
+        "joven"
+      ],
+      [
+        "azucar_sangre",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "elevada"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 22,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 23,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "elevada"
+      ],
+      [
+        "edad",
+        "joven"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "normal"
+      ],
+      [
+        "azucar_sangre",
+        "normal"
+      ]
+    ],
+    "consecuente": "bajo"
+  }
+]

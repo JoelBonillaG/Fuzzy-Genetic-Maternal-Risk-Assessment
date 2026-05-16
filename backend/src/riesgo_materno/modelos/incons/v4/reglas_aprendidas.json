@@ -1,0 +1,700 @@
+[
+  {
+    "numero": 1,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "elevada"
+      ],
+      [
+        "presion_diastolica",
+        "hipertension"
+      ],
+      [
+        "edad",
+        "optima"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 2,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "diabetes_manifiesta"
+      ],
+      [
+        "presion_diastolica",
+        "hipertension"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 3,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "diabetes_manifiesta"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ],
+      [
+        "presion_diastolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 4,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "diabetes_manifiesta"
+      ],
+      [
+        "presion_diastolica",
+        "hipertension"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "bradicardia"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 5,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "diabetes_manifiesta"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 6,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 7,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ],
+      [
+        "presion_sistolica",
+        "hipotension"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 8,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ],
+      [
+        "presion_diastolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 9,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "bradicardia"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 10,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ],
+      [
+        "presion_diastolica",
+        "hipertension"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 11,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "presion_sistolica",
+        "hipotension"
+      ],
+      [
+        "temperatura_corporal",
+        "febricular"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 12,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "edad",
+        "adolescente"
+      ],
+      [
+        "temperatura_corporal",
+        "hiperpirexia"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 13,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 14,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "presion_sistolica",
+        "hipotension"
+      ],
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 15,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "elevada"
+      ],
+      [
+        "presion_diastolica",
+        "hipertension"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 16,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "elevada"
+      ],
+      [
+        "presion_diastolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "alto"
+  },
+  {
+    "numero": 17,
+    "antecedentes": [
+      [
+        "edad",
+        "optima"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ],
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 18,
+    "antecedentes": [
+      [
+        "edad",
+        "optima"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 19,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "edad",
+        "optima"
+      ],
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 20,
+    "antecedentes": [
+      [
+        "temperatura_corporal",
+        "fiebre"
+      ],
+      [
+        "edad",
+        "optima"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 21,
+    "antecedentes": [
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "elevada"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 22,
+    "antecedentes": [
+      [
+        "presion_diastolica",
+        "elevada"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "bradicardia"
+      ],
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ]
+    ],
+    "consecuente": "medio"
+  },
+  {
+    "numero": 23,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "hipotension"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "bradicardia"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 24,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "presion_diastolica",
+        "elevada"
+      ],
+      [
+        "edad",
+        "optima"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 25,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "presion_sistolica",
+        "hipotension"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "edad",
+        "adolescente"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 26,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "edad",
+        "muy_avanzada"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 27,
+    "antecedentes": [
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "edad",
+        "adolescente"
+      ],
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 28,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "edad",
+        "adolescente"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 29,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "presion_sistolica",
+        "hipotension"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 30,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "edad",
+        "optima"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "normal"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 31,
+    "antecedentes": [
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ],
+      [
+        "edad",
+        "optima"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 32,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "hipotension"
+      ],
+      [
+        "temperatura_corporal",
+        "normal"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 33,
+    "antecedentes": [
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "edad",
+        "adolescente"
+      ],
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "bradicardia"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 34,
+    "antecedentes": [
+      [
+        "edad",
+        "adolescente"
+      ],
+      [
+        "azucar_sangre",
+        "normoglucemia"
+      ],
+      [
+        "presion_sistolica",
+        "hipotension"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 35,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "temperatura_corporal",
+        "hiperpirexia"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 36,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ],
+      [
+        "frecuencia_cardiaca",
+        "bradicardia"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ]
+    ],
+    "consecuente": "bajo"
+  },
+  {
+    "numero": 37,
+    "antecedentes": [
+      [
+        "presion_sistolica",
+        "normal"
+      ],
+      [
+        "edad",
+        "avanzada"
+      ],
+      [
+        "presion_diastolica",
+        "normal"
+      ],
+      [
+        "azucar_sangre",
+        "hiperglucemia_gestacional"
+      ]
+    ],
+    "consecuente": "bajo"
+  }
+]

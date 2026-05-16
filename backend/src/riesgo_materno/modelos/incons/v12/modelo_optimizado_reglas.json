@@ -1,0 +1,1114 @@
+{
+  "ruta_csv": "C:\\Users\\josue\\Desktop\\Paper_Riesgo_Matenro\\Fuzzy-Genetic-Maternal-Risk-Assessment-App\\backend\\src\\riesgo_materno\\datos\\Maternal Health Risk Data Set.csv",
+  "cantidad_reglas_candidatas": 44,
+  "cromosoma": [
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0
+  ],
+  "indices_reglas_activas": [
+    0,
+    2,
+    3,
+    6,
+    9,
+    12,
+    14,
+    16,
+    17,
+    18,
+    21,
+    23,
+    24,
+    27,
+    29,
+    30,
+    34,
+    35,
+    36,
+    37,
+    40,
+    41,
+    42
+  ],
+  "numeros_reglas_activas": [
+    1,
+    3,
+    4,
+    7,
+    10,
+    13,
+    15,
+    17,
+    18,
+    19,
+    22,
+    24,
+    25,
+    28,
+    30,
+    31,
+    35,
+    36,
+    37,
+    38,
+    41,
+    42,
+    43
+  ],
+  "cantidad_reglas": 21,
+  "fitness": 0.6397587729790197,
+  "balanced_accuracy_entrenamiento": 0.6985499045712169,
+  "compacidad_entrenamiento": 0.4772727272727273,
+  "total_entrenamiento": 708,
+  "metricas_prueba": {
+    "balanced_accuracy": 0.5076510977040054,
+    "compacidad": 0.5227272727272727,
+    "cantidad_reglas": 23,
+    "fitness": 0.4561321791824415
+  },
+  "generaciones_ejecutadas": 124,
+  "historial": [
+    {
+      "generacion": 0,
+      "mejor_fitness": 0.6153906233981038,
+      "fitness_promedio": 0.5240900064474532,
+      "balanced_accuracy": 0.6776839097970472,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 1,
+      "mejor_fitness": 0.6201936855966629,
+      "fitness_promedio": 0.5296330606645357,
+      "balanced_accuracy": 0.6767589034988796,
+      "compacidad": 0.45454545454545453,
+      "cantidad_reglas": 20
+    },
+    {
+      "generacion": 2,
+      "mejor_fitness": 0.6201936855966629,
+      "fitness_promedio": 0.5372216389897015,
+      "balanced_accuracy": 0.6767589034988796,
+      "compacidad": 0.45454545454545453,
+      "cantidad_reglas": 20
+    },
+    {
+      "generacion": 3,
+      "mejor_fitness": 0.6232410584303298,
+      "fitness_promedio": 0.5409798397477519,
+      "balanced_accuracy": 0.67877049212762,
+      "compacidad": 0.4318181818181818,
+      "cantidad_reglas": 19
+    },
+    {
+      "generacion": 4,
+      "mejor_fitness": 0.6232410584303298,
+      "fitness_promedio": 0.5402314296828902,
+      "balanced_accuracy": 0.67877049212762,
+      "compacidad": 0.4318181818181818,
+      "cantidad_reglas": 19
+    },
+    {
+      "generacion": 5,
+      "mejor_fitness": 0.6232410584303298,
+      "fitness_promedio": 0.5404374797140641,
+      "balanced_accuracy": 0.67877049212762,
+      "compacidad": 0.4318181818181818,
+      "cantidad_reglas": 19
+    },
+    {
+      "generacion": 6,
+      "mejor_fitness": 0.6232410584303298,
+      "fitness_promedio": 0.5433262515767403,
+      "balanced_accuracy": 0.67877049212762,
+      "compacidad": 0.4318181818181818,
+      "cantidad_reglas": 19
+    },
+    {
+      "generacion": 7,
+      "mejor_fitness": 0.6232410584303298,
+      "fitness_promedio": 0.5463653260482427,
+      "balanced_accuracy": 0.67877049212762,
+      "compacidad": 0.4318181818181818,
+      "cantidad_reglas": 19
+    },
+    {
+      "generacion": 8,
+      "mejor_fitness": 0.63002956601577,
+      "fitness_promedio": 0.5501235351029276,
+      "balanced_accuracy": 0.6978780120740163,
+      "compacidad": 0.6590909090909091,
+      "cantidad_reglas": 29
+    },
+    {
+      "generacion": 9,
+      "mejor_fitness": 0.63002956601577,
+      "fitness_promedio": 0.5507697836761721,
+      "balanced_accuracy": 0.6978780120740163,
+      "compacidad": 0.6590909090909091,
+      "cantidad_reglas": 29
+    },
+    {
+      "generacion": 10,
+      "mejor_fitness": 0.63002956601577,
+      "fitness_promedio": 0.558168128412157,
+      "balanced_accuracy": 0.6978780120740163,
+      "compacidad": 0.6590909090909091,
+      "cantidad_reglas": 29
+    },
+    {
+      "generacion": 11,
+      "mejor_fitness": 0.63002956601577,
+      "fitness_promedio": 0.5574733674615487,
+      "balanced_accuracy": 0.6978780120740163,
+      "compacidad": 0.6590909090909091,
+      "cantidad_reglas": 29
+    },
+    {
+      "generacion": 12,
+      "mejor_fitness": 0.63002956601577,
+      "fitness_promedio": 0.5606683934867811,
+      "balanced_accuracy": 0.6978780120740163,
+      "compacidad": 0.6590909090909091,
+      "cantidad_reglas": 29
+    },
+    {
+      "generacion": 13,
+      "mejor_fitness": 0.63002956601577,
+      "fitness_promedio": 0.5678871797062421,
+      "balanced_accuracy": 0.6978780120740163,
+      "compacidad": 0.6590909090909091,
+      "cantidad_reglas": 29
+    },
+    {
+      "generacion": 14,
+      "mejor_fitness": 0.63002956601577,
+      "fitness_promedio": 0.5697188938478842,
+      "balanced_accuracy": 0.6978780120740163,
+      "compacidad": 0.6590909090909091,
+      "cantidad_reglas": 29
+    },
+    {
+      "generacion": 15,
+      "mejor_fitness": 0.632136932060246,
+      "fitness_promedio": 0.5670409948481127,
+      "balanced_accuracy": 0.6917230863792064,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 16,
+      "mejor_fitness": 0.632136932060246,
+      "fitness_promedio": 0.5681730506895889,
+      "balanced_accuracy": 0.6917230863792064,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 17,
+      "mejor_fitness": 0.632136932060246,
+      "fitness_promedio": 0.5681605283152553,
+      "balanced_accuracy": 0.6917230863792064,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 18,
+      "mejor_fitness": 0.632136932060246,
+      "fitness_promedio": 0.5618470034530706,
+      "balanced_accuracy": 0.6917230863792064,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 19,
+      "mejor_fitness": 0.6325270029822317,
+      "fitness_promedio": 0.5618150847433814,
+      "balanced_accuracy": 0.6921336873497177,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 20,
+      "mejor_fitness": 0.6325270029822317,
+      "fitness_promedio": 0.5567466265922134,
+      "balanced_accuracy": 0.6921336873497177,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 21,
+      "mejor_fitness": 0.6325270029822317,
+      "fitness_promedio": 0.5597247199078978,
+      "balanced_accuracy": 0.6921336873497177,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 22,
+      "mejor_fitness": 0.6325270029822317,
+      "fitness_promedio": 0.5575354346601114,
+      "balanced_accuracy": 0.6921336873497177,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 23,
+      "mejor_fitness": 0.6325270029822317,
+      "fitness_promedio": 0.5608495091126283,
+      "balanced_accuracy": 0.6921336873497177,
+      "compacidad": 0.5,
+      "cantidad_reglas": 22
+    },
+    {
+      "generacion": 24,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5641650394251514,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 25,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5651881425525079,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 26,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5643606314821018,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 27,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.564264244372148,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 28,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5630776493033485,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 29,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5606699439891737,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 30,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5573336655404506,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 31,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5531354732954687,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 32,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5540027260614566,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 33,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5565642383917363,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 34,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5604480730734152,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 35,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5589681211597214,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 36,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5513889108740209,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 37,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5548487942920673,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 38,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5588041059797281,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 39,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5621439869714361,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 40,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5602657243626399,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 41,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5633094478542283,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 42,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5624445504970765,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 43,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5613908474452061,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 44,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.555301530909425,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 45,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5578241024636258,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 46,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5654999720534417,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 47,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5673409226085379,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 48,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.564832497917298,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 49,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5624348079699331,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 50,
+      "mejor_fitness": 0.6351462808674672,
+      "fitness_promedio": 0.5557733691512523,
+      "balanced_accuracy": 0.6984793387121665,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 51,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5535432710687053,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 52,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5530976287573123,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 53,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.55685191314316,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 54,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5590514572839135,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 55,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5612560365325308,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 56,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5609965322725792,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 57,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5682092836302275,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 58,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.566503555781862,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 59,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5644391594882743,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 60,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5669258425545585,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 61,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5699860902840904,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 62,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.567113543391968,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 63,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.570554579495428,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 64,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5668389109119918,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 65,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5657404839311087,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 66,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5603031587205032,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 67,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5587838920556591,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 68,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5573645499616874,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 69,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5636625662876414,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 70,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5659957493132969,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 71,
+      "mejor_fitness": 0.6357845787398075,
+      "fitness_promedio": 0.5593563076065519,
+      "balanced_accuracy": 0.6991512312093668,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 72,
+      "mejor_fitness": 0.6376027605579895,
+      "fitness_promedio": 0.5624314991126208,
+      "balanced_accuracy": 0.6938880733146301,
+      "compacidad": 0.4318181818181818,
+      "cantidad_reglas": 19
+    },
+    {
+      "generacion": 73,
+      "mejor_fitness": 0.6379083538945579,
+      "fitness_promedio": 0.5608675570265469,
+      "balanced_accuracy": 0.7013867840038409,
+      "compacidad": 0.5681818181818182,
+      "cantidad_reglas": 25
+    },
+    {
+      "generacion": 74,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5670053259267359,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 75,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5643465400755923,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 76,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5661523100526352,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 77,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5629763830128972,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 78,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5647346118693893,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 79,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5623490467793489,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 80,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5602055375383789,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 81,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5637742467149504,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 82,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.559968933508455,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 83,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.556996213431207,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 84,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5594325391726451,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 85,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5616336577943938,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 86,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5563366441461453,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 87,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5535718648973762,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 88,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5540239128561003,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 89,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5565200843864553,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 90,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5583917730800221,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 91,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5534058958314823,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 92,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5596443984617241,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 93,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5614265257264016,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 94,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5655856087185667,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 95,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.56849537773039,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 96,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5702444134602168,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 97,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5695585158023357,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 98,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.566777577956089,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 99,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5679570269456462,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 100,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5657043811356174,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 101,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5639684030174689,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 102,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5647275487375066,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 103,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5701258268725904,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 104,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5691745174282483,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 105,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5703535184944702,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 106,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5730201228509437,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 107,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5752882237532075,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 108,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5748597440839489,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 109,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5714997249010669,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 110,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5700320483422299,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 111,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5669332096242479,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 112,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.569743624311683,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 113,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5681963008781142,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 114,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5662147619340536,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 115,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.566638778868301,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 116,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5690539502612015,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 117,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5689364851621241,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 118,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5701104954324844,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 119,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5666909851085852,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 120,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5624257037330678,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 121,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5673573971616017,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 122,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5721429860403904,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 123,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5692452662479238,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    },
+    {
+      "generacion": 124,
+      "mejor_fitness": 0.6397587729790197,
+      "fitness_promedio": 0.5686647047309422,
+      "balanced_accuracy": 0.6985499045712169,
+      "compacidad": 0.4772727272727273,
+      "cantidad_reglas": 21
+    }
+  ]
+}

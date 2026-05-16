@@ -1,0 +1,49 @@
+{
+  "ruta_reglas_unicas": "C:\\Users\\Joel\\Desktop\\Universidad\\Septimo Semestre\\Inteligencia Artificial\\Proyecto-Paper\\Fuzzy-Genetic-Maternal-Risk-Assessment\\backend\\limpieza\\resultados_limpieza\\reglas_unicas_ripper_por_iteracion",
+  "ruta_salida": "C:\\Users\\Joel\\Desktop\\Universidad\\Septimo Semestre\\Inteligencia Artificial\\Proyecto-Paper\\Fuzzy-Genetic-Maternal-Risk-Assessment\\backend\\limpieza\\resultados_limpieza\\reglas_unicas_ripper_por_iteracion\\seleccion_mejores_por_precision\\resultados",
+  "total_reglas_evaluadas": 59,
+  "reglas_por_clase_objetivo": {
+    "low risk": 123,
+    "mid risk": 123,
+    "high risk": 122
+  },
+  "reglas_por_clase_final": {
+    "low risk": 27,
+    "mid risk": 10,
+    "high risk": 22
+  },
+  "metricas_finales": {
+    "accuracy": 0.6175889328063241,
+    "balanced_accuracy": 0.6045930748537037,
+    "error_clasificacion": 0.3824110671936759,
+    "error_balanceado": 0.3954069251462963,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk"
+      ],
+      "matriz": [
+        [
+          298,
+          104,
+          2
+        ],
+        [
+          139,
+          180,
+          17
+        ],
+        [
+          38,
+          87,
+          147
+        ]
+      ]
+    }
+  },
+  "archivos": {
+    "ranking_csv": "C:\\Users\\Joel\\Desktop\\Universidad\\Septimo Semestre\\Inteligencia Artificial\\Proyecto-Paper\\Fuzzy-Genetic-Maternal-Risk-Assessment\\backend\\limpieza\\resultados_limpieza\\reglas_unicas_ripper_por_iteracion\\seleccion_mejores_por_precision\\resultados\\ranking_reglas_ripper_por_precision.csv",
+    "conjunto_final": "C:\\Users\\Joel\\Desktop\\Universidad\\Septimo Semestre\\Inteligencia Artificial\\Proyecto-Paper\\Fuzzy-Genetic-Maternal-Risk-Assessment\\backend\\limpieza\\resultados_limpieza\\reglas_unicas_ripper_por_iteracion\\seleccion_mejores_por_precision\\resultados\\mejores_ripper_por_precision.json"
+  }
+}
