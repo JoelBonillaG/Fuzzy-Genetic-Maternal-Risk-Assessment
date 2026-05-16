@@ -48,6 +48,10 @@ class EvaluacionRegla:
     aciertos: int
     errores: int
     cobertura: int
+    calidad_local: float = 0.0
+    aporte_clase: float = 0.0
+    confusion_otras_clases: float = 0.0
+    penalizacion_duplicado: float = 0.0
 
 
 @dataclass
@@ -97,6 +101,8 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
                 poblacion=poblacion_actual,
                 codificacion=codificacion,
                 df_discretizado=df_discretizado,
+                pertenencias_fuzzy=pertenencias_fuzzy,
+                parametros=parametros,
             )
         return estado["cache_fitness"][clave][int(indice_solucion)].fitness
 
@@ -107,6 +113,8 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
                 poblacion=poblacion,
                 codificacion=codificacion,
                 df_discretizado=df_discretizado,
+                pertenencias_fuzzy=pertenencias_fuzzy,
+                parametros=parametros,
             )
         return estado["cache_fitness"][clave]
 
@@ -339,12 +347,28 @@ def evaluar_poblacion_por_recall_precision(
     poblacion,
     codificacion,
     df_discretizado,
+    pertenencias_fuzzy=None,
+    parametros=None,
 ):
-    """Evalua cada regla como recall_de_su_clase * precision."""
-    return evaluar_poblacion_local(
+    """Evalua cada regla con fitness local o compuesto, segun parametros."""
+    evaluaciones = evaluar_poblacion_local(
         poblacion=poblacion,
         df_discretizado=df_discretizado,
         codificacion=codificacion,
+    )
+    parametros = parametros or {}
+    if not parametros.get("usar_fitness_compuesto", False):
+        return evaluaciones
+    if pertenencias_fuzzy is None:
+        return evaluaciones
+
+    return aplicar_fitness_compuesto(
+        poblacion=poblacion,
+        evaluaciones=evaluaciones,
+        codificacion=codificacion,
+        df_discretizado=df_discretizado,
+        pertenencias_fuzzy=pertenencias_fuzzy,
+        parametros=parametros,
     )
 
 
@@ -415,6 +439,92 @@ def regla_tiene_cobertura(cromosoma, codificacion, pertenencias_fuzzy, df_discre
     )
 
 
+def calcular_activacion_fuzzy_regla(cromosoma, codificacion, pertenencias_fuzzy):
+    antecedentes = decodificar_antecedentes(cromosoma, codificacion)
+    if antecedentes is None:
+        cantidad = len(next(iter(next(iter(pertenencias_fuzzy.values())).values())))
+        return np.zeros(cantidad, dtype=float)
+
+    cantidad = len(next(iter(next(iter(pertenencias_fuzzy.values())).values())))
+    activacion = np.ones(cantidad, dtype=float)
+    for variable, categoria in antecedentes:
+        activacion = np.minimum(activacion, pertenencias_fuzzy[variable][categoria])
+    return activacion
+
+
+def aplicar_fitness_compuesto(
+    poblacion,
+    evaluaciones,
+    codificacion,
+    df_discretizado,
+    pertenencias_fuzzy,
+    parametros,
+):
+    """Alinea el fitness individual con la separacion fuzzy global por clase."""
+    peso_local = float(parametros.get("peso_calidad_local", 0.45))
+    peso_aporte = float(parametros.get("peso_aporte_clase", 0.35))
+    peso_confusion = float(parametros.get("peso_confusion_otras_clases", 0.15))
+    peso_duplicado = float(parametros.get("peso_penalizacion_duplicado", 0.005))
+
+    clases_reales = df_discretizado["riesgo"].to_numpy(dtype=object)
+    conteo_duplicados = contar_claves_cromosomas(poblacion, codificacion)
+    evaluaciones_compuestas = []
+
+    for cromosoma, evaluacion_local in zip(poblacion, evaluaciones):
+        clase = decodificar_clase(cromosoma, codificacion)
+        if clase is None:
+            evaluaciones_compuestas.append(evaluacion_local)
+            continue
+
+        activacion = calcular_activacion_fuzzy_regla(cromosoma, codificacion, pertenencias_fuzzy)
+        mascara_clase = clases_reales == clase
+        mascara_otras = clases_reales != clase
+
+        aporte_clase = float(np.mean(activacion[mascara_clase])) if np.any(mascara_clase) else 0.0
+        confusion_otras = float(np.mean(activacion[mascara_otras])) if np.any(mascara_otras) else 0.0
+
+        clave = clave_cromosoma(cromosoma, codificacion)
+        repeticiones = conteo_duplicados.get(clave, 1)
+        penalizacion_duplicado = float((repeticiones - 1) / repeticiones) if repeticiones > 1 else 0.0
+
+        calidad_local = float(evaluacion_local.fitness)
+        fitness = (
+            peso_local * calidad_local
+            + peso_aporte * aporte_clase
+            - peso_confusion * confusion_otras
+            - peso_duplicado * penalizacion_duplicado
+        )
+
+        evaluaciones_compuestas.append(
+            EvaluacionRegla(
+                fitness=max(FITNESS_MINIMO_RULETA, float(fitness)),
+                aciertos=evaluacion_local.aciertos,
+                errores=evaluacion_local.errores,
+                cobertura=evaluacion_local.cobertura,
+                calidad_local=calidad_local,
+                aporte_clase=aporte_clase,
+                confusion_otras_clases=confusion_otras,
+                penalizacion_duplicado=penalizacion_duplicado,
+            )
+        )
+
+    return evaluaciones_compuestas
+
+
+def contar_claves_cromosomas(poblacion, codificacion):
+    conteo = {}
+    for cromosoma in poblacion:
+        clave = clave_cromosoma(cromosoma, codificacion)
+        conteo[clave] = conteo.get(clave, 0) + 1
+    return conteo
+
+
+def clave_cromosoma(cromosoma, codificacion):
+    antecedentes = decodificar_antecedentes(cromosoma, codificacion)
+    clase = decodificar_clase(cromosoma, codificacion)
+    return (tuple(antecedentes) if antecedentes is not None else None, clase)
+
+
 def generar_cromosoma_aleatorio_con_cobertura(
     codificacion,
     pertenencias_fuzzy,
@@ -469,6 +579,7 @@ def evaluar_regla_local(individuo, df_discretizado, codificacion):
         aciertos=aciertos,
         errores=errores,
         cobertura=cobertura,
+        calidad_local=fitness,
     )
 
 
@@ -522,11 +633,19 @@ def construir_fila_historial(
     fitness = [evaluacion.fitness for evaluacion in evaluaciones]
     aciertos = [evaluacion.aciertos for evaluacion in evaluaciones]
     errores = [evaluacion.errores for evaluacion in evaluaciones]
+    calidad_local = [evaluacion.calidad_local for evaluacion in evaluaciones]
+    aporte_clase = [evaluacion.aporte_clase for evaluacion in evaluaciones]
+    confusion = [evaluacion.confusion_otras_clases for evaluacion in evaluaciones]
+    duplicados = [evaluacion.penalizacion_duplicado for evaluacion in evaluaciones]
     return {
         "generacion": int(generacion),
         "balanced_accuracy_global": float(balanced_accuracy),
         "fitness_promedio_reglas": float(np.mean(fitness)) if fitness else 0.0,
         "fitness_mejor_regla": float(np.max(fitness)) if fitness else 0.0,
+        "calidad_local_promedio": float(np.mean(calidad_local)) if calidad_local else 0.0,
+        "aporte_clase_promedio": float(np.mean(aporte_clase)) if aporte_clase else 0.0,
+        "confusion_otras_clases_promedio": float(np.mean(confusion)) if confusion else 0.0,
+        "penalizacion_duplicado_promedio": float(np.mean(duplicados)) if duplicados else 0.0,
         "aciertos_promedio_regla": float(np.mean(aciertos)) if aciertos else 0.0,
         "errores_promedio_regla": float(np.mean(errores)) if errores else 0.0,
         "intentos_invalidos_descartados_generacion": int(invalidas_descartadas),

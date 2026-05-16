@@ -44,7 +44,7 @@ CONFIGURACION_EXPERIMENTO = {
     "iteraciones": 20,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
-    "metrica_principal": "accuracy",
+    "metrica_principal": "balanced_accuracy",
 
     "ripper": {
         "k": 2,
@@ -70,6 +70,11 @@ CONFIGURACION_EXPERIMENTO = {
         "probabilidad_cruce": 0.90,
         "probabilidad_mutacion": 0.08,
         "elitismo": 12,
+        "usar_fitness_compuesto": True,
+        "peso_calidad_local": 0.45,
+        "peso_aporte_clase": 0.35,
+        "peso_confusion_otras_clases": 0.15,
+        "peso_penalizacion_duplicado": 0.005,
     },
 }
 
