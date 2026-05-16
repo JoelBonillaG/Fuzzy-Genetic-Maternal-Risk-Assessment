@@ -16,12 +16,17 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 import pygad
-from sklearn.metrics import balanced_accuracy_score
+import skfuzzy as fuzz
 
 from ...entrenamiento.datos import convertir_split_a_diccionario
 from ...entrenamiento.ripper import _discretizar
 from ...logica_difusa.motor import SistemaDifusoMamdani
-from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES, ETIQUETAS_RIESGO, VARIABLES_ENTRADA
+from ...logica_difusa.variables import (
+    ESPECIFICACIONES_VARIABLES,
+    ETIQUETAS_RIESGO,
+    PUNTOS_GRAFICA,
+    VARIABLES_ENTRADA,
+)
 
 
 BITS_POR_CAMPO = 3
@@ -50,7 +55,13 @@ def ejecutar_ag_pittsburgh_michigan(
     """Evoluciona una base fija de reglas completas mediante PyGAD."""
     df_discretizado = pd.DataFrame(_discretizar(tabla)).rename(columns={"clase": "riesgo"})
     codificacion = construir_codificacion()
-    poblacion_inicial = inicializar_poblacion(df_discretizado, parametros, codificacion)
+    pertenencias_fuzzy = construir_pertenencias_fuzzy(tabla, membresias)
+    poblacion_inicial = inicializar_poblacion(
+        df_discretizado,
+        pertenencias_fuzzy,
+        parametros,
+        codificacion,
+    )
     cache_evaluaciones = {}
     historial = []
     mejor_resultado = None
@@ -65,6 +76,8 @@ def ejecutar_ag_pittsburgh_michigan(
                 membresias=membresias,
                 parametros=parametros,
                 codificacion=codificacion,
+                df_discretizado=df_discretizado,
+                pertenencias_fuzzy=pertenencias_fuzzy,
             )
         return cache_evaluaciones[clave]
 
@@ -83,6 +96,7 @@ def ejecutar_ag_pittsburgh_michigan(
         return mutar_descendencia_michigan(
             descendencia=descendencia,
             df_discretizado=df_discretizado,
+            pertenencias_fuzzy=pertenencias_fuzzy,
             parametros=parametros,
             codificacion=codificacion,
         )
@@ -180,20 +194,26 @@ def construir_codificacion():
     }
 
 
-def inicializar_poblacion(df_discretizado, parametros, codificacion):
+def inicializar_poblacion(df_discretizado, pertenencias_fuzzy, parametros, codificacion):
     poblacion = []
     for _ in range(parametros["tamano_poblacion"]):
-        poblacion.append(generar_cromosoma_inicial(parametros, codificacion))
+        poblacion.append(generar_cromosoma_inicial(parametros, codificacion, df_discretizado, pertenencias_fuzzy))
     return np.asarray(poblacion, dtype=int)
 
 
-def generar_cromosoma_inicial(parametros, codificacion):
-    """Genera un cromosoma binario 100% aleatorio con reglas validas."""
+def generar_cromosoma_inicial(parametros, codificacion, df_discretizado, pertenencias_fuzzy):
+    """Genera un cromosoma binario aleatorio con reglas validas y cobertura."""
     genes = []
     cantidad_reglas = parametros["reglas_por_individuo"]
 
     for _ in range(cantidad_reglas):
-        genes.extend(generar_regla_binaria_valida(codificacion).tolist())
+        genes.extend(
+            generar_regla_binaria_aleatoria_con_cobertura(
+                codificacion,
+                df_discretizado,
+                pertenencias_fuzzy,
+            ).tolist()
+        )
 
     return np.asarray(genes, dtype=int)
 
@@ -221,7 +241,7 @@ def cruzar_por_bloques_regla(padres, tamano_descendencia, probabilidad_cruce, re
     return descendencia
 
 
-def mutar_descendencia_michigan(descendencia, df_discretizado, parametros, codificacion):
+def mutar_descendencia_michigan(descendencia, df_discretizado, pertenencias_fuzzy, parametros, codificacion):
     descendencia = np.asarray(descendencia, dtype=int).copy()
     cantidad_reglas = parametros["reglas_por_individuo"]
 
@@ -231,23 +251,35 @@ def mutar_descendencia_michigan(descendencia, df_discretizado, parametros, codif
         for indice_regla in range(cantidad_reglas):
             if np.random.random() < parametros["probabilidad_mutacion"]:
                 mutar_gen_regla(matriz[indice_regla], codificacion, forzar=False)
-                if decodificar_regla_binaria(matriz[indice_regla], codificacion) is None:
-                    matriz[indice_regla] = generar_regla_binaria_valida(codificacion)
+                if not regla_tiene_cobertura(matriz[indice_regla], codificacion, df_discretizado, pertenencias_fuzzy):
+                    matriz[indice_regla] = generar_regla_binaria_aleatoria_con_cobertura(
+                        codificacion,
+                        df_discretizado,
+                        pertenencias_fuzzy,
+                    )
 
         if np.random.random() < parametros["probabilidad_reemplazo"]:
             reemplazar_reglas_malas(
                 matriz=matriz,
                 df_discretizado=df_discretizado,
+                pertenencias_fuzzy=pertenencias_fuzzy,
                 parametros=parametros,
                 codificacion=codificacion,
             )
+
+        reparar_reglas_sin_cobertura(
+            matriz=matriz,
+            codificacion=codificacion,
+            df_discretizado=df_discretizado,
+            pertenencias_fuzzy=pertenencias_fuzzy,
+        )
 
         descendencia[indice_hijo] = matriz.reshape(-1)
 
     return descendencia
 
 
-def reemplazar_reglas_malas(matriz, df_discretizado, parametros, codificacion):
+def reemplazar_reglas_malas(matriz, df_discretizado, pertenencias_fuzzy, parametros, codificacion):
     calidades = evaluar_calidad_reglas_codificadas(matriz, df_discretizado, codificacion)
     cantidad_reemplazos = max(1, int(len(matriz) * parametros["fraccion_reemplazo"]))
     peores = np.argsort(calidades)[:cantidad_reemplazos]
@@ -257,8 +289,12 @@ def reemplazar_reglas_malas(matriz, df_discretizado, parametros, codificacion):
         indice_bueno = int(np.random.choice(mejores))
         matriz[indice_malo] = matriz[indice_bueno].copy()
         mutar_gen_regla(matriz[indice_malo], codificacion, forzar=True)
-        if decodificar_regla_binaria(matriz[indice_malo], codificacion) is None:
-            matriz[indice_malo] = generar_regla_binaria_valida(codificacion)
+        if not regla_tiene_cobertura(matriz[indice_malo], codificacion, df_discretizado, pertenencias_fuzzy):
+            matriz[indice_malo] = generar_regla_binaria_aleatoria_con_cobertura(
+                codificacion,
+                df_discretizado,
+                pertenencias_fuzzy,
+            )
 
 
 def mutar_gen_regla(regla_codificada, codificacion, forzar=False):
@@ -300,13 +336,32 @@ def evaluar_calidad_reglas_codificadas(matriz, df_discretizado, codificacion):
     return np.asarray(calidades, dtype=float)
 
 
-def evaluar_cromosoma(cromosoma, tabla, membresias, parametros, codificacion):
+def evaluar_cromosoma(
+    cromosoma,
+    tabla,
+    membresias,
+    parametros,
+    codificacion,
+    df_discretizado,
+    pertenencias_fuzzy,
+):
     cromosoma = np.asarray(cromosoma, dtype=int).copy()
+    cromosoma = reparar_cromosoma_sin_cobertura(
+        cromosoma,
+        parametros,
+        codificacion,
+        df_discretizado,
+        pertenencias_fuzzy,
+    )
     reglas = decodificar_cromosoma(cromosoma, codificacion)
     datos = convertir_split_a_diccionario(tabla)
-    sistema = SistemaDifusoMamdani(membresias, reglas=reglas)
+    sistema = SistemaDifusoMamdani(membresias, reglas=reglas, permitir_neutro=False)
     inferencia = sistema.inferir_lote(datos["entradas"])
-    ba = float(balanced_accuracy_score(datos["riesgos"], inferencia["riesgos"]))
+    ba = balanced_accuracy_con_sin_activacion_invalida(
+        reales=datos["riesgos"],
+        predichos=inferencia["riesgos"],
+        sin_activacion=inferencia["sin_activacion"],
+    )
     duplicados = contar_duplicados(reglas)
     proporcion_duplicados = duplicados / len(reglas) if reglas else 0.0
     fitness = (
@@ -350,6 +405,90 @@ def generar_regla_binaria_valida(codificacion):
     return np.asarray(bits, dtype=int)
 
 
+def generar_regla_binaria_aleatoria_con_cobertura(
+    codificacion,
+    df_discretizado,
+    pertenencias_fuzzy,
+    max_intentos=10000,
+):
+    for _ in range(max_intentos):
+        regla = generar_regla_binaria_valida(codificacion)
+        if regla_tiene_cobertura(regla, codificacion, df_discretizado, pertenencias_fuzzy):
+            return regla
+    raise RuntimeError(
+        "No se pudo generar una regla aleatoria con cobertura fuzzy y discreta "
+        f"despues de {max_intentos} intentos."
+    )
+
+
+def reparar_cromosoma_sin_cobertura(cromosoma, parametros, codificacion, df_discretizado, pertenencias_fuzzy):
+    matriz = np.asarray(cromosoma, dtype=int).reshape(parametros["reglas_por_individuo"], BITS_POR_REGLA).copy()
+    reparar_reglas_sin_cobertura(matriz, codificacion, df_discretizado, pertenencias_fuzzy)
+    return matriz.reshape(-1)
+
+
+def reparar_reglas_sin_cobertura(matriz, codificacion, df_discretizado, pertenencias_fuzzy):
+    for indice_regla, regla_codificada in enumerate(matriz):
+        if regla_tiene_cobertura(regla_codificada, codificacion, df_discretizado, pertenencias_fuzzy):
+            continue
+        matriz[indice_regla] = generar_regla_binaria_aleatoria_con_cobertura(
+            codificacion,
+            df_discretizado,
+            pertenencias_fuzzy,
+        )
+
+
+def regla_tiene_cobertura(regla_codificada, codificacion, df_discretizado, pertenencias_fuzzy):
+    return (
+        regla_tiene_cobertura_discreta(regla_codificada, codificacion, df_discretizado)
+        and regla_tiene_cobertura_fuzzy(regla_codificada, codificacion, pertenencias_fuzzy)
+    )
+
+
+def regla_tiene_cobertura_discreta(regla_codificada, codificacion, df_discretizado):
+    regla_decodificada = decodificar_regla_binaria(regla_codificada, codificacion)
+    if regla_decodificada is None:
+        return False
+
+    antecedentes, _ = regla_decodificada
+    cubiertos = df_discretizado
+    for variable, categoria in antecedentes:
+        cubiertos = cubiertos[cubiertos[variable] == categoria]
+        if cubiertos.empty:
+            return False
+    return True
+
+
+def regla_tiene_cobertura_fuzzy(regla_codificada, codificacion, pertenencias_fuzzy):
+    regla_decodificada = decodificar_regla_binaria(regla_codificada, codificacion)
+    if regla_decodificada is None:
+        return False
+
+    antecedentes, _ = regla_decodificada
+    cantidad = len(next(iter(next(iter(pertenencias_fuzzy.values())).values())))
+    activacion = np.ones(cantidad, dtype=float)
+    for variable, categoria in antecedentes:
+        activacion = np.minimum(activacion, pertenencias_fuzzy[variable][categoria])
+    return bool(np.any(activacion > 0.0))
+
+
+def construir_pertenencias_fuzzy(tabla, membresias):
+    datos = convertir_split_a_diccionario(tabla)
+    pertenencias = {}
+    for variable in VARIABLES_ENTRADA:
+        minimo, maximo = ESPECIFICACIONES_VARIABLES[variable]["limites"]
+        universo = np.linspace(minimo, maximo, PUNTOS_GRAFICA)
+        valores = np.asarray(datos["entradas"][variable], dtype=float)
+        pertenencias[variable] = {}
+        for categoria, puntos in membresias[variable].items():
+            curva = fuzz.trapmf(universo, puntos)
+            pertenencias[variable][categoria] = np.asarray(
+                [fuzz.interp_membership(universo, curva, valor) for valor in valores],
+                dtype=float,
+            )
+    return pertenencias
+
+
 def decodificar_regla_binaria(regla_codificada, codificacion):
     regla_codificada = np.asarray(regla_codificada, dtype=int)
     antecedentes = []
@@ -375,6 +514,22 @@ def indice_a_bits(indice):
 
 def bits_a_indice(bits):
     return int("".join(str(int(bit)) for bit in bits), 2)
+
+
+def balanced_accuracy_con_sin_activacion_invalida(reales, predichos, sin_activacion):
+    reales = np.asarray(reales)
+    predichos = np.asarray(predichos, dtype=object).copy()
+    predichos[np.asarray(sin_activacion, dtype=bool)] = "__sin_activacion__"
+
+    recalls = []
+    for clase in ETIQUETAS_RIESGO:
+        mascara_clase = reales == clase
+        total_clase = int(np.sum(mascara_clase))
+        if total_clase == 0:
+            continue
+        verdaderos_positivos = int(np.sum(predichos[mascara_clase] == clase))
+        recalls.append(verdaderos_positivos / total_clase)
+    return float(np.mean(recalls)) if recalls else 0.0
 
 def contar_duplicados(reglas):
     claves = []

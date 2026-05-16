@@ -16,7 +16,7 @@ class SistemaDifusoMamdani:
     Flujo: fusificacion -> evaluacion de reglas -> desfusificacion (centroide).
     """
 
-    def __init__(self, membresias_entrada, reglas=None):
+    def __init__(self, membresias_entrada, reglas=None, permitir_neutro=True):
         """Inicializa el motor con las membresias dadas y un subconjunto opcional de reglas activas.
 
         Entradas:
@@ -27,8 +27,11 @@ class SistemaDifusoMamdani:
                                                "antecedentes": [(variable, categoria), ...],
                                                "consecuente": "bajo" | "medio" | "alto"}
                                 Si es None, usa REGLAS (todas las reglas candidatas del JSON).
+            permitir_neutro:    si True, los casos sin activacion devuelven puntaje 50.
+                                si False, devuelven NaN para contarlos como no clasificados.
         """
         self.membresias_entrada = membresias_entrada
+        self.permitir_neutro = permitir_neutro
         if reglas is None:
             from .reglas import REGLAS
 
@@ -190,6 +193,8 @@ class SistemaDifusoMamdani:
             salida_agregada = np.fmax(salida_agregada, salida_recortada)
 
         if float(np.max(salida_agregada)) == 0.0:
+            if not self.permitir_neutro:
+                return np.nan
             return self.puntaje_neutro
 
         return float(fuzz.defuzz(self.universo_salida, salida_agregada, "centroid"))

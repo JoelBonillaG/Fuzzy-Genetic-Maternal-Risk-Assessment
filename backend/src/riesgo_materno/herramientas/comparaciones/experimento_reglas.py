@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix
 
 from ...entrenamiento.datos import cargar_dataset, convertir_split_a_diccionario
 from ...entrenamiento.modelo import RUTA_CSV
@@ -36,6 +36,7 @@ RUTA_BASE = Path(__file__).resolve().parent
 RUTA_RESULTADOS = RUTA_BASE / "resultados"
 
 CLASES = ["low risk", "mid risk", "high risk"]
+CLASE_SIN_ACTIVACION = "__sin_activacion__"
 CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "alto"}
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 
@@ -44,7 +45,7 @@ CONFIGURACION_EXPERIMENTO = {
     "iteraciones": 5,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
-    "metrica_principal": "accuracy",
+    "metrica_principal": "balanced_accuracy",
     "fitness": {
         "peso_balanced_accuracy": 0.98,
         "penalizacion_duplicados": 0.02,
@@ -272,7 +273,11 @@ def evaluar_y_guardar(
 
 def evaluar_reglas(reglas, tabla):
     datos = convertir_split_a_diccionario(tabla)
-    sistema = SistemaDifusoMamdani(construir_membresias_base(), reglas=reglas)
+    sistema = SistemaDifusoMamdani(
+        construir_membresias_base(),
+        reglas=reglas,
+        permitir_neutro=False,
+    )
     inferencia = sistema.inferir_lote(datos["entradas"])
     return construir_metricas_desde_predicciones(
         reales=datos["riesgos"],
@@ -283,11 +288,16 @@ def evaluar_reglas(reglas, tabla):
 
 
 def construir_metricas_desde_predicciones(reales, predichos, puntajes, sin_activacion):
+    predichos = np.asarray(predichos, dtype=object).copy()
+    predichos[np.asarray(sin_activacion, dtype=bool)] = CLASE_SIN_ACTIVACION
+
     correctas = int(np.sum(reales == predichos))
     total = int(len(reales))
+    etiquetas_matriz = CLASES + [CLASE_SIN_ACTIVACION]
     accuracy = float(accuracy_score(reales, predichos))
-    matriz = confusion_matrix(reales, predichos, labels=CLASES).tolist()
-    balanced_accuracy = float(balanced_accuracy_score(reales, predichos))
+    matriz = confusion_matrix(reales, predichos, labels=etiquetas_matriz).tolist()
+    balanced_accuracy = balanced_accuracy_con_clases_reales(reales, predichos)
+    desviacion_puntajes = desviacion_estandar_sin_nan(puntajes)
     return {
         "accuracy": accuracy,
         "error_clasificacion": float(1.0 - accuracy),
@@ -296,14 +306,34 @@ def construir_metricas_desde_predicciones(reales, predichos, puntajes, sin_activ
         "total": total,
         "balanced_accuracy": balanced_accuracy,
         "error_balanceado": float(1.0 - balanced_accuracy),
-        "desviacion_estandar_puntajes": float(np.std(puntajes, ddof=1)),
+        "desviacion_estandar_puntajes": desviacion_puntajes,
         "cobertura": float(1.0 - np.mean(sin_activacion)),
         "instancias_sin_activacion": int(np.sum(sin_activacion)),
         "matriz_confusion": {
-            "etiquetas": CLASES,
+            "etiquetas": etiquetas_matriz,
             "matriz": matriz,
         },
     }
+
+
+def balanced_accuracy_con_clases_reales(reales, predichos):
+    recalls = []
+    for clase in CLASES:
+        mascara_clase = reales == clase
+        total_clase = int(np.sum(mascara_clase))
+        if total_clase == 0:
+            continue
+        verdaderos_positivos = int(np.sum(predichos[mascara_clase] == clase))
+        recalls.append(verdaderos_positivos / total_clase)
+    return float(np.mean(recalls)) if recalls else 0.0
+
+
+def desviacion_estandar_sin_nan(puntajes):
+    puntajes_validos = np.asarray(puntajes, dtype=float)
+    puntajes_validos = puntajes_validos[~np.isnan(puntajes_validos)]
+    if len(puntajes_validos) <= 1:
+        return 0.0
+    return float(np.std(puntajes_validos, ddof=1))
 
 
 def construir_membresias_base():
