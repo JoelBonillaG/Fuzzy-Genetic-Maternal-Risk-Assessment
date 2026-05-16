@@ -206,16 +206,39 @@ def generar_cromosoma_inicial(parametros, codificacion, df_discretizado, pertene
     genes = []
     cantidad_reglas = parametros["reglas_por_individuo"]
 
-    for _ in range(cantidad_reglas):
+    if parametros.get("balancear_consecuentes_por_clase", True):
+        cuotas = calcular_cuotas_por_clase(cantidad_reglas, codificacion["clases"])
+        clases_objetivo = [
+            clase
+            for clase, cantidad_clase in cuotas.items()
+            for _ in range(cantidad_clase)
+        ]
+        np.random.shuffle(clases_objetivo)
+    else:
+        clases_objetivo = [None] * cantidad_reglas
+
+    for clase_objetivo in clases_objetivo:
         genes.extend(
             generar_regla_binaria_aleatoria_con_cobertura(
-                codificacion,
-                df_discretizado,
-                pertenencias_fuzzy,
+                codificacion=codificacion,
+                df_discretizado=df_discretizado,
+                pertenencias_fuzzy=pertenencias_fuzzy,
+                clase_objetivo=clase_objetivo,
             ).tolist()
         )
 
     return np.asarray(genes, dtype=int)
+
+
+def calcular_cuotas_por_clase(cantidad, clases):
+    cantidad = int(cantidad)
+    clases = list(clases)
+    base = cantidad // len(clases)
+    sobrante = cantidad % len(clases)
+    return {
+        clase: base + (1 if indice < sobrante else 0)
+        for indice, clase in enumerate(clases)
+    }
 
 
 def cruzar_por_bloques_regla(padres, tamano_descendencia, probabilidad_cruce, reglas_por_individuo):
@@ -244,6 +267,7 @@ def cruzar_por_bloques_regla(padres, tamano_descendencia, probabilidad_cruce, re
 def mutar_descendencia_michigan(descendencia, df_discretizado, pertenencias_fuzzy, parametros, codificacion):
     descendencia = np.asarray(descendencia, dtype=int).copy()
     cantidad_reglas = parametros["reglas_por_individuo"]
+    balancear_clases = parametros.get("balancear_consecuentes_por_clase", True)
 
     for indice_hijo in range(descendencia.shape[0]):
         matriz = descendencia[indice_hijo].reshape(cantidad_reglas, BITS_POR_REGLA).copy()
@@ -253,9 +277,10 @@ def mutar_descendencia_michigan(descendencia, df_discretizado, pertenencias_fuzz
                 mutar_gen_regla(matriz[indice_regla], codificacion, forzar=False)
                 if not regla_tiene_cobertura(matriz[indice_regla], codificacion, df_discretizado, pertenencias_fuzzy):
                     matriz[indice_regla] = generar_regla_binaria_aleatoria_con_cobertura(
-                        codificacion,
-                        df_discretizado,
-                        pertenencias_fuzzy,
+                        codificacion=codificacion,
+                        df_discretizado=df_discretizado,
+                        pertenencias_fuzzy=pertenencias_fuzzy,
+                        clase_objetivo=decodificar_clase_regla(matriz[indice_regla], codificacion),
                     )
 
         if np.random.random() < parametros["probabilidad_reemplazo"]:
@@ -273,6 +298,13 @@ def mutar_descendencia_michigan(descendencia, df_discretizado, pertenencias_fuzz
             df_discretizado=df_discretizado,
             pertenencias_fuzzy=pertenencias_fuzzy,
         )
+        if balancear_clases:
+            reparar_balance_clases(
+                matriz=matriz,
+                codificacion=codificacion,
+                df_discretizado=df_discretizado,
+                pertenencias_fuzzy=pertenencias_fuzzy,
+            )
 
         descendencia[indice_hijo] = matriz.reshape(-1)
 
@@ -291,29 +323,29 @@ def reemplazar_reglas_malas(matriz, df_discretizado, pertenencias_fuzzy, paramet
         mutar_gen_regla(matriz[indice_malo], codificacion, forzar=True)
         if not regla_tiene_cobertura(matriz[indice_malo], codificacion, df_discretizado, pertenencias_fuzzy):
             matriz[indice_malo] = generar_regla_binaria_aleatoria_con_cobertura(
-                codificacion,
-                df_discretizado,
-                pertenencias_fuzzy,
+                codificacion=codificacion,
+                df_discretizado=df_discretizado,
+                pertenencias_fuzzy=pertenencias_fuzzy,
+                clase_objetivo=decodificar_clase_regla(matriz[indice_malo], codificacion),
             )
 
 
 def mutar_gen_regla(regla_codificada, codificacion, forzar=False):
-    """Muta solo antecedentes; el consecuente no se modifica por mutacion."""
+    """Muta solo antecedentes cambiando una categoria completa valida."""
     indice_variable = int(np.random.randint(0, len(VARIABLES_ENTRADA)))
     inicio = indice_variable * BITS_POR_CAMPO
     fin = inicio + BITS_POR_CAMPO
-    mutar_bloque_bits(regla_codificada[inicio:fin], forzar=forzar)
-
-
-def mutar_bloque_bits(bloque, forzar=False):
-    if forzar:
-        posicion = int(np.random.randint(0, len(bloque)))
-        bloque[posicion] = 1 - bloque[posicion]
+    variable = VARIABLES_ENTRADA[indice_variable]
+    categorias = codificacion["categorias_por_variable"][variable]
+    indice_actual = bits_a_indice(regla_codificada[inicio:fin])
+    indices_validos = list(range(len(categorias)))
+    if indice_actual in indices_validos and len(indices_validos) > 1:
+        indices_validos.remove(indice_actual)
+    if not indices_validos:
         return
-    mascara = np.random.random(size=len(bloque)) < (1.0 / len(bloque))
-    if not mascara.any():
-        mascara[int(np.random.randint(0, len(bloque)))] = True
-    bloque[mascara] = 1 - bloque[mascara]
+
+    nuevo_indice = int(np.random.choice(indices_validos))
+    regla_codificada[inicio:fin] = indice_a_bits(nuevo_indice)
 
 def evaluar_calidad_reglas_codificadas(matriz, df_discretizado, codificacion):
     calidades = []
@@ -395,12 +427,15 @@ def decodificar_cromosoma(cromosoma, codificacion):
     return reglas
 
 
-def generar_regla_binaria_valida(codificacion):
+def generar_regla_binaria_valida(codificacion, clase_objetivo=None):
     bits = []
     for variable in VARIABLES_ENTRADA:
         indice = int(np.random.randint(0, len(codificacion["categorias_por_variable"][variable])))
         bits.extend(indice_a_bits(indice))
-    indice_clase = int(np.random.randint(0, len(codificacion["clases"])))
+    if clase_objetivo is None:
+        indice_clase = int(np.random.randint(0, len(codificacion["clases"])))
+    else:
+        indice_clase = int(codificacion["indice_por_clase"][clase_objetivo])
     bits.extend(indice_a_bits(indice_clase))
     return np.asarray(bits, dtype=int)
 
@@ -409,10 +444,11 @@ def generar_regla_binaria_aleatoria_con_cobertura(
     codificacion,
     df_discretizado,
     pertenencias_fuzzy,
+    clase_objetivo=None,
     max_intentos=10000,
 ):
     for _ in range(max_intentos):
-        regla = generar_regla_binaria_valida(codificacion)
+        regla = generar_regla_binaria_valida(codificacion, clase_objetivo=clase_objetivo)
         if regla_tiene_cobertura(regla, codificacion, df_discretizado, pertenencias_fuzzy):
             return regla
     raise RuntimeError(
@@ -424,6 +460,8 @@ def generar_regla_binaria_aleatoria_con_cobertura(
 def reparar_cromosoma_sin_cobertura(cromosoma, parametros, codificacion, df_discretizado, pertenencias_fuzzy):
     matriz = np.asarray(cromosoma, dtype=int).reshape(parametros["reglas_por_individuo"], BITS_POR_REGLA).copy()
     reparar_reglas_sin_cobertura(matriz, codificacion, df_discretizado, pertenencias_fuzzy)
+    if parametros.get("balancear_consecuentes_por_clase", True):
+        reparar_balance_clases(matriz, codificacion, df_discretizado, pertenencias_fuzzy)
     return matriz.reshape(-1)
 
 
@@ -432,9 +470,40 @@ def reparar_reglas_sin_cobertura(matriz, codificacion, df_discretizado, pertenen
         if regla_tiene_cobertura(regla_codificada, codificacion, df_discretizado, pertenencias_fuzzy):
             continue
         matriz[indice_regla] = generar_regla_binaria_aleatoria_con_cobertura(
-            codificacion,
-            df_discretizado,
-            pertenencias_fuzzy,
+            codificacion=codificacion,
+            df_discretizado=df_discretizado,
+            pertenencias_fuzzy=pertenencias_fuzzy,
+            clase_objetivo=decodificar_clase_regla(regla_codificada, codificacion),
+        )
+
+
+def reparar_balance_clases(matriz, codificacion, df_discretizado, pertenencias_fuzzy):
+    cuotas = calcular_cuotas_por_clase(len(matriz), codificacion["clases"])
+    indices_por_clase = {clase: [] for clase in codificacion["clases"]}
+    indices_invalidos = []
+
+    for indice, regla_codificada in enumerate(matriz):
+        clase = decodificar_clase_regla(regla_codificada, codificacion)
+        if clase not in indices_por_clase:
+            indices_invalidos.append(indice)
+            continue
+        indices_por_clase[clase].append(indice)
+
+    indices_reemplazables = list(indices_invalidos)
+    faltantes = []
+    for clase in codificacion["clases"]:
+        indices = indices_por_clase[clase]
+        exceso = max(0, len(indices) - cuotas[clase])
+        if exceso:
+            indices_reemplazables.extend(indices[-exceso:])
+        faltantes.extend([clase] * max(0, cuotas[clase] - len(indices)))
+
+    for indice, clase_objetivo in zip(indices_reemplazables, faltantes):
+        matriz[indice] = generar_regla_binaria_aleatoria_con_cobertura(
+            codificacion=codificacion,
+            df_discretizado=df_discretizado,
+            pertenencias_fuzzy=pertenencias_fuzzy,
+            clase_objetivo=clase_objetivo,
         )
 
 
@@ -442,6 +511,7 @@ def regla_tiene_cobertura(regla_codificada, codificacion, df_discretizado, perte
     return (
         regla_tiene_cobertura_discreta(regla_codificada, codificacion, df_discretizado)
         and regla_tiene_cobertura_fuzzy(regla_codificada, codificacion, pertenencias_fuzzy)
+        and regla_tiene_cobertura_de_su_clase(regla_codificada, codificacion, df_discretizado, pertenencias_fuzzy)
     )
 
 
@@ -464,12 +534,36 @@ def regla_tiene_cobertura_fuzzy(regla_codificada, codificacion, pertenencias_fuz
     if regla_decodificada is None:
         return False
 
+    activacion = calcular_activacion_fuzzy_regla(regla_codificada, codificacion, pertenencias_fuzzy)
+    return bool(np.any(activacion > 0.0))
+
+
+def regla_tiene_cobertura_de_su_clase(regla_codificada, codificacion, df_discretizado, pertenencias_fuzzy):
+    regla_decodificada = decodificar_regla_binaria(regla_codificada, codificacion)
+    if regla_decodificada is None:
+        return False
+
+    _, clase = regla_decodificada
+    activacion = calcular_activacion_fuzzy_regla(regla_codificada, codificacion, pertenencias_fuzzy)
+    clases_reales = df_discretizado["riesgo"].to_numpy(dtype=object)
+    mascara_clase = clases_reales == clase
+    if not np.any(mascara_clase):
+        return False
+    return bool(np.any(activacion[mascara_clase] > 0.0))
+
+
+def calcular_activacion_fuzzy_regla(regla_codificada, codificacion, pertenencias_fuzzy):
+    regla_decodificada = decodificar_regla_binaria(regla_codificada, codificacion)
+    if regla_decodificada is None:
+        cantidad = len(next(iter(next(iter(pertenencias_fuzzy.values())).values())))
+        return np.zeros(cantidad, dtype=float)
+
     antecedentes, _ = regla_decodificada
     cantidad = len(next(iter(next(iter(pertenencias_fuzzy.values())).values())))
     activacion = np.ones(cantidad, dtype=float)
     for variable, categoria in antecedentes:
         activacion = np.minimum(activacion, pertenencias_fuzzy[variable][categoria])
-    return bool(np.any(activacion > 0.0))
+    return activacion
 
 
 def construir_pertenencias_fuzzy(tabla, membresias):
@@ -506,6 +600,15 @@ def decodificar_regla_binaria(regla_codificada, codificacion):
     if indice_clase >= len(codificacion["clases"]):
         return None
     return antecedentes, codificacion["clases"][indice_clase]
+
+
+def decodificar_clase_regla(regla_codificada, codificacion):
+    regla_codificada = np.asarray(regla_codificada, dtype=int)
+    inicio_clase = len(VARIABLES_ENTRADA) * BITS_POR_CAMPO
+    indice_clase = bits_a_indice(regla_codificada[inicio_clase : inicio_clase + BITS_POR_CAMPO])
+    if indice_clase >= len(codificacion["clases"]):
+        return None
+    return codificacion["clases"][indice_clase]
 
 
 def indice_a_bits(indice):
