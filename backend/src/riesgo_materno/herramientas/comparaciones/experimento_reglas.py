@@ -1,7 +1,7 @@
 """Comparacion experimental de RIPPER, PRISM y AG Pittsburgh-Michigan.
 
-El experimento usa el dataset completo, sin particiones train/test. Todas las
-reglas generadas conservan los seis antecedentes clinicos.
+El experimento usa particion 70/30 estratificada. Los algoritmos aprenden solo
+con entrenamiento y las reglas finales se reportan en entrenamiento y prueba.
 
 Uso:
     python -m riesgo_materno.herramientas.comparaciones.experimento_reglas
@@ -17,7 +17,12 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, confusion_matrix
 
-from ...entrenamiento.datos import cargar_dataset, convertir_split_a_diccionario
+from ...entrenamiento.datos import (
+    cargar_dataset,
+    convertir_split_a_diccionario,
+    dividir_entrenamiento_prueba,
+    resumir_splits,
+)
 from ...entrenamiento.modelo import RUTA_CSV
 from ...entrenamiento.prism import aprender_reglas_prism as aprender_prism
 from ...entrenamiento.ripper import aprender_reglas_ripper as aprender_ripper
@@ -41,10 +46,12 @@ CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "al
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 
 CONFIGURACION_EXPERIMENTO = {
-    "id_experimento": "comparacion_reglas_riesgo_materno_dataset_completo",
+    "id_experimento": "comparacion_reglas_riesgo_materno_split_70_30",
     "iteraciones": 5,
     "clases": CLASES,
-    "estrategia_datos": "dataset_completo_sin_splits",
+    "estrategia_datos": "split_70_30_estratificado",
+    "proporcion_entrenamiento": 0.70,
+    "semilla_base": 42,
     "metrica_principal": "balanced_accuracy",
     "fitness": {
         "peso_balanced_accuracy": 0.98,
@@ -91,18 +98,22 @@ def ejecutar_experimento(config):
     tabla = cargar_dataset(RUTA_CSV)
     resultados = []
 
-    print("Dataset completo")
-    print(f"  Instancias evaluadas: {len(tabla)}")
-    print("  Estrategia: sin split entrenamiento/prueba")
+    print("Dataset con split 70/30 estratificado")
+    print(f"  Instancias totales: {len(tabla)}")
+    print("  Estrategia: entrenamiento 70% / prueba 30%")
 
     for iteracion in range(1, config["iteraciones"] + 1):
         print(f"\nIteracion {iteracion:02d}")
         ruta_iteracion = RUTA_RESULTADOS / f"iteracion_{iteracion:02d}"
         ruta_iteracion.mkdir(parents=True, exist_ok=True)
+        semilla = int(config["semilla_base"]) + iteracion - 1
+        splits = dividir_entrenamiento_prueba(tabla, semilla=semilla)
+        resumen_split = resumir_splits(splits)
+        print(f"  Split  | semilla={semilla} train={len(splits['entrenamiento'])} test={len(splits['prueba'])}")
 
-        resultados.append(ejecutar_ripper(iteracion, tabla, ruta_iteracion, config))
-        resultados.append(ejecutar_prism(iteracion, tabla, ruta_iteracion, config))
-        resultados.append(ejecutar_ag(iteracion, tabla, ruta_iteracion, config))
+        resultados.append(ejecutar_ripper(iteracion, splits, resumen_split, ruta_iteracion, config, semilla))
+        resultados.append(ejecutar_prism(iteracion, splits, resumen_split, ruta_iteracion, config, semilla))
+        resultados.append(ejecutar_ag(iteracion, splits, resumen_split, ruta_iteracion, config, semilla))
 
     resumen = construir_resumen_final(resultados)
     guardar_csv_seguro(pd.DataFrame(resumen["tabla_resumen"]), RUTA_RESULTADOS / "resumen_final.csv")
@@ -111,10 +122,12 @@ def ejecutar_experimento(config):
     return resumen
 
 
-def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
+def ejecutar_ripper(iteracion, splits, resumen_split, ruta_iteracion, config, semilla):
+    entrenamiento = splits["entrenamiento"]
+    prueba = splits["prueba"]
     inicio = time.perf_counter()
     reglas = aprender_ripper(
-        tabla,
+        entrenamiento,
         orden_clases=CLASES,
         parametros=traducir_parametros_ripper(config["ripper"]),
     )
@@ -124,45 +137,53 @@ def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
         iteracion=iteracion,
         algoritmo="RIPPER",
         reglas=reglas,
-        tabla=tabla,
+        tabla_entrenamiento=entrenamiento,
+        tabla_prueba=prueba,
+        resumen_split=resumen_split,
         ruta=ruta_iteracion / "ripper.json",
         hiperparametros=config["ripper"],
         tiempo_entrenamiento_ms=tiempo_ms,
         config_fitness=config["fitness"],
+        semilla=semilla,
     )
     print(
         f"  RIPPER | reglas={len(reglas)} | "
-        f"accuracy={resultado['metricas']['accuracy']:.4f} | "
-        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
-        f"error={resultado['metricas']['error_clasificacion']:.4f} | "
-        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
-        f"fitness={resultado['metricas']['fitness']:.4f}"
+        f"acc_train={resultado['metricas_entrenamiento']['accuracy']:.4f} | "
+        f"ba_train={resultado['metricas_entrenamiento']['balanced_accuracy']:.4f} | "
+        f"acc_test={resultado['metricas_prueba']['accuracy']:.4f} | "
+        f"ba_test={resultado['metricas_prueba']['balanced_accuracy']:.4f} | "
+        f"fitness_test={resultado['metricas_prueba']['fitness']:.4f}"
     )
     return resultado
 
 
-def ejecutar_prism(iteracion, tabla, ruta_iteracion, config):
+def ejecutar_prism(iteracion, splits, resumen_split, ruta_iteracion, config, semilla):
+    entrenamiento = splits["entrenamiento"]
+    prueba = splits["prueba"]
     inicio = time.perf_counter()
-    reglas = aprender_prism_estocastico(tabla, config["prism"])
+    reglas = aprender_prism_estocastico(entrenamiento, config["prism"])
     asignar_origen(reglas, "PRISM_ESTOCASTICO")
     tiempo_ms = medir_ms(inicio)
     resultado = evaluar_y_guardar(
         iteracion=iteracion,
         algoritmo="PRISM_ESTOCASTICO",
         reglas=reglas,
-        tabla=tabla,
+        tabla_entrenamiento=entrenamiento,
+        tabla_prueba=prueba,
+        resumen_split=resumen_split,
         ruta=ruta_iteracion / "prism.json",
         hiperparametros=config["prism"],
         tiempo_entrenamiento_ms=tiempo_ms,
         config_fitness=config["fitness"],
+        semilla=semilla,
     )
     print(
         f"  PRISM  | modo=bootstrap | reglas={len(reglas)} | "
-        f"accuracy={resultado['metricas']['accuracy']:.4f} | "
-        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
-        f"error={resultado['metricas']['error_clasificacion']:.4f} | "
-        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
-        f"fitness={resultado['metricas']['fitness']:.4f}"
+        f"acc_train={resultado['metricas_entrenamiento']['accuracy']:.4f} | "
+        f"ba_train={resultado['metricas_entrenamiento']['balanced_accuracy']:.4f} | "
+        f"acc_test={resultado['metricas_prueba']['accuracy']:.4f} | "
+        f"ba_test={resultado['metricas_prueba']['balanced_accuracy']:.4f} | "
+        f"fitness_test={resultado['metricas_prueba']['fitness']:.4f}"
     )
     return resultado
 
@@ -178,11 +199,13 @@ def aprender_prism_estocastico(tabla, config):
     return aprender_prism(muestra, config)
 
 
-def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
+def ejecutar_ag(iteracion, splits, resumen_split, ruta_iteracion, config, semilla):
+    entrenamiento = splits["entrenamiento"]
+    prueba = splits["prueba"]
     inicio = time.perf_counter()
     print("  AG-PM  | evolucionando base completa de reglas...")
     mejor, historial = ejecutar_ag_pittsburgh_michigan(
-        tabla=tabla,
+        tabla=entrenamiento,
         membresias=construir_membresias_base(),
         parametros=config["ag_pittsburgh_michigan"],
     )
@@ -193,11 +216,14 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
         iteracion=iteracion,
         algoritmo="AG_PITTSBURGH_MICHIGAN",
         reglas=reglas,
-        tabla=tabla,
+        tabla_entrenamiento=entrenamiento,
+        tabla_prueba=prueba,
+        resumen_split=resumen_split,
         ruta=ruta_iteracion / "genetic_algorithm.json",
         hiperparametros=config["ag_pittsburgh_michigan"],
         tiempo_entrenamiento_ms=tiempo_ms,
         config_fitness=config["fitness"],
+        semilla=semilla,
         extra={
             "historial_ag": resumir_historial_ag(historial),
             "mejor_individuo_ag": {
@@ -215,11 +241,11 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
     )
     print(
         f"  AG-PM  | reglas={len(reglas)} | "
-        f"accuracy={resultado['metricas']['accuracy']:.4f} | "
-        f"ba={resultado['metricas']['balanced_accuracy']:.4f} | "
-        f"error={resultado['metricas']['error_clasificacion']:.4f} | "
-        f"error_ba={resultado['metricas']['error_balanceado']:.4f} | "
-        f"fitness={resultado['metricas']['fitness']:.4f} | "
+        f"acc_train={resultado['metricas_entrenamiento']['accuracy']:.4f} | "
+        f"ba_train={resultado['metricas_entrenamiento']['balanced_accuracy']:.4f} | "
+        f"acc_test={resultado['metricas_prueba']['accuracy']:.4f} | "
+        f"ba_test={resultado['metricas_prueba']['balanced_accuracy']:.4f} | "
+        f"fitness_test={resultado['metricas_prueba']['fitness']:.4f} | "
         f"duplicados={resultado['resumen_reglas']['reglas_duplicadas']}"
     )
     return resultado
@@ -229,35 +255,45 @@ def evaluar_y_guardar(
     iteracion,
     algoritmo,
     reglas,
-    tabla,
+    tabla_entrenamiento,
+    tabla_prueba,
+    resumen_split,
     ruta,
     hiperparametros,
     tiempo_entrenamiento_ms,
     config_fitness,
+    semilla,
     extra=None,
 ):
     inicio_inferencia = time.perf_counter()
-    metricas = evaluar_reglas(reglas, tabla)
+    metricas_entrenamiento = evaluar_reglas(reglas, tabla_entrenamiento)
+    metricas_prueba = evaluar_reglas(reglas, tabla_prueba)
     tiempo_inferencia_ms = medir_ms(inicio_inferencia)
     resumen_reglas = resumir_reglas(reglas)
-    metricas["fitness"] = calcular_fitness(
-        balanced_accuracy=metricas["balanced_accuracy"],
-        duplicados=resumen_reglas["reglas_duplicadas"],
-        total_reglas=resumen_reglas["total_reglas"],
-        config_fitness=config_fitness,
-    )
+    agregar_fitness(metricas_entrenamiento, resumen_reglas, config_fitness)
+    agregar_fitness(metricas_prueba, resumen_reglas, config_fitness)
+    matriz_entrenamiento = metricas_entrenamiento.pop("matriz_confusion")
+    matriz_prueba = metricas_prueba.pop("matriz_confusion")
     resultado = {
         "id_experimento": CONFIGURACION_EXPERIMENTO["id_experimento"],
         "iteracion": int(iteracion),
         "algoritmo": algoritmo,
         "datos": {
-            "estrategia": "dataset_completo_sin_splits",
-            "total_instancias": int(len(tabla)),
+            "estrategia": CONFIGURACION_EXPERIMENTO["estrategia_datos"],
+            "semilla_split": int(semilla),
+            "total_instancias": int(len(tabla_entrenamiento) + len(tabla_prueba)),
+            "instancias_entrenamiento": int(len(tabla_entrenamiento)),
+            "instancias_prueba": int(len(tabla_prueba)),
+            "resumen_splits": resumen_split.to_dict(orient="records"),
         },
         "hiperparametros": hiperparametros,
         "resumen_reglas": resumen_reglas,
-        "metricas": metricas,
-        "matriz_confusion": metricas.pop("matriz_confusion"),
+        "metricas": metricas_prueba,
+        "metricas_entrenamiento": metricas_entrenamiento,
+        "metricas_prueba": metricas_prueba,
+        "matriz_confusion_entrenamiento": matriz_entrenamiento,
+        "matriz_confusion_prueba": matriz_prueba,
+        "matriz_confusion": matriz_prueba,
         "reglas_finales": [regla_a_formato_comun(regla, i) for i, regla in enumerate(reglas, start=1)],
         "tiempos": {
             "entrenamiento_ms": int(tiempo_entrenamiento_ms),
@@ -375,6 +411,15 @@ def calcular_fitness(balanced_accuracy, duplicados, total_reglas, config_fitness
     )
 
 
+def agregar_fitness(metricas, resumen_reglas, config_fitness):
+    metricas["fitness"] = calcular_fitness(
+        balanced_accuracy=metricas["balanced_accuracy"],
+        duplicados=resumen_reglas["reglas_duplicadas"],
+        total_reglas=resumen_reglas["total_reglas"],
+        config_fitness=config_fitness,
+    )
+
+
 def traducir_parametros_ripper(parametros):
     return {
         "k": parametros["k"],
@@ -386,24 +431,33 @@ def construir_resumen_final(resultados):
     filas = []
     for algoritmo in sorted({r["algoritmo"] for r in resultados}):
         grupo = [r for r in resultados if r["algoritmo"] == algoritmo]
-        accuracies = [r["metricas"]["accuracy"] for r in grupo]
-        errores = [r["metricas"]["error_clasificacion"] for r in grupo]
-        errores_balanceados = [r["metricas"]["error_balanceado"] for r in grupo]
-        fitness = [r["metricas"]["fitness"] for r in grupo]
-        ba = [r["metricas"]["balanced_accuracy"] for r in grupo]
+        accuracies_test = [r["metricas_prueba"]["accuracy"] for r in grupo]
+        errores_test = [r["metricas_prueba"]["error_clasificacion"] for r in grupo]
+        errores_balanceados_test = [r["metricas_prueba"]["error_balanceado"] for r in grupo]
+        fitness_test = [r["metricas_prueba"]["fitness"] for r in grupo]
+        ba_test = [r["metricas_prueba"]["balanced_accuracy"] for r in grupo]
+        accuracies_train = [r["metricas_entrenamiento"]["accuracy"] for r in grupo]
+        ba_train = [r["metricas_entrenamiento"]["balanced_accuracy"] for r in grupo]
+        fitness_train = [r["metricas_entrenamiento"]["fitness"] for r in grupo]
         filas.append(
             {
                 "algoritmo": algoritmo,
-                "accuracy_promedio": promedio(accuracies),
-                "accuracy_desviacion_estandar": desviacion(accuracies),
-                "error_promedio": promedio(errores),
-                "error_desviacion_estandar": desviacion(errores),
-                "error_balanceado_promedio": promedio(errores_balanceados),
-                "error_balanceado_desviacion_estandar": desviacion(errores_balanceados),
-                "balanced_accuracy_promedio": promedio(ba),
-                "balanced_accuracy_desviacion_estandar": desviacion(ba),
-                "fitness_promedio": promedio(fitness),
-                "fitness_desviacion_estandar": desviacion(fitness),
+                "accuracy_train_promedio": promedio(accuracies_train),
+                "accuracy_train_desviacion_estandar": desviacion(accuracies_train),
+                "balanced_accuracy_train_promedio": promedio(ba_train),
+                "balanced_accuracy_train_desviacion_estandar": desviacion(ba_train),
+                "fitness_train_promedio": promedio(fitness_train),
+                "fitness_train_desviacion_estandar": desviacion(fitness_train),
+                "accuracy_test_promedio": promedio(accuracies_test),
+                "accuracy_test_desviacion_estandar": desviacion(accuracies_test),
+                "error_test_promedio": promedio(errores_test),
+                "error_test_desviacion_estandar": desviacion(errores_test),
+                "error_balanceado_test_promedio": promedio(errores_balanceados_test),
+                "error_balanceado_test_desviacion_estandar": desviacion(errores_balanceados_test),
+                "balanced_accuracy_test_promedio": promedio(ba_test),
+                "balanced_accuracy_test_desviacion_estandar": desviacion(ba_test),
+                "fitness_test_promedio": promedio(fitness_test),
+                "fitness_test_desviacion_estandar": desviacion(fitness_test),
                 "reglas_promedio": promedio([r["resumen_reglas"]["total_reglas"] for r in grupo]),
                 "duplicados_promedio": promedio([r["resumen_reglas"]["reglas_duplicadas"] for r in grupo]),
                 "tiempo_total_ms_promedio": promedio([r["tiempos"]["total_ms"] for r in grupo]),
@@ -420,12 +474,15 @@ def mejores_iteraciones(resultados, funcion):
     salida = {}
     for algoritmo in sorted({r["algoritmo"] for r in resultados}):
         grupo = [r for r in resultados if r["algoritmo"] == algoritmo]
-        elegido = funcion(grupo, key=lambda r: r["metricas"]["accuracy"])
+        elegido = funcion(grupo, key=lambda r: r["metricas_prueba"]["balanced_accuracy"])
         salida[algoritmo] = {
             "iteracion": elegido["iteracion"],
-            "accuracy": elegido["metricas"]["accuracy"],
-            "error_clasificacion": elegido["metricas"]["error_clasificacion"],
-            "fitness": elegido["metricas"]["fitness"],
+            "accuracy_train": elegido["metricas_entrenamiento"]["accuracy"],
+            "balanced_accuracy_train": elegido["metricas_entrenamiento"]["balanced_accuracy"],
+            "accuracy_test": elegido["metricas_prueba"]["accuracy"],
+            "balanced_accuracy_test": elegido["metricas_prueba"]["balanced_accuracy"],
+            "error_clasificacion_test": elegido["metricas_prueba"]["error_clasificacion"],
+            "fitness_test": elegido["metricas_prueba"]["fitness"],
         }
     return salida
 
