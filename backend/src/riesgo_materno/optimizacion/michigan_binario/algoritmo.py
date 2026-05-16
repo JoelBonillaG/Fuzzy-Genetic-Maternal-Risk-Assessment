@@ -72,21 +72,21 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
     pertenencias_fuzzy = construir_pertenencias_fuzzy(tabla, membresias)
     cantidad_reglas = int(parametros["reglas_por_poblacion"])
     cantidad_padres = normalizar_cantidad_padres(parametros)
+    balancear_clases = bool(parametros.get("balancear_consecuentes_por_clase", True))
 
     poblacion_inicial, descartes_iniciales = inicializar_poblacion_pygad(
         cantidad=cantidad_reglas,
         codificacion=codificacion,
-    )
-    poblacion_inicial, reparadas_iniciales = reparar_reglas_sin_cobertura(
-        poblacion=poblacion_inicial,
-        codificacion=codificacion,
         pertenencias_fuzzy=pertenencias_fuzzy,
         df_discretizado=df_discretizado,
+        balancear_clases=balancear_clases,
     )
+    reparadas_iniciales = 0
 
     estado = {
         "descartes_generacion": int(descartes_iniciales),
         "reparadas_sin_cobertura_generacion": int(reparadas_iniciales),
+        "reparadas_balance_clases_generacion": 0,
         "mejor_resultado": None,
         "generaciones_sin_mejora": 0,
         "historial": [],
@@ -128,7 +128,7 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
         while len(estado["cache_fitness"]) > maximo:
             estado["cache_fitness"].pop(next(iter(estado["cache_fitness"])))
 
-    def crossover_single_point(padres, tamano_descendencia, instancia_ga):
+    def crossover_por_bloques(padres, tamano_descendencia, instancia_ga):
         descendencia = np.empty(tamano_descendencia, dtype=int)
         for indice_hijo in range(tamano_descendencia[0]):
             padre_a = padres[indice_hijo % padres.shape[0]]
@@ -136,19 +136,19 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
             if np.random.random() >= float(parametros["probabilidad_cruce"]):
                 descendencia[indice_hijo] = padre_a.copy()
                 continue
-            punto = int(np.random.randint(1, BITS_POR_REGLA))
-            descendencia[indice_hijo] = np.concatenate([padre_a[:punto], padre_b[punto:]])
+            descendencia[indice_hijo] = cruzar_campos_completos(padre_a, padre_b)
         return descendencia
 
-    def mutacion_bit_flip(descendencia, instancia_ga):
+    def mutacion_por_categoria(descendencia, instancia_ga):
         descendencia = np.asarray(descendencia, dtype=int).copy()
         descartes = 0
         for indice_hijo in range(descendencia.shape[0]):
-            mascara = np.zeros(BITS_POR_REGLA, dtype=bool)
-            mascara[:BITS_ANTECEDENTES] = (
-                np.random.random(size=BITS_ANTECEDENTES) < float(parametros["probabilidad_mutacion"])
+            descendencia[indice_hijo], mutaciones_descartadas = mutar_antecedentes_validos(
+                cromosoma=descendencia[indice_hijo],
+                codificacion=codificacion,
+                probabilidad_mutacion=float(parametros["probabilidad_mutacion"]),
             )
-            descendencia[indice_hijo, mascara] = 1 - descendencia[indice_hijo, mascara]
+            descartes += mutaciones_descartadas
             if decodificar_antecedentes(descendencia[indice_hijo], codificacion) is None:
                 descartes += 1
                 descendencia[indice_hijo] = generar_cromosoma_valido_directo(
@@ -169,6 +169,15 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
             df_discretizado=df_discretizado,
         )
         estado["reparadas_sin_cobertura_generacion"] = int(reparadas)
+        reparadas_balance = 0
+        if balancear_clases:
+            descendencia, reparadas_balance = reparar_balance_clases(
+                poblacion=descendencia,
+                codificacion=codificacion,
+                pertenencias_fuzzy=pertenencias_fuzzy,
+                df_discretizado=df_discretizado,
+            )
+        estado["reparadas_balance_clases_generacion"] = int(reparadas_balance)
         return descendencia
 
     def registrar_generacion(generacion, poblacion):
@@ -183,6 +192,7 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
             balanced_accuracy=balanced_accuracy,
             invalidas_descartadas=estado["descartes_generacion"],
             reparadas_sin_cobertura=estado["reparadas_sin_cobertura_generacion"],
+            reparadas_balance_clases=estado["reparadas_balance_clases_generacion"],
         )
         estado["historial"].append(fila)
         print(
@@ -190,7 +200,8 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
             f"ba={balanced_accuracy:.4f} "
             f"fitness_promedio_regla={fila['fitness_promedio_reglas']:.4f} "
             f"descartes_invalidos_gen={estado['descartes_generacion']} "
-            f"reparadas_sin_cobertura={estado['reparadas_sin_cobertura_generacion']}"
+            f"reparadas_sin_cobertura={estado['reparadas_sin_cobertura_generacion']} "
+            f"reparadas_balance_clases={estado['reparadas_balance_clases_generacion']}"
         )
         if progress_callback is not None:
             progress_callback(fila)
@@ -220,6 +231,16 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
         )
         instancia_ga.population = poblacion_reparada
         estado["reparadas_sin_cobertura_generacion"] = int(reparadas)
+        reparadas_balance = 0
+        if balancear_clases:
+            poblacion_balanceada, reparadas_balance = reparar_balance_clases(
+                poblacion=instancia_ga.population,
+                codificacion=codificacion,
+                pertenencias_fuzzy=pertenencias_fuzzy,
+                df_discretizado=df_discretizado,
+            )
+            instancia_ga.population = poblacion_balanceada
+        estado["reparadas_balance_clases_generacion"] = int(reparadas_balance)
         registrar_generacion(instancia_ga.generations_completed, instancia_ga.population)
         if estado["generaciones_sin_mejora"] >= int(parametros["paciencia"]):
             return "stop"
@@ -228,16 +249,18 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
     registrar_generacion(0, poblacion_inicial)
     estado["descartes_generacion"] = 0
     estado["reparadas_sin_cobertura_generacion"] = 0
+    estado["reparadas_balance_clases_generacion"] = 0
 
     instancia_ga = pygad.GA(
         initial_population=poblacion_inicial,
         num_parents_mating=cantidad_padres,
         fitness_func=fitness_func,
         num_generations=int(parametros["maximo_generaciones"]),
-        parent_selection_type="rws",
+        parent_selection_type="tournament",
+        K_tournament=int(parametros.get("tamano_torneo", 3)),
         keep_elitism=int(parametros["elitismo"]),
-        crossover_type=crossover_single_point,
-        mutation_type=mutacion_bit_flip,
+        crossover_type=crossover_por_bloques,
+        mutation_type=mutacion_por_categoria,
         gene_type=int,
         gene_space=[0, 1],
         on_generation=on_generation,
@@ -260,25 +283,92 @@ def construir_codificacion():
     }
 
 
-def inicializar_poblacion_pygad(cantidad, codificacion):
+def inicializar_poblacion_pygad(
+    cantidad,
+    codificacion,
+    pertenencias_fuzzy,
+    df_discretizado,
+    balancear_clases=True,
+):
     poblacion = []
     descartes = 0
-    while len(poblacion) < cantidad:
-        cromosoma = generar_cromosoma_valido_directo(codificacion)
-        poblacion.append(cromosoma)
+    if balancear_clases:
+        cuotas = calcular_cuotas_por_clase(cantidad, codificacion["clases"])
+        for clase, cantidad_clase in cuotas.items():
+            for _ in range(cantidad_clase):
+                cromosoma = generar_cromosoma_aleatorio_con_cobertura(
+                    codificacion=codificacion,
+                    pertenencias_fuzzy=pertenencias_fuzzy,
+                    df_discretizado=df_discretizado,
+                    clase_objetivo=clase,
+                )
+                poblacion.append(cromosoma)
+    else:
+        while len(poblacion) < cantidad:
+            cromosoma = generar_cromosoma_aleatorio_con_cobertura(
+                codificacion=codificacion,
+                pertenencias_fuzzy=pertenencias_fuzzy,
+                df_discretizado=df_discretizado,
+            )
+            poblacion.append(cromosoma)
     np.random.shuffle(poblacion)
     return np.asarray(poblacion, dtype=int), descartes
 
 
-def generar_cromosoma_valido_directo(codificacion):
+def calcular_cuotas_por_clase(cantidad, clases):
+    cantidad = int(cantidad)
+    clases = list(clases)
+    base = cantidad // len(clases)
+    sobrante = cantidad % len(clases)
+    return {
+        clase: base + (1 if indice < sobrante else 0)
+        for indice, clase in enumerate(clases)
+    }
+
+
+def generar_cromosoma_valido_directo(codificacion, clase_objetivo=None):
     bits = []
     for variable in VARIABLES_ENTRADA:
         categorias = codificacion["categorias_por_variable"][variable]
         indice = int(np.random.randint(0, len(categorias)))
         bits.extend(indice_a_bits(indice))
-    clase = str(np.random.choice(codificacion["clases"]))
+    clase = clase_objetivo if clase_objetivo is not None else str(np.random.choice(codificacion["clases"]))
     bits.extend(indice_a_bits_clase(codificacion["clases"].index(clase)))
     return np.asarray(bits, dtype=int)
+
+
+def cruzar_campos_completos(padre_a, padre_b):
+    """Cruza cromosomas copiando campos completos de 3 bits."""
+    hijo = np.asarray(padre_a, dtype=int).copy()
+    for inicio in range(0, BITS_POR_REGLA, BITS_POR_GEN):
+        fin = inicio + BITS_POR_GEN
+        if np.random.random() < 0.5:
+            hijo[inicio:fin] = padre_b[inicio:fin]
+    return hijo
+
+
+def mutar_antecedentes_validos(cromosoma, codificacion, probabilidad_mutacion):
+    """Muta antecedentes cambiando categorias completas a otros valores validos."""
+    cromosoma = np.asarray(cromosoma, dtype=int).copy()
+    descartes = 0
+    for indice_variable, variable in enumerate(VARIABLES_ENTRADA):
+        if np.random.random() >= probabilidad_mutacion:
+            continue
+
+        inicio = indice_variable * BITS_POR_GEN
+        fin = inicio + BITS_POR_GEN
+        categorias = codificacion["categorias_por_variable"][variable]
+        indice_actual = bits_a_indice(cromosoma[inicio:fin])
+        indices_validos = list(range(len(categorias)))
+        if indice_actual in indices_validos and len(indices_validos) > 1:
+            indices_validos.remove(indice_actual)
+        if not indices_validos:
+            descartes += 1
+            continue
+
+        nuevo_indice = int(np.random.choice(indices_validos))
+        cromosoma[inicio:fin] = indice_a_bits(nuevo_indice)
+    return cromosoma, descartes
 
 
 def indice_a_bits(indice):
@@ -436,7 +526,21 @@ def regla_tiene_cobertura(cromosoma, codificacion, pertenencias_fuzzy, df_discre
     return (
         regla_tiene_cobertura_fuzzy(cromosoma, codificacion, pertenencias_fuzzy)
         and regla_tiene_cobertura_discreta(cromosoma, codificacion, df_discretizado)
+        and regla_tiene_cobertura_de_su_clase(cromosoma, codificacion, pertenencias_fuzzy, df_discretizado)
     )
+
+
+def regla_tiene_cobertura_de_su_clase(cromosoma, codificacion, pertenencias_fuzzy, df_discretizado):
+    clase = decodificar_clase(cromosoma, codificacion)
+    if clase is None:
+        return False
+
+    activacion = calcular_activacion_fuzzy_regla(cromosoma, codificacion, pertenencias_fuzzy)
+    clases_reales = df_discretizado["riesgo"].to_numpy(dtype=object)
+    mascara_clase = clases_reales == clase
+    if not np.any(mascara_clase):
+        return False
+    return bool(np.any(activacion[mascara_clase] > 0.0))
 
 
 def calcular_activacion_fuzzy_regla(cromosoma, codificacion, pertenencias_fuzzy):
@@ -529,11 +633,12 @@ def generar_cromosoma_aleatorio_con_cobertura(
     codificacion,
     pertenencias_fuzzy,
     df_discretizado,
+    clase_objetivo=None,
     max_intentos=10000,
 ):
     """Genera una regla aleatoria valida con cobertura fuzzy y discreta."""
     for _ in range(max_intentos):
-        cromosoma = generar_cromosoma_valido_directo(codificacion)
+        cromosoma = generar_cromosoma_valido_directo(codificacion, clase_objetivo=clase_objetivo)
         if regla_tiene_cobertura(cromosoma, codificacion, pertenencias_fuzzy, df_discretizado):
             return cromosoma
     raise RuntimeError(
@@ -555,6 +660,42 @@ def reparar_reglas_sin_cobertura(poblacion, codificacion, pertenencias_fuzzy, df
             df_discretizado,
         )
         reparadas += 1
+    return poblacion, reparadas
+
+
+def reparar_balance_clases(poblacion, codificacion, pertenencias_fuzzy, df_discretizado):
+    """Mantiene una cuota fija de consecuentes por clase dentro de la poblacion."""
+    poblacion = np.asarray(poblacion, dtype=int).copy()
+    cuotas = calcular_cuotas_por_clase(len(poblacion), codificacion["clases"])
+    indices_por_clase = {clase: [] for clase in codificacion["clases"]}
+    indices_invalidos = []
+
+    for indice, cromosoma in enumerate(poblacion):
+        clase = decodificar_clase(cromosoma, codificacion)
+        if clase not in indices_por_clase:
+            indices_invalidos.append(indice)
+            continue
+        indices_por_clase[clase].append(indice)
+
+    indices_reemplazables = list(indices_invalidos)
+    faltantes = []
+    for clase in codificacion["clases"]:
+        indices = indices_por_clase[clase]
+        exceso = max(0, len(indices) - cuotas[clase])
+        if exceso:
+            indices_reemplazables.extend(indices[-exceso:])
+        faltantes.extend([clase] * max(0, cuotas[clase] - len(indices)))
+
+    reparadas = 0
+    for indice, clase_objetivo in zip(indices_reemplazables, faltantes):
+        poblacion[indice] = generar_cromosoma_aleatorio_con_cobertura(
+            codificacion=codificacion,
+            pertenencias_fuzzy=pertenencias_fuzzy,
+            df_discretizado=df_discretizado,
+            clase_objetivo=clase_objetivo,
+        )
+        reparadas += 1
+
     return poblacion, reparadas
 
 
@@ -629,6 +770,7 @@ def construir_fila_historial(
     balanced_accuracy,
     invalidas_descartadas,
     reparadas_sin_cobertura,
+    reparadas_balance_clases,
 ):
     fitness = [evaluacion.fitness for evaluacion in evaluaciones]
     aciertos = [evaluacion.aciertos for evaluacion in evaluaciones]
@@ -650,6 +792,7 @@ def construir_fila_historial(
         "errores_promedio_regla": float(np.mean(errores)) if errores else 0.0,
         "intentos_invalidos_descartados_generacion": int(invalidas_descartadas),
         "reglas_reparadas_sin_cobertura_generacion": int(reparadas_sin_cobertura),
+        "reglas_reparadas_balance_clases_generacion": int(reparadas_balance_clases),
     }
 
 
