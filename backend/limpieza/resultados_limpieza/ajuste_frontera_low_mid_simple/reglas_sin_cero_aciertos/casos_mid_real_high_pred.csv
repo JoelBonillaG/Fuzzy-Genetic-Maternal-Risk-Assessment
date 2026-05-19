@@ -1,0 +1,5 @@
+indice,puntaje,y_true,y_pred,edad,presion_sistolica,presion_diastolica,azucar_sangre,temperatura_corporal,frecuencia_cardiaca
+554,86.47106500185704,mid risk,high risk,50.0,130.0,100.0,16.0,98.0,75.0
+603,86.47106500185704,mid risk,high risk,50.0,130.0,100.0,16.0,98.0,75.0
+818,86.47106500185704,mid risk,high risk,50.0,130.0,100.0,16.0,98.0,75.0
+832,86.47106500185704,mid risk,high risk,50.0,130.0,100.0,16.0,98.0,75.0

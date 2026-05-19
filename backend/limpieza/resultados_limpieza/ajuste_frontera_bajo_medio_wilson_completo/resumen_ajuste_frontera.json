@@ -1,0 +1,41 @@
+[
+  {
+    "conjunto": "reglas_sin_cero_aciertos",
+    "archivo": "limpieza\\resultados_limpieza\\iteracion_12_sin_reglas_cero_aciertos\\reglas_sin_cero_aciertos.json",
+    "total_reglas": 129,
+    "casos_ajustados": 131,
+    "accuracy_normal": 0.5662055335968379,
+    "balanced_accuracy_normal": 0.5689608351591462,
+    "accuracy_ajustada": 0.6956521739130435,
+    "balanced_accuracy_ajustada": 0.6989211526194635,
+    "delta_accuracy": 0.12944664031620556,
+    "delta_balanced_accuracy": 0.12996031746031733,
+    "delta_aciertos": 131
+  },
+  {
+    "conjunto": "genetic_algorithm_reglas_unicas",
+    "archivo": "limpieza\\resultados_limpieza\\reglas_unicas_por_iteracion\\iteracion_12\\genetic_algorithm_reglas_unicas.json",
+    "total_reglas": 159,
+    "casos_ajustados": 63,
+    "accuracy_normal": 0.5365612648221344,
+    "balanced_accuracy_normal": 0.5397495631916133,
+    "accuracy_ajustada": 0.5988142292490118,
+    "balanced_accuracy_ajustada": 0.6022495631916133,
+    "delta_accuracy": 0.062252964426877444,
+    "delta_balanced_accuracy": 0.0625,
+    "delta_aciertos": 63
+  },
+  {
+    "conjunto": "reglas_filtradas_precision_por_clase",
+    "archivo": "limpieza\\resultados_limpieza\\iteracion_12_filtro_precision_por_clase\\reglas_filtradas_precision_por_clase.json",
+    "total_reglas": 91,
+    "casos_ajustados": 20,
+    "accuracy_normal": 0.6679841897233202,
+    "balanced_accuracy_normal": 0.6725710911427277,
+    "accuracy_ajustada": 0.6877470355731226,
+    "balanced_accuracy_ajustada": 0.6924123609839975,
+    "delta_accuracy": 0.01976284584980237,
+    "delta_balanced_accuracy": 0.01984126984126977,
+    "delta_aciertos": 20
+  }
+]

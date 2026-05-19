@@ -1,0 +1,4 @@
+conjunto,archivo,total_reglas,casos_ajustados,accuracy_normal,balanced_accuracy_normal,accuracy_ajustada,balanced_accuracy_ajustada,delta_accuracy,delta_balanced_accuracy,delta_aciertos
+reglas_sin_cero_aciertos,limpieza\resultados_limpieza\iteracion_12_sin_reglas_cero_aciertos\reglas_sin_cero_aciertos.json,129,0,0.5662055335968379,0.5689608351591462,0.5662055335968379,0.5689608351591462,0.0,0.0,0
+genetic_algorithm_reglas_unicas,limpieza\resultados_limpieza\reglas_unicas_por_iteracion\iteracion_12\genetic_algorithm_reglas_unicas.json,159,0,0.5365612648221344,0.5397495631916133,0.5365612648221344,0.5397495631916133,0.0,0.0,0
+reglas_filtradas_precision_por_clase,limpieza\resultados_limpieza\iteracion_12_filtro_precision_por_clase\reglas_filtradas_precision_por_clase.json,91,0,0.6679841897233202,0.6725710911427277,0.6679841897233202,0.6725710911427277,0.0,0.0,0

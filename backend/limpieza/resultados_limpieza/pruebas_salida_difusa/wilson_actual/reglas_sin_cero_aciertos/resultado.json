@@ -1,0 +1,46 @@
+{
+  "archivo_reglas": "limpieza\\resultados_limpieza\\iteracion_12_sin_reglas_cero_aciertos\\reglas_sin_cero_aciertos.json",
+  "total_reglas": 129,
+  "metricas": {
+    "accuracy": 0.5662055335968379,
+    "balanced_accuracy": 0.5689608351591462,
+    "aciertos": 573,
+    "errores": 439,
+    "total": 1012,
+    "sin_activacion": 36,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk",
+        "__sin_activacion__"
+      ],
+      "matriz": [
+        [
+          236,
+          141,
+          0,
+          27
+        ],
+        [
+          158,
+          166,
+          4,
+          8
+        ],
+        [
+          1,
+          99,
+          171,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

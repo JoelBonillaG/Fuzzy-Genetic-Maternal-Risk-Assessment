@@ -1,0 +1,109 @@
+{
+  "archivo_origen": "limpieza\\resultados_limpieza\\iteracion_12_filtro_precision_por_clase\\reglas_filtradas_precision_por_clase.json",
+  "descripcion_origen": "Reglas de iteracion_12 filtradas por precision local discretizada por clase.",
+  "total_reglas": 91,
+  "ajuste": {
+    "tipo": "oraculo_para_analisis",
+    "descripcion": "Cambia low risk a mid risk solo cuando la clase real es mid risk y el puntaje cae en la frontera bajo-medio.",
+    "puntaje_minimo": 39.95,
+    "puntaje_maximo": 42.97,
+    "clase_real_requerida": "mid risk",
+    "clase_predicha_original": "low risk",
+    "clase_ajustada": "mid risk"
+  },
+  "normal": {
+    "accuracy": 0.6679841897233202,
+    "balanced_accuracy": 0.6725710911427277,
+    "error_clasificacion": 0.3320158102766798,
+    "error_balanceado": 0.32742890885727227,
+    "aciertos": 676,
+    "errores": 336,
+    "total": 1012,
+    "sin_activacion": 38,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk",
+        "__sin_activacion__"
+      ],
+      "matriz": [
+        [
+          261,
+          102,
+          14,
+          27
+        ],
+        [
+          89,
+          220,
+          19,
+          8
+        ],
+        [
+          12,
+          62,
+          195,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "ajustado": {
+    "accuracy": 0.6679841897233202,
+    "balanced_accuracy": 0.6725710911427277,
+    "error_clasificacion": 0.3320158102766798,
+    "error_balanceado": 0.32742890885727227,
+    "aciertos": 676,
+    "errores": 336,
+    "total": 1012,
+    "sin_activacion": 38,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk",
+        "__sin_activacion__"
+      ],
+      "matriz": [
+        [
+          261,
+          102,
+          14,
+          27
+        ],
+        [
+          89,
+          220,
+          19,
+          8
+        ],
+        [
+          12,
+          62,
+          195,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "delta": {
+    "accuracy": 0.0,
+    "balanced_accuracy": 0.0,
+    "aciertos": 0,
+    "errores": 0
+  },
+  "casos_ajustados": []
+}

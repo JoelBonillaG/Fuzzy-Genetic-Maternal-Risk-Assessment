@@ -1,0 +1,46 @@
+{
+  "archivo_reglas": "limpieza\\resultados_limpieza\\iteracion_12_filtro_precision_por_clase\\reglas_filtradas_precision_por_clase.json",
+  "total_reglas": 91,
+  "metricas": {
+    "accuracy": 0.6679841897233202,
+    "balanced_accuracy": 0.6725710911427277,
+    "aciertos": 676,
+    "errores": 336,
+    "total": 1012,
+    "sin_activacion": 38,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk",
+        "__sin_activacion__"
+      ],
+      "matriz": [
+        [
+          261,
+          102,
+          14,
+          27
+        ],
+        [
+          89,
+          220,
+          19,
+          8
+        ],
+        [
+          12,
+          62,
+          195,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

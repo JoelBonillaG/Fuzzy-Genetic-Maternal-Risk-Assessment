@@ -257,3 +257,4 @@ def puntaje_a_riesgo(puntaje):
     if puntaje < 73.12:
         return "mid risk"
     return "high risk"
+

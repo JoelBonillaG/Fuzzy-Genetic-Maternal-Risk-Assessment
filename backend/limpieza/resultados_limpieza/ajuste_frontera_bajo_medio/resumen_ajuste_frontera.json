@@ -1,0 +1,41 @@
+[
+  {
+    "conjunto": "reglas_sin_cero_aciertos",
+    "archivo": "limpieza\\resultados_limpieza\\iteracion_12_sin_reglas_cero_aciertos\\reglas_sin_cero_aciertos.json",
+    "total_reglas": 129,
+    "casos_ajustados": 0,
+    "accuracy_normal": 0.5662055335968379,
+    "balanced_accuracy_normal": 0.5689608351591462,
+    "accuracy_ajustada": 0.5662055335968379,
+    "balanced_accuracy_ajustada": 0.5689608351591462,
+    "delta_accuracy": 0.0,
+    "delta_balanced_accuracy": 0.0,
+    "delta_aciertos": 0
+  },
+  {
+    "conjunto": "genetic_algorithm_reglas_unicas",
+    "archivo": "limpieza\\resultados_limpieza\\reglas_unicas_por_iteracion\\iteracion_12\\genetic_algorithm_reglas_unicas.json",
+    "total_reglas": 159,
+    "casos_ajustados": 0,
+    "accuracy_normal": 0.5365612648221344,
+    "balanced_accuracy_normal": 0.5397495631916133,
+    "accuracy_ajustada": 0.5365612648221344,
+    "balanced_accuracy_ajustada": 0.5397495631916133,
+    "delta_accuracy": 0.0,
+    "delta_balanced_accuracy": 0.0,
+    "delta_aciertos": 0
+  },
+  {
+    "conjunto": "reglas_filtradas_precision_por_clase",
+    "archivo": "limpieza\\resultados_limpieza\\iteracion_12_filtro_precision_por_clase\\reglas_filtradas_precision_por_clase.json",
+    "total_reglas": 91,
+    "casos_ajustados": 0,
+    "accuracy_normal": 0.6679841897233202,
+    "balanced_accuracy_normal": 0.6725710911427277,
+    "accuracy_ajustada": 0.6679841897233202,
+    "balanced_accuracy_ajustada": 0.6725710911427277,
+    "delta_accuracy": 0.0,
+    "delta_balanced_accuracy": 0.0,
+    "delta_aciertos": 0
+  }
+]

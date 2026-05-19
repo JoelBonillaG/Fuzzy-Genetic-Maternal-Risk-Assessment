@@ -1,0 +1,13 @@
+indice,puntaje,tipo_ajuste,y_real,y_pred_original,y_pred_ajustada,edad,presion_sistolica,presion_diastolica,azucar_sangre,temperatura_corporal,frecuencia_cardiaca
+26,40.95480204742688,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,75.0,7.2,98.0,66.0
+165,40.95480204742688,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,75.0,7.2,98.0,66.0
+261,40.95480204742688,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,75.0,6.9,98.0,66.0
+497,41.44499750892172,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,80.0,7.0,98.0,70.0
+526,41.44499750892172,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,80.0,7.0,98.0,70.0
+574,41.44499750892172,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,80.0,7.0,98.0,70.0
+638,40.95480204742688,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,60.0,7.0,98.4,70.0
+651,41.44499750892172,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,80.0,7.0,98.0,70.0
+692,40.95480204742688,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,60.0,7.0,98.4,70.0
+696,41.44499750892172,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,80.0,7.0,98.0,70.0
+905,41.44499750892172,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,80.0,7.0,98.0,70.0
+924,41.44499750892172,Cambia mid risk a low risk solo cuando la clase real es low risk y el puntaje cae en la frontera bajo-medio.,low risk,mid risk,low risk,19.0,120.0,80.0,7.0,98.0,70.0
