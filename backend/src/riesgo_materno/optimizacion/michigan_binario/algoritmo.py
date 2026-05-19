@@ -1,7 +1,7 @@
 """AG Michigan binario con PyGAD.
 
-Cada individuo de PyGAD representa una regla difusa:
-    6 antecedentes * 3 bits fijos + 3 bits de consecuente = 21 bits.
+Cada individuo de PyGAD representa una regla difusa parcial:
+    6 categorias * 3 bits + 6 bits de uso + 3 bits de consecuente = 27 bits.
 
 La poblacion completa funciona como base de reglas. Cada regla conserva sus
 antecedentes y su consecuente dentro del cromosoma. La inicializacion es
@@ -29,9 +29,13 @@ from ...logica_difusa.variables import (
 
 
 BITS_POR_GEN = 3
+BITS_POR_USO = 1
 BITS_POR_CONSECUENTE = 3
-BITS_ANTECEDENTES = len(VARIABLES_ENTRADA) * BITS_POR_GEN
+BITS_POR_ANTECEDENTE = BITS_POR_GEN + BITS_POR_USO
+BITS_ANTECEDENTES = len(VARIABLES_ENTRADA) * BITS_POR_ANTECEDENTE
 BITS_POR_REGLA = BITS_ANTECEDENTES + BITS_POR_CONSECUENTE
+MIN_ANTECEDENTES_ACTIVOS = 1
+MAX_ANTECEDENTES_ACTIVOS = len(VARIABLES_ENTRADA)
 FITNESS_MINIMO_RULETA = 1e-6
 CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "alto"}
 
@@ -49,6 +53,8 @@ class EvaluacionRegla:
     errores: int
     cobertura: int
     calidad_local: float = 0.0
+    aporte_marginal: float = 0.0
+    dano_marginal: float = 0.0
     aporte_clase: float = 0.0
     confusion_otras_clases: float = 0.0
     penalizacion_duplicado: float = 0.0
@@ -102,6 +108,8 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
                 codificacion=codificacion,
                 df_discretizado=df_discretizado,
                 pertenencias_fuzzy=pertenencias_fuzzy,
+                tabla=tabla,
+                membresias=membresias,
                 parametros=parametros,
             )
         return estado["cache_fitness"][clave][int(indice_solucion)].fitness
@@ -114,6 +122,8 @@ def ejecutar_ag_michigan_binario(tabla, membresias, parametros, progress_callbac
                 codificacion=codificacion,
                 df_discretizado=df_discretizado,
                 pertenencias_fuzzy=pertenencias_fuzzy,
+                tabla=tabla,
+                membresias=membresias,
                 parametros=parametros,
             )
         return estado["cache_fitness"][clave]
@@ -328,22 +338,33 @@ def calcular_cuotas_por_clase(cantidad, clases):
 
 def generar_cromosoma_valido_directo(codificacion, clase_objetivo=None):
     bits = []
+    variables_activas = seleccionar_variables_activas()
     for variable in VARIABLES_ENTRADA:
         categorias = codificacion["categorias_por_variable"][variable]
         indice = int(np.random.randint(0, len(categorias)))
         bits.extend(indice_a_bits(indice))
+        bits.append(1 if variable in variables_activas else 0)
     clase = clase_objetivo if clase_objetivo is not None else str(np.random.choice(codificacion["clases"]))
     bits.extend(indice_a_bits_clase(codificacion["clases"].index(clase)))
     return np.asarray(bits, dtype=int)
 
 
+def seleccionar_variables_activas():
+    cantidad = int(np.random.randint(MIN_ANTECEDENTES_ACTIVOS, MAX_ANTECEDENTES_ACTIVOS + 1))
+    return set(np.random.choice(VARIABLES_ENTRADA, size=cantidad, replace=False).tolist())
+
+
 def cruzar_campos_completos(padre_a, padre_b):
-    """Cruza cromosomas copiando campos completos de 3 bits."""
+    """Cruza cromosomas copiando antecedentes completos y consecuente."""
     hijo = np.asarray(padre_a, dtype=int).copy()
-    for inicio in range(0, BITS_POR_REGLA, BITS_POR_GEN):
-        fin = inicio + BITS_POR_GEN
+    for indice_variable in range(len(VARIABLES_ENTRADA)):
+        inicio = inicio_antecedente(indice_variable)
+        fin = inicio + BITS_POR_ANTECEDENTE
         if np.random.random() < 0.5:
             hijo[inicio:fin] = padre_b[inicio:fin]
+    if np.random.random() < 0.5:
+        hijo[BITS_ANTECEDENTES:BITS_POR_REGLA] = padre_b[BITS_ANTECEDENTES:BITS_POR_REGLA]
+    reparar_mascara_uso(hijo)
     return hijo
 
 
@@ -355,20 +376,59 @@ def mutar_antecedentes_validos(cromosoma, codificacion, probabilidad_mutacion):
         if np.random.random() >= probabilidad_mutacion:
             continue
 
-        inicio = indice_variable * BITS_POR_GEN
+        inicio = inicio_categoria(indice_variable)
         fin = inicio + BITS_POR_GEN
         categorias = codificacion["categorias_por_variable"][variable]
         indice_actual = bits_a_indice(cromosoma[inicio:fin])
-        indices_validos = list(range(len(categorias)))
-        if indice_actual in indices_validos and len(indices_validos) > 1:
-            indices_validos.remove(indice_actual)
-        if not indices_validos:
-            descartes += 1
-            continue
-
-        nuevo_indice = int(np.random.choice(indices_validos))
-        cromosoma[inicio:fin] = indice_a_bits(nuevo_indice)
+        if np.random.random() < 0.35:
+            cromosoma[inicio_uso(indice_variable)] = 1 - int(cromosoma[inicio_uso(indice_variable)])
+        else:
+            indices_validos = list(range(len(categorias)))
+            if indice_actual in indices_validos and len(indices_validos) > 1:
+                indices_validos.remove(indice_actual)
+            if not indices_validos:
+                descartes += 1
+                continue
+            nuevo_indice = int(np.random.choice(indices_validos))
+            cromosoma[inicio:fin] = indice_a_bits(nuevo_indice)
+    reparar_mascara_uso(cromosoma)
     return cromosoma, descartes
+
+
+def inicio_antecedente(indice_variable):
+    return indice_variable * BITS_POR_ANTECEDENTE
+
+
+def inicio_categoria(indice_variable):
+    return inicio_antecedente(indice_variable)
+
+
+def inicio_uso(indice_variable):
+    return inicio_antecedente(indice_variable) + BITS_POR_GEN
+
+
+def reparar_mascara_uso(cromosoma):
+    activos = [
+        indice
+        for indice in range(len(VARIABLES_ENTRADA))
+        if int(cromosoma[inicio_uso(indice)]) == 1
+    ]
+    inactivos = [
+        indice
+        for indice in range(len(VARIABLES_ENTRADA))
+        if int(cromosoma[inicio_uso(indice)]) == 0
+    ]
+
+    while len(activos) < MIN_ANTECEDENTES_ACTIVOS and inactivos:
+        indice = int(np.random.choice(inactivos))
+        cromosoma[inicio_uso(indice)] = 1
+        activos.append(indice)
+        inactivos.remove(indice)
+
+    while len(activos) > MAX_ANTECEDENTES_ACTIVOS:
+        indice = int(np.random.choice(activos))
+        cromosoma[inicio_uso(indice)] = 0
+        activos.remove(indice)
 
 
 def indice_a_bits(indice):
@@ -382,13 +442,19 @@ def indice_a_bits_clase(indice):
 def decodificar_antecedentes(cromosoma, codificacion):
     antecedentes = []
     for indice_variable, variable in enumerate(VARIABLES_ENTRADA):
-        inicio = indice_variable * BITS_POR_GEN
+        if int(cromosoma[inicio_uso(indice_variable)]) == 0:
+            continue
+
+        inicio = inicio_categoria(indice_variable)
         bloque = cromosoma[inicio : inicio + BITS_POR_GEN]
         indice_categoria = bits_a_indice(bloque)
         categorias = codificacion["categorias_por_variable"][variable]
         if indice_categoria >= len(categorias):
             return None
         antecedentes.append((variable, categorias[indice_categoria]))
+
+    if not (MIN_ANTECEDENTES_ACTIVOS <= len(antecedentes) <= MAX_ANTECEDENTES_ACTIVOS):
+        return None
     return antecedentes
 
 
@@ -433,11 +499,30 @@ def decodificar_poblacion(poblacion, codificacion):
     return reglas
 
 
+def decodificar_reglas_por_indice(poblacion, codificacion):
+    reglas = []
+    for numero, cromosoma in enumerate(poblacion, start=1):
+        clase = decodificar_clase(cromosoma, codificacion)
+        antecedentes = decodificar_antecedentes(cromosoma, codificacion)
+        if clase is None or antecedentes is None:
+            reglas.append(None)
+            continue
+        reglas.append({
+            "numero": numero,
+            "antecedentes": antecedentes,
+            "consecuente": CLASE_A_CONSECUENTE[clase],
+            "source": "AG_MICHIGAN_BINARIO",
+        })
+    return reglas
+
+
 def evaluar_poblacion_por_recall_precision(
     poblacion,
     codificacion,
     df_discretizado,
     pertenencias_fuzzy=None,
+    tabla=None,
+    membresias=None,
     parametros=None,
 ):
     """Evalua cada regla con fitness local o compuesto, segun parametros."""
@@ -451,6 +536,20 @@ def evaluar_poblacion_por_recall_precision(
         return evaluaciones
     if pertenencias_fuzzy is None:
         return evaluaciones
+
+    if parametros.get("usar_aporte_marginal", False):
+        if tabla is None or membresias is None:
+            return evaluaciones
+        return aplicar_fitness_marginal(
+            poblacion=poblacion,
+            evaluaciones=evaluaciones,
+            codificacion=codificacion,
+            df_discretizado=df_discretizado,
+            pertenencias_fuzzy=pertenencias_fuzzy,
+            tabla=tabla,
+            membresias=membresias,
+            parametros=parametros,
+        )
 
     return aplicar_fitness_compuesto(
         poblacion=poblacion,
@@ -554,6 +653,106 @@ def calcular_activacion_fuzzy_regla(cromosoma, codificacion, pertenencias_fuzzy)
     for variable, categoria in antecedentes:
         activacion = np.minimum(activacion, pertenencias_fuzzy[variable][categoria])
     return activacion
+
+
+def aplicar_fitness_marginal(
+    poblacion,
+    evaluaciones,
+    codificacion,
+    df_discretizado,
+    pertenencias_fuzzy,
+    tabla,
+    membresias,
+    parametros,
+):
+    """Evalua cada regla por su aporte marginal al BA global de la base."""
+    peso_marginal = float(parametros.get("peso_aporte_marginal", 0.70))
+    peso_dano_marginal = float(parametros.get("peso_dano_marginal", 0.20))
+    peso_local = float(parametros.get("peso_calidad_local", 0.15))
+    peso_separacion = float(parametros.get("peso_separacion_clases", 0.10))
+    peso_confusion = float(parametros.get("peso_confusion_otras_clases", 0.05))
+    peso_duplicado = float(parametros.get("peso_penalizacion_duplicado", 0.005))
+
+    reglas_por_indice = decodificar_reglas_por_indice(poblacion, codificacion)
+    reglas_validas = [regla for regla in reglas_por_indice if regla is not None]
+    ba_global = evaluar_balanced_accuracy_global(reglas_validas, tabla, membresias) if reglas_validas else 0.0
+
+    aportes_crudos = []
+    for indice, regla in enumerate(reglas_por_indice):
+        if regla is None:
+            aportes_crudos.append(0.0)
+            continue
+        reglas_sin_i = [
+            otra_regla
+            for j, otra_regla in enumerate(reglas_por_indice)
+            if j != indice and otra_regla is not None
+        ]
+        ba_sin_i = evaluar_balanced_accuracy_global(reglas_sin_i, tabla, membresias) if reglas_sin_i else 0.0
+        aportes_crudos.append(float(ba_global - ba_sin_i))
+
+    aportes = [max(0.0, aporte) for aporte in aportes_crudos]
+    danos = [max(0.0, -aporte) for aporte in aportes_crudos]
+    max_aporte = max(aportes) if aportes else 0.0
+    max_dano = max(danos) if danos else 0.0
+    aportes_normalizados = [
+        aporte / max_aporte if max_aporte > 0.0 else 0.0
+        for aporte in aportes
+    ]
+    danos_normalizados = [
+        dano / max_dano if max_dano > 0.0 else 0.0
+        for dano in danos
+    ]
+
+    clases_reales = df_discretizado["riesgo"].to_numpy(dtype=object)
+    conteo_duplicados = contar_claves_cromosomas(poblacion, codificacion)
+    evaluaciones_marginales = []
+
+    for indice, (cromosoma, evaluacion_local) in enumerate(zip(poblacion, evaluaciones)):
+        clase = decodificar_clase(cromosoma, codificacion)
+        if clase is None or reglas_por_indice[indice] is None:
+            evaluaciones_marginales.append(EvaluacionRegla(FITNESS_MINIMO_RULETA, 0, 0, 0))
+            continue
+
+        activacion = calcular_activacion_fuzzy_regla(cromosoma, codificacion, pertenencias_fuzzy)
+        mascara_clase = clases_reales == clase
+        mascara_otras = clases_reales != clase
+
+        aporte_clase = float(np.mean(activacion[mascara_clase])) if np.any(mascara_clase) else 0.0
+        confusion_otras = float(np.mean(activacion[mascara_otras])) if np.any(mascara_otras) else 0.0
+        separacion = max(0.0, aporte_clase - confusion_otras)
+
+        clave = clave_cromosoma(cromosoma, codificacion)
+        repeticiones = conteo_duplicados.get(clave, 1)
+        penalizacion_duplicado = float((repeticiones - 1) / repeticiones) if repeticiones > 1 else 0.0
+
+        aporte_marginal = float(aportes_normalizados[indice])
+        dano_marginal = float(danos_normalizados[indice])
+        calidad_local = float(evaluacion_local.fitness)
+        fitness = (
+            peso_marginal * aporte_marginal
+            - peso_dano_marginal * dano_marginal
+            + peso_local * calidad_local
+            + peso_separacion * separacion
+            - peso_confusion * confusion_otras
+            - peso_duplicado * penalizacion_duplicado
+        )
+
+        evaluaciones_marginales.append(
+            EvaluacionRegla(
+                fitness=max(FITNESS_MINIMO_RULETA, float(fitness)),
+                aciertos=evaluacion_local.aciertos,
+                errores=evaluacion_local.errores,
+                cobertura=evaluacion_local.cobertura,
+                calidad_local=calidad_local,
+                aporte_marginal=aporte_marginal,
+                dano_marginal=dano_marginal,
+                aporte_clase=aporte_clase,
+                confusion_otras_clases=confusion_otras,
+                penalizacion_duplicado=penalizacion_duplicado,
+            )
+        )
+
+    return evaluaciones_marginales
 
 
 def aplicar_fitness_compuesto(
@@ -776,6 +975,8 @@ def construir_fila_historial(
     aciertos = [evaluacion.aciertos for evaluacion in evaluaciones]
     errores = [evaluacion.errores for evaluacion in evaluaciones]
     calidad_local = [evaluacion.calidad_local for evaluacion in evaluaciones]
+    aporte_marginal = [evaluacion.aporte_marginal for evaluacion in evaluaciones]
+    dano_marginal = [evaluacion.dano_marginal for evaluacion in evaluaciones]
     aporte_clase = [evaluacion.aporte_clase for evaluacion in evaluaciones]
     confusion = [evaluacion.confusion_otras_clases for evaluacion in evaluaciones]
     duplicados = [evaluacion.penalizacion_duplicado for evaluacion in evaluaciones]
@@ -785,6 +986,10 @@ def construir_fila_historial(
         "fitness_promedio_reglas": float(np.mean(fitness)) if fitness else 0.0,
         "fitness_mejor_regla": float(np.max(fitness)) if fitness else 0.0,
         "calidad_local_promedio": float(np.mean(calidad_local)) if calidad_local else 0.0,
+        "aporte_marginal_promedio": float(np.mean(aporte_marginal)) if aporte_marginal else 0.0,
+        "aporte_marginal_max": float(np.max(aporte_marginal)) if aporte_marginal else 0.0,
+        "dano_marginal_promedio": float(np.mean(dano_marginal)) if dano_marginal else 0.0,
+        "dano_marginal_max": float(np.max(dano_marginal)) if dano_marginal else 0.0,
         "aporte_clase_promedio": float(np.mean(aporte_clase)) if aporte_clase else 0.0,
         "confusion_otras_clases_promedio": float(np.mean(confusion)) if confusion else 0.0,
         "penalizacion_duplicado_promedio": float(np.mean(duplicados)) if duplicados else 0.0,

@@ -1,9 +1,9 @@
 """AG Pittsburgh-Michigan con cromosoma numerico usando PyGAD.
 
 Genotipo:
-    Cromosoma plano de longitud reglas_por_individuo * 7.
-    Cada bloque de 7 genes representa una regla:
-    [edad, sistolica, diastolica, glucosa, temperatura, frecuencia, clase]
+    Cromosoma plano de longitud reglas_por_individuo * 13.
+    Cada regla usa categoria + bit de uso por variable y una clase:
+    [edad, usa_edad, sistolica, usa_sistolica, ..., clase]
 
 Fenotipo:
     Base completa de reglas difusas consumida por el motor Mamdani.
@@ -24,7 +24,9 @@ from ...logica_difusa.motor import SistemaDifusoMamdani
 from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES, ETIQUETAS_RIESGO, VARIABLES_ENTRADA
 
 
-GENES_POR_REGLA = 7
+GENES_POR_REGLA = len(VARIABLES_ENTRADA) * 2 + 1
+MIN_ANTECEDENTES_ACTIVOS = 1
+MAX_ANTECEDENTES_ACTIVOS = len(VARIABLES_ENTRADA)
 CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "alto"}
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 
@@ -45,7 +47,7 @@ def ejecutar_ag_pittsburgh_michigan(
     parametros,
     progress_callback=None,
 ):
-    """Evoluciona una base fija de reglas completas mediante PyGAD."""
+    """Evoluciona una base fija de reglas parciales mediante PyGAD."""
     df_discretizado = pd.DataFrame(_discretizar(tabla)).rename(columns={"clase": "riesgo"})
     codificacion = construir_codificacion()
     poblacion_inicial = inicializar_poblacion(df_discretizado, parametros, codificacion)
@@ -184,6 +186,7 @@ def construir_gene_space(reglas_por_individuo, codificacion):
         espacios_regla.append(
             list(range(len(codificacion["categorias_por_variable"][variable])))
         )
+        espacios_regla.append([0, 1])
     espacios_regla.append(list(range(len(codificacion["clases"]))))
     return espacios_regla * reglas_por_individuo
 
@@ -201,12 +204,19 @@ def generar_cromosoma_inicial(parametros, codificacion):
     cantidad_reglas = parametros["reglas_por_individuo"]
 
     for _ in range(cantidad_reglas):
+        variables_activas = seleccionar_variables_activas()
         for variable in VARIABLES_ENTRADA:
             cantidad_categorias = len(codificacion["categorias_por_variable"][variable])
             genes.append(int(np.random.randint(0, cantidad_categorias)))
+            genes.append(1 if variable in variables_activas else 0)
         genes.append(int(np.random.randint(0, len(codificacion["clases"]))))
 
     return np.asarray(genes, dtype=int)
+
+
+def seleccionar_variables_activas():
+    cantidad = int(np.random.randint(MIN_ANTECEDENTES_ACTIVOS, MAX_ANTECEDENTES_ACTIVOS + 1))
+    return set(np.random.choice(VARIABLES_ENTRADA, size=cantidad, replace=False).tolist())
 
 
 def cruzar_por_bloques_regla(padres, tamano_descendencia, probabilidad_cruce, reglas_por_individuo):
@@ -280,10 +290,16 @@ def mutar_gen_regla(regla_codificada, codificacion, forzar=False):
 
     indice_variable = int(np.random.randint(0, len(VARIABLES_ENTRADA)))
     variable = VARIABLES_ENTRADA[indice_variable]
+    if np.random.random() < 0.35:
+        regla_codificada[indice_uso(indice_variable)] = 1 - int(regla_codificada[indice_uso(indice_variable)])
+        reparar_usos_regla(regla_codificada)
+        return
+
     opciones = list(range(len(codificacion["categorias_por_variable"][variable])))
-    regla_codificada[indice_variable] = elegir_distinto(
+    posicion_categoria = indice_categoria(indice_variable)
+    regla_codificada[posicion_categoria] = elegir_distinto(
         opciones,
-        int(regla_codificada[indice_variable]),
+        int(regla_codificada[posicion_categoria]),
     )
 
 
@@ -297,7 +313,13 @@ def evaluar_calidad_reglas_codificadas(matriz, df_discretizado, codificacion):
     for regla_codificada in matriz:
         cubiertos = df_discretizado
         for indice_variable, variable in enumerate(VARIABLES_ENTRADA):
-            categoria = decodificar_categoria(variable, regla_codificada[indice_variable], codificacion)
+            if int(regla_codificada[indice_uso(indice_variable)]) == 0:
+                continue
+            categoria = decodificar_categoria(
+                variable,
+                regla_codificada[indice_categoria(indice_variable)],
+                codificacion,
+            )
             cubiertos = cubiertos[cubiertos[variable] == categoria]
 
         clase = codificacion["clases"][int(regla_codificada[-1])]
@@ -337,11 +359,18 @@ def decodificar_cromosoma(cromosoma, codificacion):
     matriz = np.asarray(cromosoma, dtype=int).reshape(-1, GENES_POR_REGLA)
     reglas = []
     for numero, regla_codificada in enumerate(matriz, start=1):
+        reparar_usos_regla(regla_codificada)
         antecedentes = []
         for indice_variable, variable in enumerate(VARIABLES_ENTRADA):
+            if int(regla_codificada[indice_uso(indice_variable)]) == 0:
+                continue
             antecedentes.append((
                 variable,
-                decodificar_categoria(variable, regla_codificada[indice_variable], codificacion),
+                decodificar_categoria(
+                    variable,
+                    regla_codificada[indice_categoria(indice_variable)],
+                    codificacion,
+                ),
             ))
         clase = codificacion["clases"][int(regla_codificada[-1])]
         reglas.append({
@@ -351,6 +380,36 @@ def decodificar_cromosoma(cromosoma, codificacion):
             "source": "AG_PITTSBURGH_MICHIGAN",
         })
     return reglas
+
+
+def indice_categoria(indice_variable):
+    return indice_variable * 2
+
+
+def indice_uso(indice_variable):
+    return indice_categoria(indice_variable) + 1
+
+
+def reparar_usos_regla(regla_codificada):
+    activos = [
+        indice
+        for indice in range(len(VARIABLES_ENTRADA))
+        if int(regla_codificada[indice_uso(indice)]) == 1
+    ]
+    inactivos = [
+        indice
+        for indice in range(len(VARIABLES_ENTRADA))
+        if int(regla_codificada[indice_uso(indice)]) == 0
+    ]
+    while len(activos) < MIN_ANTECEDENTES_ACTIVOS and inactivos:
+        indice = int(np.random.choice(inactivos))
+        regla_codificada[indice_uso(indice)] = 1
+        activos.append(indice)
+        inactivos.remove(indice)
+    while len(activos) > MAX_ANTECEDENTES_ACTIVOS:
+        indice = int(np.random.choice(activos))
+        regla_codificada[indice_uso(indice)] = 0
+        activos.remove(indice)
 
 
 def decodificar_categoria(variable, indice_categoria, codificacion):

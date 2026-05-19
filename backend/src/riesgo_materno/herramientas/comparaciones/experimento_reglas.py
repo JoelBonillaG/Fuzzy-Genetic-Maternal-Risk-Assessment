@@ -1,7 +1,7 @@
 """Comparacion experimental de RIPPER, PRISM y AG Michigan binario.
 
 El experimento usa el dataset completo, sin particiones train/test. En esta
-rama las reglas conservan seis antecedentes clinicos.
+rama las reglas pueden conservar solo los antecedentes clinicos que aportan.
 
 Uso:
     python -m riesgo_materno.herramientas.comparaciones.experimento_reglas
@@ -25,6 +25,7 @@ from ...logica_difusa.motor import SistemaDifusoMamdani
 from ...logica_difusa.variables import ESPECIFICACIONES_VARIABLES
 from ...optimizacion.michigan_binario import (
     BITS_POR_GEN,
+    BITS_POR_USO,
     BITS_POR_REGLA,
     BITS_POR_CONSECUENTE,
     contar_duplicados,
@@ -56,7 +57,7 @@ CONFIGURACION_EXPERIMENTO = {
         "fraccion_bootstrap": 0.75,
         "cobertura_minima_regla": 2,
         "orden_clases": CLASES,
-        "maximo_condiciones_por_regla": 6,
+        "maximo_condiciones_por_regla": 5,
         "maximo_reglas_por_clase": 40,
         "eliminar_positivos_cubiertos": True,
     },
@@ -73,9 +74,12 @@ CONFIGURACION_EXPERIMENTO = {
         "tamano_torneo": 5,
         "balancear_consecuentes_por_clase": True,
         "usar_fitness_compuesto": True,
-        "peso_calidad_local": 0.45,
-        "peso_aporte_clase": 0.35,
-        "peso_confusion_otras_clases": 0.15,
+        "usar_aporte_marginal": True,
+        "peso_aporte_marginal": 0.70,
+        "peso_dano_marginal": 0.20,
+        "peso_calidad_local": 0.15,
+        "peso_separacion_clases": 0.10,
+        "peso_confusion_otras_clases": 0.05,
         "peso_penalizacion_duplicado": 0.005,
     },
 }
@@ -194,6 +198,7 @@ def ejecutar_ag(iteracion, tabla, ruta_iteracion, config):
             "historial_ag": resumir_historial_ag(historial),
             "mejor_poblacion_ag": {
                 "bits_por_gen": BITS_POR_GEN,
+                "bits_por_uso": BITS_POR_USO,
                 "bits_por_consecuente": BITS_POR_CONSECUENTE,
                 "bits_por_regla": BITS_POR_REGLA,
                 "intentos_invalidos_descartados_generacion": mejor.intentos_invalidos_descartados_generacion,
@@ -327,6 +332,9 @@ def resumir_reglas(reglas):
         "total_reglas": int(total_reglas),
         "reglas_duplicadas": int(reglas_duplicadas),
         "reglas_por_clase": por_clase,
+        "antecedentes_promedio": float(np.mean(longitudes)) if longitudes else 0.0,
+        "antecedentes_min": int(np.min(longitudes)) if longitudes else 0,
+        "antecedentes_max": int(np.max(longitudes)) if longitudes else 0,
     }
 
 
