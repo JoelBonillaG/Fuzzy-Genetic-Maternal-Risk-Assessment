@@ -63,7 +63,7 @@ CONFIGURACION_EXPERIMENTO = {
     },
 
     "ag_michigan_binario": {
-        "reglas_por_poblacion": 368,
+        "reglas_por_poblacion": 50,
         "bits_por_gen": 3,
         "cantidad_padres": 120,
         "maximo_generaciones": 1500,
@@ -72,7 +72,7 @@ CONFIGURACION_EXPERIMENTO = {
         "probabilidad_mutacion": 0.05,
         "elitismo": 12,
         "tamano_torneo": 5,
-        "balancear_consecuentes_por_clase": True,
+        "balancear_consecuentes_por_clase": False,
         "usar_fitness_compuesto": True,
         "usar_aporte_marginal": True,
         "peso_aporte_marginal": 0.70,
