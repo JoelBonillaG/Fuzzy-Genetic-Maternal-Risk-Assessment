@@ -42,7 +42,7 @@ CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "al
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 CONFIGURACION_EXPERIMENTO = {
     "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
-    "iteraciones": 2,
+    "iteraciones": 1,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
     "metrica_principal": "balanced_accuracy",
@@ -63,9 +63,9 @@ CONFIGURACION_EXPERIMENTO = {
     },
 
     "ag_michigan_binario": {
-        "reglas_por_poblacion": 368,
+        "reglas_por_poblacion": 50,
         "bits_por_gen": 3,
-        "cantidad_padres": 120,
+        "cantidad_padres": 150,
         "maximo_generaciones": 1500,
         "paciencia": 1000,
         "probabilidad_cruce": 0.90,
@@ -74,12 +74,9 @@ CONFIGURACION_EXPERIMENTO = {
         "tamano_torneo": 5,
         "balancear_consecuentes_por_clase": False,
         "usar_fitness_compuesto": True,
-        "usar_aporte_marginal": True,
-        "peso_aporte_marginal": 0.70,
-        "peso_dano_marginal": 0.20,
-        "peso_calidad_local": 0.15,
-        "peso_separacion_clases": 0.10,
-        "peso_confusion_otras_clases": 0.05,
+        "peso_calidad_local": 0.45,
+        "peso_aporte_clase": 0.35,
+        "peso_confusion_otras_clases": 0.15,
         "peso_penalizacion_duplicado": 0.005,
     },
 }

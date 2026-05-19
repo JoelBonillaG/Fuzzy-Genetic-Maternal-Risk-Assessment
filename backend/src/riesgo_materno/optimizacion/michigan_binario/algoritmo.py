@@ -525,7 +525,7 @@ def evaluar_poblacion_por_recall_precision(
     membresias=None,
     parametros=None,
 ):
-    """Evalua cada regla con fitness local o compuesto, segun parametros."""
+    """Evalua cada regla de forma individual o con fitness compuesto simple."""
     evaluaciones = evaluar_poblacion_local(
         poblacion=poblacion,
         df_discretizado=df_discretizado,
@@ -536,20 +536,6 @@ def evaluar_poblacion_por_recall_precision(
         return evaluaciones
     if pertenencias_fuzzy is None:
         return evaluaciones
-
-    if parametros.get("usar_aporte_marginal", False):
-        if tabla is None or membresias is None:
-            return evaluaciones
-        return aplicar_fitness_marginal(
-            poblacion=poblacion,
-            evaluaciones=evaluaciones,
-            codificacion=codificacion,
-            df_discretizado=df_discretizado,
-            pertenencias_fuzzy=pertenencias_fuzzy,
-            tabla=tabla,
-            membresias=membresias,
-            parametros=parametros,
-        )
 
     return aplicar_fitness_compuesto(
         poblacion=poblacion,

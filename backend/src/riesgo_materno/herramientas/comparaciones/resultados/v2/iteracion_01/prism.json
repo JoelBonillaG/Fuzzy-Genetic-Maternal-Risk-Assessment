@@ -1,0 +1,117 @@
+{
+  "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
+  "iteracion": 1,
+  "algoritmo": "PRISM_ESTOCASTICO",
+  "datos": {
+    "estrategia": "dataset_completo_sin_splits",
+    "total_instancias": 1012
+  },
+  "hiperparametros": {
+    "modo": "prism_bootstrap",
+    "fraccion_bootstrap": 0.75,
+    "cobertura_minima_regla": 2,
+    "orden_clases": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "maximo_condiciones_por_regla": 5,
+    "maximo_reglas_por_clase": 40,
+    "eliminar_positivos_cubiertos": true
+  },
+  "resumen_reglas": {
+    "total_reglas": 3,
+    "reglas_duplicadas": 0,
+    "reglas_por_clase": {
+      "low risk": 0,
+      "mid risk": 2,
+      "high risk": 1
+    },
+    "antecedentes_promedio": 1.3333333333333333,
+    "antecedentes_min": 1,
+    "antecedentes_max": 2
+  },
+  "metricas": {
+    "accuracy": 0.13636363636363635,
+    "error_clasificacion": 0.8636363636363636,
+    "errores": 874,
+    "aciertos": 138,
+    "total": 1012,
+    "sin_activacion": 854,
+    "balanced_accuracy": 0.16561624649859943,
+    "error_balanceado": 0.8343837535014006
+  },
+  "matriz_confusion": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk",
+      "__sin_activacion__"
+    ],
+    "matriz": [
+      [
+        0,
+        8,
+        0,
+        396
+      ],
+      [
+        0,
+        15,
+        5,
+        316
+      ],
+      [
+        0,
+        7,
+        123,
+        142
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "reglas_finales": [
+    {
+      "id": "R001",
+      "antecedentes": [
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R002",
+      "antecedentes": [
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R003",
+      "antecedentes": [
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "PRISM_ESTOCASTICO"
+    }
+  ]
+}
