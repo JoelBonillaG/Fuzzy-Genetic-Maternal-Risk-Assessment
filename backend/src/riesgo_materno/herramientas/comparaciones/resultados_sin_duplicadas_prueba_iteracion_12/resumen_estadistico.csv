@@ -1,4 +1,0 @@
-algoritmo,iteraciones,accuracy_promedio,accuracy_desviacion_estandar,error_promedio,error_desviacion_estandar,balanced_accuracy_promedio,balanced_accuracy_desviacion_estandar,error_balanceado_promedio,error_balanceado_desviacion_estandar,reglas_limpias_promedio,reglas_limpias_desviacion_estandar,duplicadas_eliminadas_promedio,antecedentes_promedio,antecedentes_desviacion_estandar,mejor_iteracion,mejor_accuracy,mejor_balanced_accuracy
-AG_MICHIGAN_BINARIO,1,0.5365612648221344,0.0,0.4634387351778656,0.0,0.5397495631916133,0.0,0.46025043680838673,0.0,159.0,0.0,209.0,6.0,0.0,12,0.5365612648221344,0.5397495631916133
-PRISM_ESTOCASTICO,1,0.040513833992094864,0.0,0.9594861660079052,0.0,0.0417036451544314,0.0,0.9582963548455686,0.0,4.0,0.0,0.0,6.0,0.0,12,0.040513833992094864,0.0417036451544314
-RIPPER,1,0.3221343873517787,0.0,0.6778656126482213,0.0,0.33201655249558565,0.0,0.6679834475044144,0.0,30.0,0.0,7.0,6.0,0.0,12,0.3221343873517787,0.33201655249558565

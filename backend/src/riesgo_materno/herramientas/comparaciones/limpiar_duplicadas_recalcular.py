@@ -4,10 +4,10 @@ Uso desde backend:
     python -m src.riesgo_materno.herramientas.comparaciones.limpiar_duplicadas_recalcular
 
 Lee:
-    src/riesgo_materno/herramientas/comparaciones/resultados/iteracion_XX/*.json
+    src/riesgo_materno/herramientas/comparaciones/resultados/vN/iteracion_XX/*.json
 
 Guarda:
-    src/riesgo_materno/herramientas/comparaciones/resultados_sin_duplicadas
+    src/riesgo_materno/herramientas/comparaciones/resultados_sin_duplicadas/vN
 """
 
 from __future__ import annotations
@@ -39,8 +39,8 @@ RUTA_SALIDA = RUTA_BASE / "resultados_sin_duplicadas"
 
 def main():
     args = crear_parser().parse_args()
-    entrada = Path(args.entrada)
-    salida = Path(args.salida)
+    entrada = resolver_entrada(Path(args.entrada) if args.entrada else RUTA_ENTRADA)
+    salida = Path(args.salida) if args.salida else resolver_salida(entrada)
     salida.mkdir(parents=True, exist_ok=True)
 
     tabla = cargar_dataset(RUTA_CSV)
@@ -48,12 +48,17 @@ def main():
     membresias = construir_membresias_base()
 
     filas = []
+    resultados = []
     for ruta_json in archivos_de_resultados(entrada):
         resultado = procesar_archivo(ruta_json, salida, datos, membresias)
+        resultados.append(resultado)
         filas.append(fila_resumen(resultado))
         imprimir_resultado(resultado)
 
     resumen = construir_resumen(filas)
+    ruta_matriz = guardar_matriz_mejor_ba(resultados, salida)
+    if ruta_matriz is not None:
+        resumen["matriz_confusion_mejor_ba"] = str(ruta_matriz)
     guardar_csv(salida / "resumen_iteraciones.csv", filas)
     guardar_csv(salida / "resumen_estadistico.csv", resumen["resumen_estadistico"])
     guardar_json(salida / "resumen_metricas.json", resumen)
@@ -62,9 +67,47 @@ def main():
 
 def crear_parser():
     parser = argparse.ArgumentParser(description="Recalcula metricas eliminando reglas duplicadas.")
-    parser.add_argument("--entrada", default=str(RUTA_ENTRADA))
-    parser.add_argument("--salida", default=str(RUTA_SALIDA))
+    parser.add_argument("--entrada", default=None)
+    parser.add_argument("--salida", default=None)
     return parser
+
+
+def resolver_entrada(ruta: Path):
+    if ruta.name.startswith("iteracion_"):
+        return ruta
+
+    versiones = [
+        carpeta
+        for carpeta in ruta.glob("v*")
+        if carpeta.is_dir() and carpeta.name[1:].isdigit() and contiene_iteraciones(carpeta)
+    ]
+    if versiones:
+        return max(versiones, key=lambda carpeta: int(carpeta.name[1:]))
+    if contiene_iteraciones(ruta):
+        return ruta
+    return ruta
+
+
+def resolver_salida(entrada: Path):
+    if entrada.name.startswith("v") and entrada.name[1:].isdigit():
+        return RUTA_SALIDA / entrada.name
+    return crear_carpeta_versionada(RUTA_SALIDA)
+
+
+def contiene_iteraciones(ruta: Path):
+    return ruta.is_dir() and any(carpeta.is_dir() for carpeta in ruta.glob("iteracion_*"))
+
+
+def crear_carpeta_versionada(base: Path):
+    base.mkdir(parents=True, exist_ok=True)
+    versiones = [
+        int(carpeta.name[1:])
+        for carpeta in base.glob("v*")
+        if carpeta.is_dir() and carpeta.name[1:].isdigit()
+    ]
+    ruta = base / f"v{max(versiones, default=0) + 1}"
+    ruta.mkdir(parents=True, exist_ok=False)
+    return ruta
 
 
 def archivos_de_resultados(entrada: Path):
@@ -283,6 +326,69 @@ def construir_resumen(filas: list[dict]):
         "resumen_estadistico": resumen_estadistico(tabla),
         "tabla_iteraciones": filas,
     }
+
+
+def guardar_matriz_mejor_ba(resultados: list[dict], salida: Path):
+    if not resultados:
+        return None
+
+    mejor = max(
+        resultados,
+        key=lambda resultado: (
+            resultado["metricas_limpias"]["balanced_accuracy"],
+            resultado["metricas_limpias"]["accuracy"],
+        ),
+    )
+    carpeta = salida / "matrices_confusion"
+    ruta = carpeta / "mejor_ba_sin_duplicadas.png"
+    graficar_matriz_confusion(mejor, ruta)
+    return ruta
+
+
+def graficar_matriz_confusion(resultado: dict, ruta: Path):
+    import matplotlib.pyplot as plt
+
+    matriz_info = resultado["matriz_confusion_limpia"]
+    etiquetas = matriz_info["etiquetas"]
+    matriz = np.asarray(matriz_info["matriz"], dtype=int)
+    metricas = resultado["metricas_limpias"]
+    reglas = resultado["resumen_reglas_limpias"]
+
+    figura, eje = plt.subplots(figsize=(9, 7), constrained_layout=True)
+    imagen = eje.imshow(matriz, cmap="Blues")
+    figura.colorbar(imagen, ax=eje, fraction=0.046, pad=0.04)
+
+    eje.set_xticks(np.arange(len(etiquetas)))
+    eje.set_yticks(np.arange(len(etiquetas)))
+    eje.set_xticklabels(etiquetas, rotation=35, ha="right")
+    eje.set_yticklabels(etiquetas)
+    eje.set_xlabel("Prediccion")
+    eje.set_ylabel("Clase real")
+    eje.set_title(
+        "Mejor matriz de confusion sin duplicadas\n"
+        f"{resultado['algoritmo']} | Iteracion {resultado['iteracion']:02d} | "
+        f"BA={metricas['balanced_accuracy']:.4f} | "
+        f"Accuracy={metricas['accuracy']:.4f} | "
+        f"Reglas={reglas['total_reglas']}"
+    )
+
+    umbral = matriz.max() / 2 if matriz.size else 0
+    for fila in range(matriz.shape[0]):
+        for columna in range(matriz.shape[1]):
+            color = "white" if matriz[fila, columna] > umbral else "black"
+            eje.text(
+                columna,
+                fila,
+                str(matriz[fila, columna]),
+                ha="center",
+                va="center",
+                color=color,
+                fontweight="bold",
+            )
+
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    figura.savefig(ruta, dpi=160)
+    plt.close(figura)
 
 
 def resumen_estadistico(tabla: pd.DataFrame):

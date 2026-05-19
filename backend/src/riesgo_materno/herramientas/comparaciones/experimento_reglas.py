@@ -42,7 +42,7 @@ CLASE_A_CONSECUENTE = {"low risk": "bajo", "mid risk": "medio", "high risk": "al
 CONSECUENTE_A_CLASE = {v: k for k, v in CLASE_A_CONSECUENTE.items()}
 CONFIGURACION_EXPERIMENTO = {
     "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
-    "iteraciones": 20,
+    "iteraciones": 2,
     "clases": CLASES,
     "estrategia_datos": "dataset_completo_sin_splits",
     "metrica_principal": "balanced_accuracy",
@@ -63,7 +63,7 @@ CONFIGURACION_EXPERIMENTO = {
     },
 
     "ag_michigan_binario": {
-        "reglas_por_poblacion": 50,
+        "reglas_por_poblacion": 368,
         "bits_por_gen": 3,
         "cantidad_padres": 120,
         "maximo_generaciones": 1500,
@@ -92,8 +92,8 @@ def principal():
 
 
 def ejecutar_experimento(config):
-    RUTA_RESULTADOS.mkdir(parents=True, exist_ok=True)
-    guardar_json(RUTA_RESULTADOS / "config_experimento.json", config)
+    ruta_resultados = crear_carpeta_versionada(RUTA_RESULTADOS)
+    guardar_json(ruta_resultados / "config_experimento.json", config)
 
     tabla = cargar_dataset(RUTA_CSV)
     resultados = []
@@ -104,7 +104,7 @@ def ejecutar_experimento(config):
 
     for iteracion in range(1, config["iteraciones"] + 1):
         print(f"\nIteracion {iteracion:02d}")
-        ruta_iteracion = RUTA_RESULTADOS / f"iteracion_{iteracion:02d}"
+        ruta_iteracion = ruta_resultados / f"iteracion_{iteracion:02d}"
         ruta_iteracion.mkdir(parents=True, exist_ok=True)
 
         resultados.append(ejecutar_ripper(iteracion, tabla, ruta_iteracion, config))
@@ -112,10 +112,22 @@ def ejecutar_experimento(config):
         resultados.append(ejecutar_ag(iteracion, tabla, ruta_iteracion, config))
 
     resumen = construir_resumen_final(resultados)
-    guardar_csv_seguro(pd.DataFrame(resumen["tabla_resumen"]), RUTA_RESULTADOS / "resumen_final.csv")
-    guardar_json_seguro(RUTA_RESULTADOS / "resumen_final.json", resumen)
-    print(f"\nResultados guardados en: {RUTA_RESULTADOS}")
+    guardar_csv_seguro(pd.DataFrame(resumen["tabla_resumen"]), ruta_resultados / "resumen_final.csv")
+    guardar_json_seguro(ruta_resultados / "resumen_final.json", resumen)
+    print(f"\nResultados guardados en: {ruta_resultados}")
     return resumen
+
+
+def crear_carpeta_versionada(base):
+    base.mkdir(parents=True, exist_ok=True)
+    versiones = []
+    for carpeta in base.glob("v*"):
+        if carpeta.is_dir() and carpeta.name[1:].isdigit():
+            versiones.append(int(carpeta.name[1:]))
+    siguiente = max(versiones, default=0) + 1
+    ruta = base / f"v{siguiente}"
+    ruta.mkdir(parents=True, exist_ok=False)
+    return ruta
 
 
 def ejecutar_ripper(iteracion, tabla, ruta_iteracion, config):
