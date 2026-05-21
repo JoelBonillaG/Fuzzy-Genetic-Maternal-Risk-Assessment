@@ -8,6 +8,7 @@ import {
   formatPercentage,
   getCategoryLabel,
   getFieldLabel,
+  OUTPUT_RISK_CUTS,
   getRiskUi,
   obtenerDefinicionesDifusas,
   obtenerReglasDifusas,
@@ -484,6 +485,9 @@ function AggregacionPanel({ result }: { result: ExplicacionResponse }) {
   const narrative = buildClinicalNarrative(result);
   const esFallback = result.sin_activacion;
   const scoreValue = result.puntaje ?? 0;
+  const lowWidth = OUTPUT_RISK_CUTS.lowToMid;
+  const midWidth = OUTPUT_RISK_CUTS.midToHigh - OUTPUT_RISK_CUTS.lowToMid;
+  const highWidth = 100 - OUTPUT_RISK_CUTS.midToHigh;
 
   return (
     <GlassPanel className="mt-6 p-6 sm:p-7">
@@ -558,15 +562,15 @@ function AggregacionPanel({ result }: { result: ExplicacionResponse }) {
           <div className="mt-2">
             <div className="mb-1 flex justify-between text-xs text-slate-400">
               <span>0</span>
-              <span>40</span>
-              <span>65</span>
+              <span>{OUTPUT_RISK_CUTS.lowToMid.toFixed(2)}</span>
+              <span>{OUTPUT_RISK_CUTS.midToHigh.toFixed(2)}</span>
               <span>100</span>
             </div>
             {/* Zonas coloreadas: bajo=verde, medio=ambar, alto=rojo */}
             <div className="relative h-4 w-full overflow-hidden rounded-full flex">
-              <div className="h-full bg-emerald-200" style={{ width: "40%" }} />
-              <div className="h-full bg-amber-200" style={{ width: "25%" }} />
-              <div className="h-full bg-rose-200" style={{ width: "35%" }} />
+              <div className="h-full bg-emerald-200" style={{ width: `${lowWidth}%` }} />
+              <div className="h-full bg-amber-200" style={{ width: `${midWidth}%` }} />
+              <div className="h-full bg-rose-200" style={{ width: `${highWidth}%` }} />
               {/* Marcador del centroide */}
               <motion.div
                 className="absolute top-0 h-full w-1 rounded-full bg-slate-800 shadow"

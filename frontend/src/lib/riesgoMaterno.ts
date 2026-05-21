@@ -96,6 +96,10 @@ export interface FuzzyReglasResponse {
 // ── Field specs (labels / units para display) ─────────────────────────────────
 
 const TEMPERATURE_VARIABLE = "temperatura_corporal";
+export const OUTPUT_RISK_CUTS = {
+  lowToMid: 39.92,
+  midToHigh: 73.12,
+} as const;
 
 const fieldMetaByApiKey: Record<string, { label: string; unit: string; unitDescription: string }> = {
   edad: {
@@ -277,13 +281,15 @@ export function buildClinicalNarrative(result: ExplicacionResponse): ClinicalNar
       ? `Los indicadores que mas influyeron: ${alerts.join(", ")}.`
       : "Los indicadores clinicos se encuentran dentro de los rangos esperados.";
 
-  const high = result.activaciones["alto"] ?? 0;
-  const mid = result.activaciones["medio"] ?? 0;
+  const finalTone = getRiskUi(result.riesgo).tone;
+  const finalActivationKey = finalTone === "high" ? "alto" : finalTone === "mid" ? "medio" : "bajo";
+  const finalActivation = result.activaciones[finalActivationKey] ?? 0;
   const rulesCount = result.reglas_activadas.length;
 
   let conclusion = `Se evaluaron ${rulesCount} regla${rulesCount === 1 ? "" : "s"} del sistema difuso.`;
-  if (high > 0.5) conclusion += ` Evidencia hacia riesgo alto: ${Math.round(high * 100)}%.`;
-  else if (mid > 0.4) conclusion += ` Evidencia hacia riesgo medio: ${Math.round(mid * 100)}%.`;
+  if (finalActivation > 0) {
+    conclusion += ` Evidencia hacia ${riskLabel}: ${Math.round(finalActivation * 100)}%.`;
+  }
 
   return { intro, details, conclusion };
 }
