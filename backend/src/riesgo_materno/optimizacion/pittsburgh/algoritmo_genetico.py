@@ -239,7 +239,10 @@ def evaluar_base_reglas(cromosoma, datos, membresias):
     sistema = SistemaDifusoMamdani(membresias, reglas=reglas_activas)
     inferencia = sistema.inferir_lote(datos["entradas"])
 
-    riesgos_predichos = inferencia["riesgos"]
+    riesgos_predichos = predicciones_con_sin_activacion(
+        inferencia["riesgos"],
+        inferencia["sin_activacion"],
+    )
     riesgos_reales = datos["riesgos"]
 
     # BA: promedio del recall por clase — trata todas las clases por igual sin importar su tamano
@@ -260,3 +263,9 @@ def evaluar_base_reglas(cromosoma, datos, membresias):
         cantidad_reglas=cantidad_reglas,
         fitness=float(fitness),
     )
+
+
+def predicciones_con_sin_activacion(predichos, sin_activacion):
+    predichos = np.asarray(predichos, dtype=object).copy()
+    predichos[np.asarray(sin_activacion, dtype=bool)] = "__sin_activacion__"
+    return predichos

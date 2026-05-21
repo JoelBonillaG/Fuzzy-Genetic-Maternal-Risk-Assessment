@@ -1,6 +1,6 @@
 // ── Prediccion ────────────────────────────────────────────────────────────────
 
-export type RiskTone = "low" | "mid" | "high";
+export type RiskTone = "low" | "mid" | "high" | "none";
 
 export interface PrediccionRequest {
   edad: number;
@@ -18,8 +18,8 @@ export interface AjusteEntradaResponse {
 }
 
 export interface PrediccionResponse {
-  puntaje: number;
-  riesgo: string;
+  puntaje: number | null;
+  riesgo: string | null;
   sin_activacion: boolean;
   sistema: string;
   origen_modelo: string;
@@ -44,8 +44,8 @@ export interface ExplicacionResponse {
   pertenencias: Record<string, Record<string, number>>;
   reglas_activadas: ReglaActivada[];
   activaciones: Record<string, number>;
-  puntaje: number;
-  riesgo: string;
+  puntaje: number | null;
+  riesgo: string | null;
   sin_activacion: boolean;
   origen_modelo: string;
   ajustes_entrada: AjusteEntradaResponse[];
@@ -55,7 +55,8 @@ export interface ExplicacionResponse {
 
 export interface VariableDefinicion {
   limites: number[];
-  categorias: Record<string, number[]>;
+  epsilon?: number;
+  categorias: Record<string, { puntos_base: number[]; puntos_optimizados: number[] }>;
 }
 
 export interface FuzzyDefinicionesResponse {
@@ -84,26 +85,6 @@ export interface FuzzyReglasResponse {
   reglas: ReglaSchema[];
   total: number;
   total_activas: number;
-}
-
-// ── Algoritmo genetico ────────────────────────────────────────────────────────
-
-export interface SeleccionReglasResponse {
-  disponible: boolean;
-  cromosoma: number[];
-  numeros_reglas_activas: number[];
-  cantidad_reglas: number;
-  fitness: number;
-  metricas_prueba: Record<string, number> | null;
-  historial: GeneracionHistorial[];
-}
-
-export interface GeneracionHistorial {
-  generacion: number;
-  mejor_fitness: number;
-  fitness_promedio: number;
-  aciertos: number;
-  cantidad_reglas: number;
 }
 
 // ── Field specs (labels / units para display) ─────────────────────────────────
@@ -147,19 +128,21 @@ export function getFieldUnit(variable: string): string {
   return fieldMetaByApiKey[variable]?.unit ?? "";
 }
 
-export function getRiskTone(value: string): RiskTone {
+export function getRiskTone(value: string | null | undefined): RiskTone {
+  if (!value) return "none";
   const n = value.toLowerCase();
   if (n.includes("high") || n.includes("alto")) return "high";
   if (n.includes("mid") || n.includes("medio")) return "mid";
   return "low";
 }
 
-export function getRiskUi(value: string) {
+export function getRiskUi(value: string | null | undefined) {
   const tone = getRiskTone(value);
   return { tone, ...riskToneConfig[tone] };
 }
 
-export function formatScore(value: number) {
+export function formatScore(value: number | null | undefined) {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "No disponible";
   return scoreFormatter.format(value);
 }
 
@@ -195,18 +178,18 @@ export interface ClinicalNarrative {
 }
 
 export function buildClinicalNarrative(result: ExplicacionResponse): ClinicalNarrative {
-  if (result.sin_activacion) {
+  const sinClasificacion = result.sin_activacion || result.reglas_activadas.length === 0 || !result.riesgo;
+
+  if (sinClasificacion) {
     return {
-      intro: "El perfil ingresado no coincidio con ninguna regla aprendida por el sistema.",
-      details:
-        "Ninguna combinacion de indicadores activo reglas del sistema difuso. El puntaje de 50 es un valor neutro de respaldo, no el resultado de una inferencia clinica.",
-      conclusion:
-        "Verifique que los valores ingresados sean correctos. Si los valores son validos, el caso puede requerir evaluacion medica directa.",
+      intro: "El sistema no pudo clasificar el riesgo de este paciente.",
+      details: "No se activaron reglas suficientes para emitir una clasificacion.",
+      conclusion: "Verifique los datos ingresados.",
     };
   }
 
   const riskLabel = getRiskUi(result.riesgo).label.toLowerCase();
-  const score = Math.round(result.puntaje);
+  const score = Math.round(result.puntaje ?? 0);
   const intro = `El sistema clasifico este caso como ${riskLabel} con un puntaje de ${score} sobre 100.`;
 
   const alerts: string[] = [];
@@ -277,16 +260,13 @@ export async function obtenerReglasDifusas() {
   return apiRequest<FuzzyReglasResponse>("/difuso/reglas", { method: "GET" });
 }
 
-export async function obtenerSeleccionReglas() {
-  return apiRequest<SeleccionReglasResponse>("/ga/seleccion-reglas", { method: "GET" });
-}
-
 // ── Internal ──────────────────────────────────────────────────────────────────
 
 const riskToneConfig = {
   low: { accent: "#4ade80", label: "Riesgo bajo" },
   mid: { accent: "#f59e0b", label: "Riesgo medio" },
   high: { accent: "#fb7185", label: "Riesgo alto" },
+  none: { accent: "#64748b", label: "Sin clasificacion" },
 } as const;
 
 const numberFormatter = new Intl.NumberFormat("es-EC", { maximumFractionDigits: 2 });

@@ -156,7 +156,11 @@ def evaluar_individuo(cromosoma, reglas_candidatas, datos, membresias, lambda_pe
     reglas_activas = [reglas_candidatas[i] for i in indices]
     sistema = SistemaDifusoMamdani(membresias, reglas=reglas_activas)
     inferencia = sistema.inferir_lote(datos["entradas"])
-    ba = float(balanced_accuracy_score(datos["riesgos"], inferencia["riesgos"]))
+    predichos = predicciones_con_sin_activacion(
+        inferencia["riesgos"],
+        inferencia["sin_activacion"],
+    )
+    ba = float(balanced_accuracy_score(datos["riesgos"], predichos))
     cantidad_reglas = len(reglas_activas)
     fitness = ba - lambda_penalty * (cantidad_reglas / len(reglas_candidatas))
     return ResultadoSeleccion(
@@ -165,3 +169,9 @@ def evaluar_individuo(cromosoma, reglas_candidatas, datos, membresias, lambda_pe
         balanced_accuracy=ba,
         cantidad_reglas=cantidad_reglas,
     )
+
+
+def predicciones_con_sin_activacion(predichos, sin_activacion):
+    predichos = np.asarray(predichos, dtype=object).copy()
+    predichos[np.asarray(sin_activacion, dtype=bool)] = "__sin_activacion__"
+    return predichos

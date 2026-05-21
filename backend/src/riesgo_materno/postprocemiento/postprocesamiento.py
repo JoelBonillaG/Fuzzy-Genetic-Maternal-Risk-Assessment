@@ -122,7 +122,7 @@ class ExperimentoPostprocesado:
 
     def _inferir(self) -> dict:
         datos = convertir_split_a_diccionario(self.tabla)
-        sistema = SistemaDifusoMamdani(membresias_base(), reglas=self.reglas, permitir_neutro=False)
+        sistema = SistemaDifusoMamdani(membresias_base(), reglas=self.reglas)
         salida = sistema.inferir_lote(datos["entradas"])
         return {
             "reales": np.asarray(datos["riesgos"], dtype=object),

@@ -726,7 +726,7 @@ def evaluar_regla_local(individuo, df_discretizado, codificacion):
 
 def evaluar_balanced_accuracy_global(reglas, tabla, membresias):
     datos = convertir_split_a_diccionario(tabla)
-    sistema = SistemaDifusoMamdani(membresias, reglas=reglas, permitir_neutro=False)
+    sistema = SistemaDifusoMamdani(membresias, reglas=reglas)
     inferencia = sistema.inferir_lote(datos["entradas"])
     return balanced_accuracy_con_sin_activacion_invalida(
         reales=datos["riesgos"],

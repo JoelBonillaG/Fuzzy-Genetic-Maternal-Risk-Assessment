@@ -18,6 +18,12 @@ def principal():
             f"{ajuste['variable']} "
             f"{ajuste['valor_original']} -> {ajuste['valor_ajustado']}"
         )
+    if resultado["sin_activacion"]:
+        print("Puntaje de riesgo: NaN")
+        print("Riesgo: sin clasificacion")
+        print("Motivo: ninguna regla se activo para este perfil.")
+        return
+
     print(f"Puntaje de riesgo: {resultado['puntaje']:.4f}")
     print(f"Riesgo: {resultado['riesgo']}")
 

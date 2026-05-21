@@ -11,7 +11,7 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
-import { generateMembershipSeries, trapezoidMembership } from "../../lib/membership";
+import { generateMembershipSeries, resolveMembershipPoints, trapezoidMembership } from "../../lib/membership";
 import {
   getFieldLabel,
   getFieldUnit,
@@ -170,7 +170,7 @@ function VariableCard({
   const activeMemberships = categoryNames
     .map((cat, idx) => ({
       cat,
-      mu: trapezoidMembership(currentValue, varDef.categorias[cat] as [number, number, number, number]),
+      mu: trapezoidMembership(currentValue, resolveMembershipPoints(varDef.categorias[cat])),
       color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
     }))
     .filter((m) => m.mu > 0.01)
@@ -182,12 +182,14 @@ function VariableCard({
 
   const curveSeries = categoryNames.map((cat, idx) => {
     const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
-    const points = varDef.categorias[cat] as [number, number, number, number];
+    const points = resolveMembershipPoints(varDef.categorias[cat]);
     return {
       name: cat,
       type: "line",
       smooth: false,
       symbol: "none",
+      color,
+      itemStyle: { color },
       lineStyle: { width: 2, color },
       areaStyle: { opacity: 0.07, color },
       data: generateMembershipSeries(domain, points).map((p) => [p.x, p.membership]),
@@ -200,6 +202,8 @@ function VariableCard({
           name: "__marker",
           type: "line",
           symbol: "none",
+          color: "#f59e0b",
+          itemStyle: { color: "#f59e0b" },
           lineStyle: { width: 0 },
           data: [] as number[][],
           markLine: {

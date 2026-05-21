@@ -16,7 +16,7 @@ class SistemaDifusoMamdani:
     Flujo: fusificacion -> evaluacion de reglas -> desfusificacion (centroide).
     """
 
-    def __init__(self, membresias_entrada, reglas=None, permitir_neutro=True):
+    def __init__(self, membresias_entrada, reglas=None):
         """Inicializa el motor con las membresias dadas y un subconjunto opcional de reglas activas.
 
         Entradas:
@@ -27,8 +27,6 @@ class SistemaDifusoMamdani:
                                                "antecedentes": [(variable, categoria), ...],
                                                "consecuente": "bajo" | "medio" | "alto"}
                                 Si es None, usa REGLAS (todas las reglas candidatas del JSON).
-            permitir_neutro:    si True, un caso sin activacion devuelve puntaje_neutro.
-                                si False, un caso sin activacion devuelve NaN y riesgo None.
         """
         self.membresias_entrada = membresias_entrada
         if reglas is None:
@@ -37,8 +35,6 @@ class SistemaDifusoMamdani:
             self.reglas = REGLAS
         else:
             self.reglas = reglas
-        self.permitir_neutro = permitir_neutro
-        self.puntaje_neutro = 50.0
         self.universos_entrada = self._crear_universos_entrada()
         self.universo_salida = self._crear_universo_salida()
         self.curvas_entrada = self._crear_curvas_entrada()
@@ -54,8 +50,8 @@ class SistemaDifusoMamdani:
                       Ejemplo: {"presion_sistolica": [120, 140], "edad": [25, 38], ...}
         Salida:
             dict con:
-              "puntajes":      np.array de N floats (0-100, resultado de la desfusificacion)
-              "riesgos":       np.array de N strings ("low risk" | "mid risk" | "high risk")
+              "puntajes":      np.array de N floats (0-100 o NaN si no hay activacion)
+              "riesgos":       np.array de N strings o None si no hay activacion
               "activaciones":  lista de N dicts {"bajo": float, "medio": float, "alto": float}
               "sin_activacion": np.array de N bools (True si ninguna regla se activo para ese caso)
         """
@@ -193,9 +189,8 @@ class SistemaDifusoMamdani:
             salida_agregada = np.fmax(salida_agregada, salida_recortada)
 
         if float(np.max(salida_agregada)) == 0.0:
-            if not self.permitir_neutro:
-                return np.nan
-            return self.puntaje_neutro
+            # Sin area agregada no existe centroide defendible.
+            return np.nan
 
         return float(fuzz.defuzz(self.universo_salida, salida_agregada, "centroid"))
 

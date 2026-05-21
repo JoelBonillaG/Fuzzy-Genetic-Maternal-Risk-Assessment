@@ -5,6 +5,10 @@ from pathlib import Path
 RUTA_PAQUETE = Path(__file__).resolve().parents[1]
 RUTA_CSV = RUTA_PAQUETE / "datos" / "Maternal Health Risk Data Set.csv"
 COLUMNA_RIESGO_CSV = "RiskLevel"
+RUTA_REGLAS = RUTA_PAQUETE / "reglas"
+RUTA_REGLAS_LIMPIAS = RUTA_REGLAS / "limpias"
+RUTA_REGLAS_SISTEMA_DIFUSO = RUTA_REGLAS / "reglas_sistema_difuso.json"
+RUTA_METADATA_REGLAS_SISTEMA_DIFUSO = RUTA_REGLAS / "metadata_reglas_sistema_difuso.json"
 RUTA_REGLAS_APRENDIDAS = RUTA_PAQUETE / "modelos" / "reglas_aprendidas.json"
 RUTA_SELECCION_REGLAS = RUTA_PAQUETE / "modelos" / "modelo_optimizado_reglas.json"
 

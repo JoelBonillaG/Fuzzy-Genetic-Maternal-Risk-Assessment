@@ -13,8 +13,10 @@ import {
   type ExplicacionResponse,
   type FuzzyDefinicionesResponse,
   type FuzzyReglasResponse,
+  type ReglaSchema,
+  type AntecedentRegla,
 } from "../../lib/riesgoMaterno";
-import { generateMembershipSeries } from "../../lib/membership";
+import { generateMembershipSeries, resolveMembershipPoints } from "../../lib/membership";
 import { ChartPanel } from "../ui/ChartPanel";
 import { GlassPanel } from "../ui/GlassPanel";
 import { SectionHeader } from "../ui/SectionHeader";
@@ -29,6 +31,7 @@ const toneClassMap = {
   low: "text-emerald-700 border-emerald-200 bg-emerald-50",
   mid: "text-amber-700 border-amber-200 bg-amber-50",
   high: "text-rose-700 border-rose-200 bg-rose-50",
+  none: "text-slate-700 border-slate-200 bg-slate-50",
 };
 
 const activationOrder = [
@@ -45,6 +48,11 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
   const [selectedVariable, setSelectedVariable] = useState<string>("");
   const [reglasData, setReglasData] = useState<FuzzyReglasResponse | null>(null);
   const [showReglas, setShowReglas] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    low: true,
+    mid: false,
+    high: false,
+  });
 
   useEffect(() => {
     obtenerDefinicionesDifusas()
@@ -70,7 +78,6 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
       <SectionHeader
         eyebrow="Inferencia Mamdani"
         title="Funciones de pertenencia y reglas"
-        description="Curvas trapezoidales (base vs optimizado), fuzzificacion del caso actual y reglas activadas."
       />
 
       {loading ? (
@@ -109,45 +116,75 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
 
             {showReglas && reglasData && (
               <GlassPanel className="mt-3 p-5 sm:p-6">
-                <div className="text-xs uppercase tracking-[0.22em] text-cyan-700/80 mb-4">
-                  Reglas aprendidas por RIPPER — {reglasData.total} reglas IF-THEN
-                </div>
-                <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
-                  {reglasData.reglas.map((regla) => {
-                    const riskUi = getRiskUi(regla.consecuente);
-                    return (
-                      <div
-                        key={regla.numero}
-                        className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-4 py-3 text-sm"
-                      >
-                        <span className="shrink-0 rounded-full border border-cyan-300/30 bg-cyan-50 px-2.5 py-0.5 text-xs font-semibold text-cyan-700">
-                          #{regla.numero}
-                        </span>
-                        <span className="text-slate-500 text-xs">IF</span>
-                        {regla.antecedentes.map((ant, i) => (
-                          <span key={i} className="flex items-center gap-1 text-xs">
-                            <span className="font-medium text-slate-700">{getFieldLabel(ant.variable)}</span>
-                            <span className="text-slate-400">=</span>
-                            <span className="rounded-full bg-sky-50 px-2 py-0.5 font-mono text-sky-700">{ant.categoria}</span>
-                            {i < regla.antecedentes.length - 1 && (
-                              <span className="text-slate-400 ml-1">AND</span>
-                            )}
-                          </span>
-                        ))}
-                        <span className="text-slate-500 text-xs ml-1">THEN</span>
-                        <span
-                          className="rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide"
-                          style={{
-                            borderColor: `${riskUi.accent}55`,
-                            color: riskUi.accent,
-                            backgroundColor: `${riskUi.accent}18`,
-                          }}
-                        >
-                          {riskUi.label}
-                        </span>
-                      </div>
-                    );
-                  })}
+                <div className="text-xs uppercase tracking-[0.22em] text-cyan-700/80 mb-4">Reglas</div>
+                <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+                  {(() => {
+                    const groups: Record<string, ReglaSchema[]> = { low: [], mid: [], high: [] };
+                    for (const r of reglasData.reglas) {
+                      const tone = getRiskUi(r.consecuente).tone;
+                      if (tone === "low") groups.low.push(r as ReglaSchema);
+                      else if (tone === "mid") groups.mid.push(r as ReglaSchema);
+                      else if (tone === "high") groups.high.push(r as ReglaSchema);
+                      else groups.low.push(r as ReglaSchema);
+                    }
+
+                    const labels: Record<string, string> = { low: "Riesgo bajo", mid: "Riesgo medio", high: "Riesgo alto" };
+
+                    return ([
+                      "low",
+                      "mid",
+                      "high",
+                    ] as const).map((key) => {
+                      const list = (groups[key] || []).sort((a, b) => a.numero - b.numero);
+                      const isOpen = !!expandedGroups[key];
+
+                      return (
+                        <div key={key} className="rounded-2xl border border-sky-100 bg-white/92 p-2">
+                          <div className="flex items-center justify-between px-3 py-2">
+                            <div className="text-sm font-medium text-slate-700">{labels[key]} ({list.length})</div>
+                            <button
+                              type="button"
+                              onClick={() => setExpandedGroups((s) => ({ ...s, [key]: !s[key] }))}
+                              className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-slate-600"
+                            >
+                              {isOpen ? "Ocultar" : "Ver"}
+                            </button>
+                          </div>
+
+                          {isOpen && (
+                            <div className="mt-2 space-y-2">
+                              {list.map((regla) => {
+                                const riskUi = getRiskUi(regla.consecuente);
+                                return (
+                                  <div
+                                    key={regla.numero}
+                                    className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200/70 bg-white px-4 py-3 text-sm"
+                                  >
+                                    <span className="shrink-0 rounded-full border border-cyan-300/30 bg-cyan-50 px-2.5 py-0.5 text-xs font-semibold text-cyan-700">#{regla.numero}</span>
+                                    {regla.antecedentes.map((ant: AntecedentRegla, i: number) => (
+                                      <span key={i} className="flex items-center gap-1 text-xs">
+                                        <span className="font-medium text-slate-700">{getFieldLabel(ant.variable)}</span>
+                                        <span className="text-slate-400">=</span>
+                                        <span className="rounded-full bg-sky-50 px-2 py-0.5 font-mono text-sky-700">{ant.categoria}</span>
+                                        {i < regla.antecedentes.length - 1 && <span className="text-slate-400 ml-1">AND</span>}
+                                      </span>
+                                    ))}
+
+                                    <span
+                                      className="rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide"
+                                      style={{ borderColor: `${riskUi.accent}55`, color: riskUi.accent, backgroundColor: `${riskUi.accent}18` }}
+                                    >
+                                      {riskUi.label}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
               </GlassPanel>
             )}
@@ -159,11 +196,7 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
                 <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
                   <div>
-                    <p className="font-semibold">Ninguna regla se activo para este perfil</p>
-                    <p className="mt-1 text-amber-700">
-                      Los valores ingresados no coincidieron con ninguna regla aprendida.
-                      El puntaje de 50 es un valor neutro por defecto, no una clasificacion clinica real.
-                    </p>
+                      <p className="font-semibold">Ninguna regla se activo para este paciente.</p>
                   </div>
                 </div>
               )}
@@ -210,7 +243,7 @@ function MembershipCurvesPanel({
 
   const series = categoryNames.map((cat, idx) => {
     const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
-    const points = varDef.categorias[cat] as [number, number, number, number];
+    const points = resolveMembershipPoints(varDef.categorias[cat]);
     const curveSeries = generateMembershipSeries(domain, points);
     const mu = explanationResult?.pertenencias?.[selectedVariable]?.[cat] ?? null;
 
@@ -219,6 +252,8 @@ function MembershipCurvesPanel({
       type: "line",
       smooth: false,
       symbol: "none",
+      color,
+      itemStyle: { color },
       lineStyle: { width: 2.5, color },
       areaStyle: { opacity: 0.06, color },
       data: curveSeries.map((p) => [p.x, p.membership]),
@@ -233,6 +268,8 @@ function MembershipCurvesPanel({
             name: `Valor actual (${currentPoint})`,
             type: "line",
             symbol: "none",
+            color: "#f59e0b",
+            itemStyle: { color: "#f59e0b" },
             lineStyle: { width: 2, color: "#f59e0b", type: "dotted" },
             markLine: {
               symbol: "none",
@@ -305,7 +342,7 @@ function MembershipCurvesPanel({
             <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Categorias</div>
             {categoryNames.map((cat, idx) => {
               const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
-              const pts = varDef.categorias[cat] as number[];
+              const pts = resolveMembershipPoints(varDef.categorias[cat]);
               const mu = explanationResult?.pertenencias?.[selectedVariable]?.[cat];
               return (
                 <div
@@ -336,10 +373,7 @@ function MembershipCurvesPanel({
         )}
       </GlassPanel>
 
-      <ChartPanel
-        title={`${getFieldLabel(selectedVariable)} — curvas de pertenencia`}
-        subtitle="Curvas trapezoidales por categoria linguistica"
-      >
+      <ChartPanel title={`${getFieldLabel(selectedVariable)} — curvas de pertenencia`} subtitle="">
         <div className="h-[420px]">
           <ReactECharts
             key={selectedVariable}
@@ -425,6 +459,7 @@ function FuzzificationPanel({ result }: { result: ExplicacionResponse }) {
 function AggregacionPanel({ result }: { result: ExplicacionResponse }) {
   const narrative = buildClinicalNarrative(result);
   const esFallback = result.sin_activacion;
+  const scoreValue = result.puntaje ?? 0;
 
   return (
     <GlassPanel className="mt-6 p-6 sm:p-7">
@@ -473,14 +508,14 @@ function AggregacionPanel({ result }: { result: ExplicacionResponse }) {
               className="text-5xl font-semibold"
               style={{ color: esFallback ? "#94a3b8" : getRiskUi(result.riesgo).accent }}
             >
-              {result.puntaje.toFixed(1)}
+              {esFallback ? "N/A" : scoreValue.toFixed(1)}
             </div>
-            <div className="mb-1 text-sm text-slate-500">/ 100</div>
+            {!esFallback && <div className="mb-1 text-sm text-slate-500">/ 100</div>}
           </div>
           {esFallback ? (
             <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
               <AlertTriangle className="h-3 w-3" />
-              Valor neutro de respaldo
+              Sin puntaje por falta de activacion
             </div>
           ) : (
             <div
@@ -511,9 +546,9 @@ function AggregacionPanel({ result }: { result: ExplicacionResponse }) {
               {/* Marcador del centroide */}
               <motion.div
                 className="absolute top-0 h-full w-1 rounded-full bg-slate-800 shadow"
-                style={{ left: `${result.puntaje}%` }}
+                style={{ left: `${scoreValue}%` }}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                animate={{ opacity: esFallback ? 0 : 1 }}
                 transition={{ duration: 0.4 }}
               />
             </div>
@@ -527,10 +562,22 @@ function AggregacionPanel({ result }: { result: ExplicacionResponse }) {
       </div>
 
       <div className="mt-5 border-t border-sky-100 pt-5">
-        <div className="flex items-start gap-2 text-sm text-slate-600">
-          <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-cyan-600" />
-          <p className="leading-6">{narrative.intro} {narrative.details}</p>
-        </div>
+        {esFallback ? (
+          <div className="flex items-start gap-2 text-sm text-slate-600">
+            <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-cyan-600" />
+            <p className="leading-6">
+              El sistema no pudo clasificar este caso porque ninguna regla se activo. No tiene
+              sentido mostrar indicadores influyentes cuando no hubo evidencia difusa suficiente.
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-start gap-2 text-sm text-slate-600">
+            <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-cyan-600" />
+            <p className="leading-6">
+              {narrative.intro} {narrative.details}
+            </p>
+          </div>
+        )}
       </div>
     </GlassPanel>
   );
@@ -562,8 +609,7 @@ function RulesPanel({ result }: { result: ExplicacionResponse }) {
           <div className="flex items-start gap-3 rounded-2xl border border-amber-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-700">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
             <span>
-              Ninguna regla se activo para este perfil. El puntaje 50 es un valor neutro de
-              respaldo generado cuando no hay evidencia clinica disponible.
+                Ninguna regla se activo para este paciente.
             </span>
           </div>
         )}

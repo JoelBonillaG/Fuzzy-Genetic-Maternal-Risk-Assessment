@@ -77,7 +77,11 @@ def ejecutar_desde_csv(argumentos):
             resultado = predecir_caso(valores)
 
             riesgo_real = fila["riesgo_csv"]
-            riesgo_predicho = str(resultado["riesgo"]).strip().lower()
+            riesgo_predicho = (
+                str(resultado["riesgo"]).strip().lower()
+                if resultado["riesgo"] is not None
+                else "__sin_activacion__"
+            )
 
             if riesgo_real in metricas and riesgo_predicho in metricas[riesgo_real]["predicciones"]:
                 metricas[riesgo_real]["total"] += 1
@@ -98,8 +102,7 @@ def ejecutar_desde_csv(argumentos):
                     f"{ajuste['valor_original']} -> {ajuste['valor_ajustado']}"
                 )
 
-            lineas_salida.append(f"Puntaje de riesgo: {resultado['puntaje']:.4f}")
-            lineas_salida.append(f"Riesgo: {resultado['riesgo']}")
+            lineas_salida.append(formatear_resultado_difuso(resultado))
             lineas_salida.append("-" * 70)
 
     lineas_salida.append("")
@@ -221,9 +224,21 @@ def construir_salida_individual(resultado):
             f"{ajuste['valor_original']} -> {ajuste['valor_ajustado']}"
         )
 
-    lineas.append(f"Puntaje de riesgo: {resultado['puntaje']:.4f}")
-    lineas.append(f"Riesgo: {resultado['riesgo']}")
+    lineas.append(formatear_resultado_difuso(resultado))
     return "\n".join(lineas)
+
+
+def formatear_resultado_difuso(resultado):
+    if resultado["sin_activacion"]:
+        return "\n".join([
+            "Puntaje de riesgo: NaN",
+            "Riesgo: sin clasificacion",
+            "Motivo: ninguna regla se activo para este perfil.",
+        ])
+    return "\n".join([
+        f"Puntaje de riesgo: {resultado['puntaje']:.4f}",
+        f"Riesgo: {resultado['riesgo']}",
+    ])
 
 
 def construir_comando(valores):

@@ -316,7 +316,11 @@ def evaluar_cromosoma(cromosoma, tabla, membresias, parametros, codificacion):
     datos = convertir_split_a_diccionario(tabla)
     sistema = SistemaDifusoMamdani(membresias, reglas=reglas)
     inferencia = sistema.inferir_lote(datos["entradas"])
-    ba = float(balanced_accuracy_score(datos["riesgos"], inferencia["riesgos"]))
+    predichos = predicciones_con_sin_activacion(
+        inferencia["riesgos"],
+        inferencia["sin_activacion"],
+    )
+    ba = float(balanced_accuracy_score(datos["riesgos"], predichos))
     duplicados = contar_duplicados(reglas)
     proporcion_duplicados = duplicados / len(reglas) if reglas else 0.0
     fitness = (
@@ -331,6 +335,12 @@ def evaluar_cromosoma(cromosoma, tabla, membresias, parametros, codificacion):
         duplicados=duplicados,
         proporcion_duplicados=float(proporcion_duplicados),
     )
+
+
+def predicciones_con_sin_activacion(predichos, sin_activacion):
+    predichos = np.asarray(predichos, dtype=object).copy()
+    predichos[np.asarray(sin_activacion, dtype=bool)] = "__sin_activacion__"
+    return predichos
 
 
 def decodificar_cromosoma(cromosoma, codificacion):

@@ -351,7 +351,11 @@ def evaluar_reglas_difusas(reglas, tabla):
     datos = convertir_split_a_diccionario(tabla)
     sistema = SistemaDifusoMamdani(membresias, reglas=reglas)
     inferencia = sistema.inferir_lote(datos["entradas"])
-    return calcular_metricas(datos["riesgos"], inferencia["riesgos"])
+    predichos = predicciones_con_sin_activacion(
+        inferencia["riesgos"],
+        inferencia["sin_activacion"],
+    )
+    return calcular_metricas(datos["riesgos"], predichos)
 
 
 def calcular_metricas(reales, predichos):
@@ -364,6 +368,12 @@ def calcular_metricas(reales, predichos):
             f1_score(reales, predichos, labels=ETIQUETAS_RIESGO, average="macro", zero_division=0)
         ),
     }
+
+
+def predicciones_con_sin_activacion(predichos, sin_activacion):
+    predichos = np.asarray(predichos, dtype=object).copy()
+    predichos[np.asarray(sin_activacion, dtype=bool)] = "__sin_activacion__"
+    return predichos
 
 
 def clase_mayoritaria(tabla):
