@@ -4,10 +4,10 @@ import { AlertTriangle, BookOpen, CheckCircle2, LoaderCircle, ShieldAlert } from
 import {
   buildClinicalNarrative,
   buildResultSummary,
-  buildRuleNarrative,
   formatPercentage,
   formatScore,
   formatValue,
+  getCategoryLabel,
   getFieldLabel,
   getRiskUi,
   type ExplicacionResponse,
@@ -25,12 +25,14 @@ const iconMap = {
   low: CheckCircle2,
   mid: AlertTriangle,
   high: ShieldAlert,
+  none: AlertTriangle,
 };
 
 const toneClassMap = {
   low: "text-emerald-700 border-emerald-200 bg-emerald-50",
   mid: "text-amber-700 border-amber-200 bg-amber-50",
   high: "text-rose-700 border-rose-200 bg-rose-50",
+  none: "text-slate-700 border-slate-200 bg-slate-50",
 };
 
 export function RecommendationSection({ result, isLoading, error }: RecommendationSectionProps) {
@@ -99,6 +101,8 @@ function ResultContent({ result }: { result: ExplicacionResponse }) {
   const summary = buildResultSummary(result);
   const narrative = buildClinicalNarrative(result);
   const sortedRules = [...result.reglas_activadas].sort((a, b) => b.fuerza - a.fuerza);
+  const scoreValue = result.puntaje ?? 0;
+  const noClassification = result.sin_activacion || result.reglas_activadas.length === 0 || !result.riesgo;
 
   const gaugeOption = {
     backgroundColor: "transparent",
@@ -129,7 +133,7 @@ function ResultContent({ result }: { result: ExplicacionResponse }) {
         detail: {
           valueAnimation: false,
           offsetCenter: [0, "0%"],
-          formatter: "{value}",
+          formatter: noClassification ? "N/A" : "{value}",
           color: "#0f172a",
           fontSize: 40,
           fontWeight: 700,
@@ -139,23 +143,18 @@ function ResultContent({ result }: { result: ExplicacionResponse }) {
           color: "rgba(71, 85, 105, 0.8)",
           fontSize: 13,
         },
-        data: [{ value: Number(result.puntaje.toFixed(1)), name: "Puntaje" }],
+        data: [{ value: Number(scoreValue.toFixed(1)), name: noClassification ? "Sin puntaje" : "Puntaje" }],
       },
     ],
   };
 
   return (
     <div className="space-y-6">
-      {result.sin_activacion && (
+      {noClassification && (
         <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
           <div>
-            <p className="font-semibold">Ninguna regla se activo para este perfil</p>
-            <p className="mt-1 text-amber-700">
-              Los valores ingresados no coincidieron con ninguna regla aprendida por RIPPER.
-              El puntaje de 50 es un valor neutro por defecto, no una clasificacion clinica real.
-              Verifica que los valores ingresados sean correctos o consulta a un profesional.
-            </p>
+            <p className="font-semibold">El sistema no pudo clasificar el riesgo de este paciente.</p>
           </div>
         </div>
       )}
@@ -174,10 +173,10 @@ function ResultContent({ result }: { result: ExplicacionResponse }) {
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-slate-900 sm:text-[1.9rem]">
-                  {result.sin_activacion ? "Sin clasificacion" : risk.label}
+                  {noClassification ? "Sin clasificacion" : risk.label}
                 </h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  {result.sin_activacion
+                  {noClassification
                     ? "El perfil no activo ninguna regla del sistema."
                     : "Clasificacion final del caso analizado."}
                 </p>
@@ -208,7 +207,9 @@ function ResultContent({ result }: { result: ExplicacionResponse }) {
               <span className="text-4xl font-semibold leading-none text-slate-900 sm:text-5xl">
                 {formatScore(result.puntaje)}
               </span>
-              <span className="pb-1 text-sm font-medium text-slate-500">/100</span>
+              {!noClassification && (
+                <span className="pb-1 text-sm font-medium text-slate-500">/100</span>
+              )}
             </div>
             <p className="mt-3 text-base font-semibold leading-6 text-slate-900">
               {summary.headline}
@@ -244,100 +245,119 @@ function ResultContent({ result }: { result: ExplicacionResponse }) {
         ) : null}
       </GlassPanel>
 
-      {!result.sin_activacion && (
-        <GlassPanel className="p-6 sm:p-8">
-          <div className="flex items-start gap-4">
-            <div className="shrink-0 rounded-2xl border border-cyan-300/30 bg-cyan-50 p-3 text-cyan-700">
-              <BookOpen className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-[0.22em] text-cyan-700/80">
-                Por que el sistema tomo esta decision
+      {!noClassification && (
+        <>
+          <GlassPanel className="p-6 sm:p-8">
+            <div className="flex items-start gap-4">
+              <div className="shrink-0 rounded-2xl border border-cyan-300/30 bg-cyan-50 p-3 text-cyan-700">
+                <BookOpen className="h-5 w-5" />
               </div>
-              <p className="mt-3 text-base font-semibold leading-relaxed text-slate-900">
-                {narrative.intro}
-              </p>
-              <p className="mt-2 text-sm leading-7 text-slate-600">{narrative.details}</p>
-              <p className="mt-2 text-sm leading-7 text-slate-600">{narrative.conclusion}</p>
-            </div>
-          </div>
-        </GlassPanel>
-      )}
-
-      <GlassPanel className="p-5 sm:p-6">
-        <div className="flex items-start gap-4">
-          <div className="shrink-0 rounded-2xl border border-cyan-300/30 bg-cyan-50 p-3 text-cyan-700">
-            <BookOpen className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="text-base font-semibold text-slate-900">
-              Reglas que influyeron en la decision
-            </div>
-            <p className="mt-1 text-sm text-slate-500">
-              Ordenadas por peso de influencia, de mayor a menor impacto en el resultado final.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-5 space-y-4">
-          {sortedRules.length === 0 && (
-            <div className="flex items-start gap-3 rounded-2xl border border-amber-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-700">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
-              <span>
-                Ninguna regla se activo para este perfil. El puntaje de 50 es un valor neutro de
-                respaldo, no el resultado de una inferencia clinica real.
-              </span>
-            </div>
-          )}
-          {sortedRules.map((rule, index) => {
-            const ruleRisk = getRiskUi(rule.consecuente);
-            const ruleNarrative = buildRuleNarrative(rule);
-
-            return (
-              <motion.div
-                key={rule.numero}
-                initial={{ opacity: 0, y: 18 }}
-                transition={{ duration: 0.4, delay: index * 0.04 }}
-                viewport={{ once: true, amount: 0.2 }}
-                whileInView={{ opacity: 1, y: 0 }}
-              >
-                <div className="rounded-[1.75rem] border border-slate-200/70 bg-white/92 p-5 sm:p-6">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span className="rounded-full border border-cyan-300/30 bg-cyan-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">
-                        Regla {rule.numero}
-                      </span>
-                      <span
-                        className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${toneClassMap[ruleRisk.tone]}`}
-                      >
-                        Indica {ruleRisk.label.toLowerCase()}
-                      </span>
-                      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-                        Peso {formatPercentage(rule.fuerza)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <p className="mt-4 text-sm leading-7 text-slate-700">
-                    <span className="font-medium text-slate-500">Se activo porque: </span>
-                    {ruleNarrative}
-                  </p>
-
-                  <div className="mt-4 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-1.5 rounded-full"
-                      style={{
-                        backgroundColor: ruleRisk.accent,
-                        width: `${Math.max(4, Math.round(rule.fuerza * 100))}%`,
-                      }}
-                    />
-                  </div>
+              <div>
+                <div className="text-xs uppercase tracking-[0.22em] text-cyan-700/80">
+                  Por que el sistema tomo esta decision
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </GlassPanel>
+                <p className="mt-3 text-base font-semibold leading-relaxed text-slate-900">
+                  {narrative.intro}
+                </p>
+                <p className="mt-2 text-sm leading-7 text-slate-600">{narrative.details}</p>
+                <p className="mt-2 text-sm leading-7 text-slate-600">{narrative.conclusion}</p>
+              </div>
+            </div>
+          </GlassPanel>
+
+          <GlassPanel className="p-5 sm:p-6">
+            <div className="flex items-start gap-4">
+              <div className="shrink-0 rounded-2xl border border-cyan-300/30 bg-cyan-50 p-3 text-cyan-700">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-base font-semibold text-slate-900">
+                  Reglas que influyeron en la decision
+                </div>
+                <p className="mt-1 text-sm text-slate-500">
+                  Ordenadas por peso de influencia, de mayor a menor impacto en el resultado final.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              {sortedRules.length === 0 && (
+                <div className="flex items-start gap-3 rounded-2xl border border-amber-100 bg-amber-50/60 px-4 py-3 text-sm text-amber-700">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+                  <span>
+                    Ninguna regla se activo para este paciente.
+                  </span>
+                </div>
+              )}
+              {sortedRules.map((rule, index) => {
+                const ruleRisk = getRiskUi(rule.consecuente);
+
+                return (
+                  <motion.div
+                    key={rule.numero}
+                    initial={{ opacity: 0, y: 18 }}
+                    transition={{ duration: 0.4, delay: index * 0.04 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                  >
+                    <div className="rounded-[1.75rem] border border-slate-200/70 bg-white/92 p-5 sm:p-6">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="rounded-full border border-cyan-300/30 bg-cyan-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700">
+                            Regla {rule.numero}
+                          </span>
+                          <span
+                            className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${toneClassMap[ruleRisk.tone]}`}
+                          >
+                            Indica {ruleRisk.label.toLowerCase()}
+                          </span>
+                          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                            Peso {formatPercentage(rule.fuerza)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <div className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+                          Antecedentes activados
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {rule.antecedentes.map((antecedent, antecedentIndex) => (
+                            <div
+                              key={`${rule.numero}-${antecedent.variable}-${antecedent.categoria}-${antecedentIndex}`}
+                              className="inline-flex items-center overflow-hidden rounded-full border border-sky-100 bg-white shadow-sm"
+                            >
+                              <span className="bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800">
+                                {getFieldLabel(antecedent.variable)}
+                              </span>
+                              <span className="border-x border-sky-100 bg-white px-2 py-1.5 text-xs font-semibold text-slate-400">
+                                =
+                              </span>
+                              <span className="bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-800">
+                                {getCategoryLabel(antecedent.categoria)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className="h-1.5 rounded-full"
+                          style={{
+                            backgroundColor: ruleRisk.accent,
+                            width: `${Math.max(4, Math.round(rule.fuerza * 100))}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </GlassPanel>
+        </>
+      )}
     </div>
   );
 }

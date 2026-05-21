@@ -19,12 +19,14 @@ class AjusteEntradaResponse(BaseModel):
 
 
 class PrediccionResponse(BaseModel):
-    puntaje: float
-    riesgo: str
+    puntaje: float | None
+    riesgo: str | None
+    sin_activacion: bool = False
     sistema: str
     origen_modelo: str
+    fuente_reglas: str = "AG"
+    fallback_ripper: bool = False
     ajustes_entrada: list[AjusteEntradaResponse]
-    cantidad_reglas_activas: int
 
 
 class AntecedentExplicacion(BaseModel):
@@ -45,11 +47,14 @@ class ExplicacionResponse(BaseModel):
     pertenencias: dict[str, dict[str, float]]
     reglas_activadas: list[ReglaActivada]
     activaciones: dict[str, float]
-    puntaje: float
-    riesgo: str
+    puntaje: float | None
+    riesgo: str | None
+    sin_activacion: bool = False
+    sistema: str = ""
     origen_modelo: str
+    fuente_reglas: str = "AG"
+    fallback_ripper: bool = False
     ajustes_entrada: list[AjusteEntradaResponse]
-    cantidad_reglas_activas: int
 
 
 class CurvaMembresia(BaseModel):
@@ -62,39 +67,17 @@ class MembresiasResponse(BaseModel):
     origen_modelo: str
 
 
-# ── Algoritmo genetico (lectura de la seleccion guardada) ─────────────────────
-
-class GeneracionHistorial(BaseModel):
-    generacion: int
-    mejor_fitness: float
-    fitness_promedio: float
-    aciertos: int
-    cantidad_reglas: int
-
-
-class MetricasPrueba(BaseModel):
-    aciertos: int
-    total: int
-    accuracy: float
-    fitness: float
-
-
-class SeleccionReglasResponse(BaseModel):
-    disponible: bool
-    cromosoma: list[int]
-    numeros_reglas_activas: list[int]
-    cantidad_reglas: int
-    fitness: float
-    metricas_prueba: dict | MetricasPrueba | None = None
-    historial: list[GeneracionHistorial] = []
-
-
 # ── Logica difusa ─────────────────────────────────────────────────────────────
+
+class CategoriaDefinicion(BaseModel):
+    puntos_base: list[float]
+    puntos_optimizados: list[float]
+
 
 class VariableDefinicion(BaseModel):
     limites: list[float]
     epsilon: float
-    categorias: dict[str, list[float]]
+    categorias: dict[str, CategoriaDefinicion]
 
 
 class SalidaDifusa(BaseModel):
@@ -118,10 +101,9 @@ class ReglaSchema(BaseModel):
     numero: int
     antecedentes: list[AntecedentRegla]
     consecuente: str
-    activa: bool
 
 
 class FuzzyReglasResponse(BaseModel):
     reglas: list[ReglaSchema]
     total: int
-    total_activas: int
+    fuente_reglas: str = "AG"

@@ -1,8 +1,6 @@
-import type { PatientFormData } from "../data/mockData";
-
-export type RiskTone = "low" | "mid" | "high";
-
 // ── Prediccion ────────────────────────────────────────────────────────────────
+
+export type RiskTone = "low" | "mid" | "high" | "none";
 
 export interface PrediccionRequest {
   edad: number;
@@ -20,12 +18,13 @@ export interface AjusteEntradaResponse {
 }
 
 export interface PrediccionResponse {
-  puntaje: number;
-  riesgo: string;
-  // true cuando ninguna regla RIPPER activo — puntaje=50 es neutro, no un resultado clinico real
+  puntaje: number | null;
+  riesgo: string | null;
   sin_activacion: boolean;
   sistema: string;
   origen_modelo: string;
+  fuente_reglas: string;
+  fallback_ripper: boolean;
   ajustes_entrada: AjusteEntradaResponse[];
 }
 
@@ -47,58 +46,22 @@ export interface ExplicacionResponse {
   pertenencias: Record<string, Record<string, number>>;
   reglas_activadas: ReglaActivada[];
   activaciones: Record<string, number>;
-  puntaje: number;
-  riesgo: string;
-  // true cuando ninguna regla RIPPER activo — puntaje=50 es neutro, no un resultado clinico real
+  puntaje: number | null;
+  riesgo: string | null;
   sin_activacion: boolean;
+  sistema: string;
   origen_modelo: string;
+  fuente_reglas: string;
+  fallback_ripper: boolean;
   ajustes_entrada: AjusteEntradaResponse[];
-}
-
-// ── Algoritmo genetico ────────────────────────────────────────────────────────
-
-export interface GeneracionHistorial {
-  generacion: number;
-  fitness: number;
-  fitness_promedio: number;
-  macro_f1: number;
-  recall_alto: number;
-}
-
-export interface GAHistorialResponse {
-  disponible: boolean;
-  historial_generaciones: GeneracionHistorial[];
-  fitness: number;
-  generaciones: number;
-  macro_f1: number;
-  recall_alto: number;
-}
-
-export interface ComparacionRow {
-  metrica: string;
-  base: number;
-  optimizado: number;
-  delta: number;
-}
-
-export interface GAComparacionResponse {
-  disponible: boolean;
-  tabla_comparativa: ComparacionRow[];
-  mejor_cromosoma: number[];
-  membresias_decodificadas: Record<string, Record<string, number[]>>;
 }
 
 // ── Logica difusa ─────────────────────────────────────────────────────────────
 
-export interface CategoriaDefinicion {
-  puntos_base: number[];
-  puntos_optimizados: number[];
-}
-
 export interface VariableDefinicion {
   limites: number[];
-  epsilon: number;
-  categorias: Record<string, CategoriaDefinicion>;
+  epsilon?: number;
+  categorias: Record<string, { puntos_base: number[]; puntos_optimizados: number[] }>;
 }
 
 export interface FuzzyDefinicionesResponse {
@@ -120,140 +83,107 @@ export interface ReglaSchema {
   numero: number;
   antecedentes: AntecedentRegla[];
   consecuente: string;
+  activa: boolean;
 }
 
 export interface FuzzyReglasResponse {
   reglas: ReglaSchema[];
   total: number;
+  total_activas?: number;
+  fuente_reglas: string;
 }
 
-// ── Field specs ───────────────────────────────────────────────────────────────
+// ── Field specs (labels / units para display) ─────────────────────────────────
 
-export const numericFieldSpecs = [
-  {
-    formKey: "age",
-    apiKey: "edad",
+const TEMPERATURE_VARIABLE = "temperatura_corporal";
+
+const fieldMetaByApiKey: Record<string, { label: string; unit: string; unitDescription: string }> = {
+  edad: {
     label: "Edad",
-    helper: "Edad materna en anos",
-    placeholder: "31",
-    unit: "anos",
-    min: 10,
-    max: 70,
-    step: 1,
+    unit: "años",
+    unitDescription: "Edad del paciente expresada en años.",
   },
-  {
-    formKey: "systolicBP",
-    apiKey: "presion_sistolica",
+  presion_sistolica: {
     label: "Presion sistolica",
-    helper: "Valor superior de referencia",
-    placeholder: "146",
     unit: "mmHg",
-    min: 70,
-    max: 160,
-    step: 1,
+    unitDescription: "Milimetros de mercurio: unidad usada para medir la presion arterial.",
   },
-  {
-    formKey: "diastolicBP",
-    apiKey: "presion_diastolica",
+  presion_diastolica: {
     label: "Presion diastolica",
-    helper: "Valor inferior de referencia",
-    placeholder: "94",
     unit: "mmHg",
-    min: 49,
-    max: 100,
-    step: 1,
+    unitDescription: "Milimetros de mercurio: unidad usada para medir la presion arterial.",
   },
-  {
-    formKey: "bloodGlucose",
-    apiKey: "azucar_sangre",
-    label: "Glucosa / BS",
-    helper: "Medicion de glucosa en sangre",
-    placeholder: "7.8",
+  azucar_sangre: {
+    label: "Glucemia",
     unit: "mmol/L",
-    min: 6,
-    max: 19,
-    step: 0.1,
+    unitDescription: "Milimoles por litro: concentracion de glucosa en sangre.",
   },
-  {
-    formKey: "bodyTemperature",
-    apiKey: "temperatura_corporal",
+  temperatura_corporal: {
     label: "Temperatura corporal",
-    helper: "Registro termico observado",
-    placeholder: "100.1",
-    unit: "F",
-    min: 97,
-    max: 103,
-    step: 0.1,
+    unit: "°C",
+    unitDescription: "Grados Celsius: unidad de temperatura usada para el ingreso del paciente.",
   },
-  {
-    formKey: "heartRate",
-    apiKey: "frecuencia_cardiaca",
+  frecuencia_cardiaca: {
     label: "Frecuencia cardiaca",
-    helper: "Frecuencia cardiaca observada",
-    placeholder: "88",
     unit: "bpm",
-    min: 60,
-    max: 90,
-    step: 1,
+    unitDescription: "Latidos por minuto: cantidad de pulsaciones del corazon en un minuto.",
   },
-] as const;
+};
 
-export type NumericFormField = (typeof numericFieldSpecs)[number]["formKey"];
-type NumericFieldSpec = (typeof numericFieldSpecs)[number];
+export const VARIABLE_ORDER = [
+  "edad",
+  "presion_sistolica",
+  "presion_diastolica",
+  "azucar_sangre",
+  "temperatura_corporal",
+  "frecuencia_cardiaca",
+] as const;
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "/api/v1").replace(/\/$/, "");
 
-const fieldSpecByApiKey = Object.fromEntries(
-  numericFieldSpecs.map((spec) => [spec.apiKey, spec]),
-) as Record<(typeof numericFieldSpecs)[number]["apiKey"], NumericFieldSpec>;
-
-const riskToneConfig = {
-  low: { accent: "#4ade80", label: "Riesgo bajo" },
-  mid: { accent: "#f59e0b", label: "Riesgo medio" },
-  high: { accent: "#fb7185", label: "Riesgo alto" },
-} as const;
-
-const numberFormatter = new Intl.NumberFormat("es-EC", { maximumFractionDigits: 2 });
-const scoreFormatter = new Intl.NumberFormat("es-EC", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
-
 // ── Builders ──────────────────────────────────────────────────────────────────
 
-export function buildPredictionPayload(formData: PatientFormData): PrediccionRequest {
-  return numericFieldSpecs.reduce((payload, spec) => {
-    payload[spec.apiKey] = parseNumericField(formData[spec.formKey], spec.label);
-    return payload;
-  }, {} as PrediccionRequest);
+export function buildPredictionPayload(values: Record<string, number>): PrediccionRequest {
+  const payload: Record<string, number> = {};
+
+  for (const key of VARIABLE_ORDER) {
+    if (values[key] === undefined || !Number.isFinite(values[key])) {
+      throw new Error(`Valor faltante o invalido para ${getFieldLabel(key)}.`);
+    }
+    payload[key] = toBackendValue(key, values[key]);
+  }
+
+  return payload as unknown as PrediccionRequest;
 }
 
-export function getFieldLabel(variable: string) {
-  return fieldSpecByApiKey[variable as keyof typeof fieldSpecByApiKey]?.label ?? humanize(variable);
+export function getFieldLabel(variable: string): string {
+  return fieldMetaByApiKey[variable]?.label ?? humanize(variable);
 }
 
-export function getFieldUnit(variable: string) {
-  return fieldSpecByApiKey[variable as keyof typeof fieldSpecByApiKey]?.unit ?? "";
+export function getFieldUnit(variable: string): string {
+  if (variable === TEMPERATURE_VARIABLE) return "°C";
+  return fieldMetaByApiKey[variable]?.unit ?? "";
 }
 
-export function getFieldRange(formKey: NumericFormField) {
-  const spec = numericFieldSpecs.find((item) => item.formKey === formKey);
-  return spec ? `${spec.min} - ${spec.max} ${spec.unit}` : "";
+export function getFieldUnitDescription(variable: string): string {
+  return fieldMetaByApiKey[variable]?.unitDescription ?? "";
 }
 
-export function getRiskTone(value: string): RiskTone {
+export function getRiskTone(value: string | null | undefined): RiskTone {
+  if (!value) return "none";
   const n = value.toLowerCase();
   if (n.includes("high") || n.includes("alto")) return "high";
   if (n.includes("mid") || n.includes("medio")) return "mid";
   return "low";
 }
 
-export function getRiskUi(value: string) {
+export function getRiskUi(value: string | null | undefined) {
   const tone = getRiskTone(value);
   return { tone, ...riskToneConfig[tone] };
 }
 
-export function formatScore(value: number) {
+export function formatScore(value: number | null | undefined) {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "No disponible";
   return scoreFormatter.format(value);
 }
 
@@ -264,39 +194,46 @@ export function formatPercentage(value: number) {
 }
 
 export function formatValue(variable: string, value: number) {
+  const displayValue = toDisplayValue(variable, value);
   const unit = getFieldUnit(variable);
-  return unit ? `${numberFormatter.format(value)} ${unit}` : numberFormatter.format(value);
+  return unit ? `${numberFormatter.format(displayValue)} ${unit}` : numberFormatter.format(displayValue);
+}
+
+export function toBackendValue(variable: string, value: number) {
+  if (variable !== TEMPERATURE_VARIABLE) return value;
+  return roundToTwo((value * 9) / 5 + 32);
+}
+
+export function toDisplayValue(variable: string, value: number) {
+  if (variable !== TEMPERATURE_VARIABLE) return value;
+  return roundToTwo(((value - 32) * 5) / 9);
+}
+
+export function toDisplayVariableDefinition(variable: string, definition: VariableDefinicion): VariableDefinicion {
+  if (variable !== TEMPERATURE_VARIABLE) return definition;
+
+  return {
+    ...definition,
+    limites: definition.limites.map((value) => toDisplayValue(variable, value)),
+    categorias: Object.fromEntries(
+      Object.entries(definition.categorias).map(([category, points]) => [
+        category,
+        {
+          puntos_base: points.puntos_base.map((value) => toDisplayValue(variable, value)),
+          puntos_optimizados: points.puntos_optimizados.map((value) => toDisplayValue(variable, value)),
+        },
+      ]),
+    ),
+  };
 }
 
 export function formatAntecedentLabel(antecedent: AntecedentExplicacion) {
   return `${getFieldLabel(antecedent.variable)} es ${humanize(antecedent.categoria)}`;
 }
 
-export function buildRuleTitle(rule: ReglaActivada) {
-  return `Si ${rule.antecedentes.map(formatAntecedentLabel).join(" y ")}`;
-}
-
-const categoryLabels: Record<string, string> = {
-  bajo: "bajo",
-  baja: "baja",
-  normal: "normal",
-  alto: "alto",
-  alta: "alta",
-  elevado: "elevado",
-  elevada: "elevada",
-  joven: "joven",
-  adulta: "adulta",
-  avanzada: "avanzada",
-  fiebre: "con fiebre",
-};
-
-function getCategoryLabel(categoria: string): string {
-  return categoryLabels[categoria] ?? humanize(categoria);
-}
-
 export function buildRuleNarrative(rule: ReglaActivada): string {
   const parts = rule.antecedentes.map(
-    (a) => `la ${getFieldLabel(a.variable).toLowerCase()} está ${getCategoryLabel(a.categoria)}`,
+    (a) => `la ${getFieldLabel(a.variable).toLowerCase()} indica ${getCategoryLabel(a.categoria)}`,
   );
   if (parts.length === 0) return "";
   if (parts.length === 1) return capitalize(parts[0]) + ".";
@@ -311,19 +248,18 @@ export interface ClinicalNarrative {
 }
 
 export function buildClinicalNarrative(result: ExplicacionResponse): ClinicalNarrative {
-  // Caso sin activacion: ninguna regla se disparo — puntaje 50 es fallback neutro, no clasificacion real
-  if (result.sin_activacion) {
+  const sinClasificacion = result.sin_activacion || result.reglas_activadas.length === 0 || !result.riesgo;
+
+  if (sinClasificacion) {
     return {
-      intro: "El perfil ingresado no coincidio con ninguna regla aprendida por el sistema.",
-      details:
-        "Ninguna combinacion de indicadores activo reglas del sistema difuso. El puntaje de 50 es un valor neutro de respaldo, no el resultado de una inferencia clinica.",
-      conclusion:
-        "Verifique que los valores ingresados sean correctos. Si los valores son validos, el caso puede requerir evaluacion medica directa ya que el sistema no tiene evidencia suficiente para clasificarlo.",
+      intro: "El sistema no pudo clasificar el riesgo de este paciente.",
+      details: "No se activaron reglas suficientes para emitir una clasificacion.",
+      conclusion: "Verifique los datos ingresados.",
     };
   }
 
   const riskLabel = getRiskUi(result.riesgo).label.toLowerCase();
-  const score = Math.round(result.puntaje);
+  const score = Math.round(result.puntaje ?? 0);
   const intro = `El sistema clasifico este caso como ${riskLabel} con un puntaje de ${score} sobre 100.`;
 
   const alerts: string[] = [];
@@ -331,8 +267,8 @@ export function buildClinicalNarrative(result: ExplicacionResponse): ClinicalNar
     const top = Object.entries(categories).sort(([, a], [, b]) => b - a)[0];
     if (!top) continue;
     const [topCat, topVal] = top;
-    if (topVal >= 0.4 && topCat !== "normal") {
-      alerts.push(`${getFieldLabel(variable).toLowerCase()} ${getCategoryLabel(topCat)}`);
+    if (topVal >= 0.4 && topCat !== "normal" && topCat !== "normoglucemia" && topCat !== "optima") {
+      alerts.push(`${getFieldLabel(variable).toLowerCase()} en ${getCategoryLabel(topCat)}`);
     }
   }
 
@@ -343,42 +279,28 @@ export function buildClinicalNarrative(result: ExplicacionResponse): ClinicalNar
 
   const high = result.activaciones["alto"] ?? 0;
   const mid = result.activaciones["medio"] ?? 0;
-  const low = result.activaciones["bajo"] ?? 0;
   const rulesCount = result.reglas_activadas.length;
 
   let conclusion = `Se evaluaron ${rulesCount} regla${rulesCount === 1 ? "" : "s"} del sistema difuso.`;
-
-  if (high > 0.5) {
-    conclusion += ` Evidencia hacia riesgo alto: ${Math.round(high * 100)}%.`;
-  } else if (mid > 0.4) {
-    conclusion += ` Evidencia hacia riesgo medio: ${Math.round(mid * 100)}%.`;
-  } else if (low > 0.5) {
-    conclusion += ` Evidencia hacia riesgo bajo: ${Math.round(low * 100)}%.`;
-  }
+  if (high > 0.5) conclusion += ` Evidencia hacia riesgo alto: ${Math.round(high * 100)}%.`;
+  else if (mid > 0.4) conclusion += ` Evidencia hacia riesgo medio: ${Math.round(mid * 100)}%.`;
 
   return { intro, details, conclusion };
 }
 
 export function buildResultSummary(
-  result: Pick<ExplicacionResponse, "reglas_activadas" | "ajustes_entrada" | "sin_activacion">,
+  result: Pick<ExplicacionResponse, "reglas_activadas" | "sin_activacion">,
 ) {
-  const adj = result.ajustes_entrada.length;
   const rulesCount = result.reglas_activadas.length;
-  const adjustmentText =
-    adj > 0
-      ? `Se normalizaron ${adj} valor${adj === 1 ? "" : "es"} antes del analisis para mantener la entrada dentro del rango esperado.`
-      : "La entrada se evaluo sin ajustes previos.";
-
   if (result.sin_activacion) {
     return {
       headline: "Perfil sin coincidencia en las reglas aprendidas.",
-      description: adjustmentText,
+      description: "La entrada se evaluo sin ajustes previos.",
     };
   }
-
   return {
     headline: `${rulesCount} regla${rulesCount === 1 ? "" : "s"} aportaron evidencia directa al resultado final.`,
-    description: adjustmentText,
+    description: "La entrada se evaluo sin ajustes previos.",
   };
 }
 
@@ -404,121 +326,50 @@ export async function obtenerDefinicionesDifusas() {
   return apiRequest<FuzzyDefinicionesResponse>("/difuso/definiciones", { method: "GET" });
 }
 
-export async function obtenerReglasDifusas() {
-  return apiRequest<FuzzyReglasResponse>("/difuso/reglas", { method: "GET" });
-}
-
-export async function obtenerEstadoGA() {
-  return apiRequest<{ en_entrenamiento: boolean }>("/ga/estado", { method: "GET" });
-}
-
-export async function obtenerHistorialGA() {
-  return apiRequest<GAHistorialResponse>("/ga/historial", { method: "GET" });
-}
-
-export async function obtenerComparacionGA() {
-  return apiRequest<GAComparacionResponse>("/ga/comparacion", { method: "GET" });
-}
-
-export interface ReentrenarParams {
-  tamano_poblacion: number;
-  cantidad_hijos: number;
-  maximo_generaciones: number;
-  probabilidad_cruce: number;
-  probabilidad_mutacion: number;
-}
-
-export const defaultReentrenarParams: ReentrenarParams = {
-  tamano_poblacion: 50,
-  cantidad_hijos: 50,
-  maximo_generaciones: 60,
-  probabilidad_cruce: 0.85,
-  probabilidad_mutacion: 0.04,
-};
-
-export interface GAProgresoDone {
-  tipo: "done";
-  exito: boolean;
-  fitness: number;
-  generaciones: number;
-  macro_f1: number;
-  recall_alto: number;
-}
-
-export interface GAProgresoGeneracion {
-  tipo: "generacion";
-  generacion: number;
-  fitness: number;
-  fitness_promedio: number;
-  macro_f1: number;
-  recall_alto: number;
-  membresias_decodificadas: Record<string, Record<string, number[]>>;
-}
-
-export interface GAProgresoError {
-  tipo: "error";
-  mensaje: string;
-}
-
-export type GAProgresoEvento = GAProgresoGeneracion | GAProgresoDone | GAProgresoError;
-
-export async function reentrenarGA(params: ReentrenarParams = defaultReentrenarParams) {
-  return apiRequest<{ exito: boolean; fitness: number; generaciones: number; macro_f1: number; recall_alto: number }>(
-    "/ga/reentrenar",
-    { method: "POST", body: JSON.stringify(params) },
-  );
-}
-
-export async function* reentrenarGAStream(
-  params: ReentrenarParams,
-  signal?: AbortSignal,
-): AsyncGenerator<GAProgresoEvento> {
-  const response = await fetch(`${apiBaseUrl}/ga/reentrenar-stream`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(params),
-    signal,
-  });
-
-  if (!response.ok) {
-    let message = `Error ${response.status}`;
-    try {
-      const data = (await response.json()) as { detail?: string };
-      if (typeof data.detail === "string") message = data.detail;
-    } catch { /* keep default */ }
-    throw new Error(message);
-  }
-
-  const reader = response.body!.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop()!;
-      for (const line of lines) {
-        if (line.startsWith("data: ")) {
-          yield JSON.parse(line.slice(6)) as GAProgresoEvento;
-        }
-      }
-    }
-  } finally {
-    reader.cancel();
-  }
+export async function obtenerReglasDifusas(fuente: string = "AG") {
+  return apiRequest<FuzzyReglasResponse>(`/difuso/reglas?fuente=${encodeURIComponent(fuente)}`, { method: "GET" });
 }
 
 // ── Internal ──────────────────────────────────────────────────────────────────
 
-function parseNumericField(value: string, label: string) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) {
-    throw new Error(`Ingrese un valor numerico valido para ${label.toLowerCase()}.`);
-  }
-  return n;
+const riskToneConfig = {
+  low: { accent: "#4ade80", label: "Riesgo bajo" },
+  mid: { accent: "#f59e0b", label: "Riesgo medio" },
+  high: { accent: "#fb7185", label: "Riesgo alto" },
+  none: { accent: "#64748b", label: "Sin clasificacion" },
+} as const;
+
+const numberFormatter = new Intl.NumberFormat("es-EC", { maximumFractionDigits: 2 });
+const scoreFormatter = new Intl.NumberFormat("es-EC", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
+const categoryLabels: Record<string, string> = {
+  adolescente: "adolescente",
+  optima: "óptima",
+  avanzada: "avanzada",
+  muy_avanzada: "muy avanzada",
+  hipotension: "hipotensión",
+  normal: "normal",
+  elevada: "elevada",
+  hipertension: "hipertensión",
+  hipertension_severa: "hipertensión severa",
+  normoglucemia: "normoglucemia",
+  hiperglucemia_gestacional: "hiperglucemia gestacional",
+  diabetes_manifiesta: "diabetes manifiesta",
+  febricular: "febrícula",
+  fiebre: "fiebre",
+  hiperpirexia: "hiperpirexia",
+  bradicardia: "bradicardia",
+  taquicardia: "taquicardia",
+  bajo: "bajo",
+  medio: "medio",
+  alto: "alto",
+};
+
+export function getCategoryLabel(categoria: string): string {
+  return categoryLabels[categoria] ?? humanize(categoria);
 }
 
 async function apiRequest<T>(path: string, init: RequestInit): Promise<T> {
@@ -551,4 +402,8 @@ function capitalize(text: string): string {
 
 function humanize(value: string) {
   return value.replaceAll("_", " ");
+}
+
+function roundToTwo(value: number) {
+  return Number(value.toFixed(2));
 }

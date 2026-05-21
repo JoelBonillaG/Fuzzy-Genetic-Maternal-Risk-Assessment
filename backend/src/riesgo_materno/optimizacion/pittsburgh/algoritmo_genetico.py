@@ -1,0 +1,271 @@
+"""Algoritmo genetico Pittsburgh puro para seleccion de reglas difusas.
+
+Cada individuo es un cromosoma binario que representa una base completa de reglas.
+El AG selecciona el subconjunto de reglas candidatas que maximiza:
+
+    Fitness(S) = w_aciertos * NCP(S) - w_tamano * |S|
+
+donde NCP(S) es el numero de patrones correctamente clasificados por la base S
+y |S| es la cantidad de reglas activas.
+"""
+
+from dataclasses import dataclass
+
+import numpy as np
+import pandas as pd
+import pygad
+from sklearn.metrics import balanced_accuracy_score
+
+from ...logica_difusa.motor import SistemaDifusoMamdani
+from ...entrenamiento.modelo import PARAMETROS_AG, PESOS_FITNESS
+from .cromosoma import (
+    CANTIDAD_REGLAS_CANDIDATAS,
+    cantidad_reglas_activas,
+    cromosoma_aleatorio,
+    cromosoma_todas_activas,
+    es_base_vacia,
+    seleccion_a_base_reglas,
+)
+
+
+# Fitness positivo minimo entregado a PyGAD para que la ruleta funcione bien.
+FITNESS_MINIMO_RULETA = 1e-6
+
+
+@dataclass
+class ResultadoBase:
+    """Resultado de evaluar una base de reglas (un individuo Pittsburgh)."""
+    cromosoma: np.ndarray
+    balanced_accuracy: float  # BA(S)  — promedio del recall por clase, entre 0 y 1
+    compacidad: float          # C(S)   — fraccion de reglas usadas: |S| / |Scand|, entre 0 y 1
+    cantidad_reglas: int       # |S|    — numero absoluto de reglas activas, util para mostrar
+    fitness: float
+
+
+def ejecutar_ag_pittsburgh(
+    datos_entrenamiento,
+    membresias,
+    parametros_override=None,
+    progress_callback=None,
+):
+    """Ejecuta el AG Pittsburgh sobre datos_entrenamiento y devuelve el mejor individuo + historial."""
+    parametros = {**PARAMETROS_AG, **(parametros_override or {})}
+    cache_evaluaciones = {}
+    historial = []
+    mejor_resultado = None
+    generaciones_sin_mejora = 0
+
+    poblacion_inicial = inicializar_poblacion(parametros["tamano_poblacion"])
+
+    def evaluar_con_cache(cromosoma):
+        clave = np.asarray(cromosoma, dtype=int).tobytes()
+        if clave not in cache_evaluaciones:
+            cache_evaluaciones[clave] = evaluar_base_reglas(cromosoma, datos_entrenamiento, membresias)
+        return cache_evaluaciones[clave]
+
+    def fitness_func(instancia_ga, solucion, indice_solucion):
+        # PyGAD ruleta requiere fitness positivo: aplicamos un piso minimo.
+        fitness_real = evaluar_con_cache(solucion).fitness
+        return max(FITNESS_MINIMO_RULETA, fitness_real)
+
+    def on_generation(instancia_ga):
+        nonlocal mejor_resultado, generaciones_sin_mejora
+
+        evaluaciones = []
+        for individuo in instancia_ga.population:
+            evaluaciones.append(evaluar_con_cache(individuo))
+
+        mejor_generacion = max(evaluaciones, key=lambda r: r.fitness)
+
+        valores_fitness = []
+        for r in evaluaciones:
+            valores_fitness.append(r.fitness)
+        promedio_fitness = float(np.mean(valores_fitness))
+        promedio_ba = float(np.mean([r.balanced_accuracy for r in evaluaciones]))
+        cantidades_reglas = [r.cantidad_reglas for r in evaluaciones]
+        reglas_min = int(np.min(cantidades_reglas))
+        reglas_promedio = float(np.mean(cantidades_reglas))
+        reglas_max = int(np.max(cantidades_reglas))
+        cromosomas_unicos = len({
+            np.asarray(individuo, dtype=int).tobytes()
+            for individuo in instancia_ga.population
+        })
+        diversidad = cromosomas_unicos / len(instancia_ga.population)
+
+        historial.append({
+            "generacion": int(instancia_ga.generations_completed),
+            "mejor_fitness": mejor_generacion.fitness,
+            "fitness_promedio": promedio_fitness,
+            "balanced_accuracy": mejor_generacion.balanced_accuracy,
+            "balanced_accuracy_promedio": promedio_ba,
+            "compacidad": mejor_generacion.compacidad,
+            "cantidad_reglas": mejor_generacion.cantidad_reglas,
+            "reglas_min": reglas_min,
+            "reglas_promedio": reglas_promedio,
+            "reglas_max": reglas_max,
+            "cromosomas_unicos": cromosomas_unicos,
+            "diversidad": diversidad,
+        })
+
+        print(
+            f"Generacion {instancia_ga.generations_completed:03d} | "
+            f"fitness={mejor_generacion.fitness:.4f} | "
+            f"fit_prom={promedio_fitness:.4f} | "
+            f"ba={mejor_generacion.balanced_accuracy:.4f} | "
+            f"ba_prom={promedio_ba:.4f} | "
+            f"reglas={mejor_generacion.cantidad_reglas} | "
+            f"reglas_prom={reglas_promedio:.1f} | "
+            f"unicos={cromosomas_unicos}/{len(instancia_ga.population)}"
+        )
+
+        if progress_callback is not None:
+            progress_callback({
+                "tipo": "generacion",
+                "generacion": int(instancia_ga.generations_completed),
+                "fitness": round(mejor_generacion.fitness, 4),
+                "fitness_promedio": round(promedio_fitness, 4),
+                "balanced_accuracy": round(mejor_generacion.balanced_accuracy, 4),
+                "balanced_accuracy_promedio": round(promedio_ba, 4),
+                "compacidad": round(mejor_generacion.compacidad, 4),
+                "cantidad_reglas": mejor_generacion.cantidad_reglas,
+                "reglas_min": reglas_min,
+                "reglas_promedio": round(reglas_promedio, 2),
+                "reglas_max": reglas_max,
+                "cromosomas_unicos": cromosomas_unicos,
+                "diversidad": round(diversidad, 4),
+            })
+
+        if mejor_resultado is None or mejor_generacion.fitness > mejor_resultado.fitness:
+            mejor_resultado = mejor_generacion
+            generaciones_sin_mejora = 0
+        else:
+            generaciones_sin_mejora += 1
+
+        if generaciones_sin_mejora >= parametros["paciencia"]:
+            return "stop"
+        return None
+
+    # Evaluar la generacion inicial para registrarla en el historial como generacion 0.
+    evaluaciones_iniciales = []
+    for individuo in poblacion_inicial:
+        evaluaciones_iniciales.append(evaluar_con_cache(individuo))
+
+    mejor_inicial = max(evaluaciones_iniciales, key=lambda r: r.fitness)
+
+    valores_fitness_iniciales = []
+    for r in evaluaciones_iniciales:
+        valores_fitness_iniciales.append(r.fitness)
+    promedio_ba_inicial = float(np.mean([r.balanced_accuracy for r in evaluaciones_iniciales]))
+    cantidades_reglas_iniciales = [r.cantidad_reglas for r in evaluaciones_iniciales]
+    cromosomas_unicos_iniciales = len({
+        np.asarray(individuo, dtype=int).tobytes()
+        for individuo in poblacion_inicial
+    })
+    diversidad_inicial = cromosomas_unicos_iniciales / len(poblacion_inicial)
+
+    historial.append({
+        "generacion": 0,
+        "mejor_fitness": mejor_inicial.fitness,
+        "fitness_promedio": float(np.mean(valores_fitness_iniciales)),
+        "balanced_accuracy": mejor_inicial.balanced_accuracy,
+        "balanced_accuracy_promedio": promedio_ba_inicial,
+        "compacidad": mejor_inicial.compacidad,
+        "cantidad_reglas": mejor_inicial.cantidad_reglas,
+        "reglas_min": int(np.min(cantidades_reglas_iniciales)),
+        "reglas_promedio": float(np.mean(cantidades_reglas_iniciales)),
+        "reglas_max": int(np.max(cantidades_reglas_iniciales)),
+        "cromosomas_unicos": cromosomas_unicos_iniciales,
+        "diversidad": diversidad_inicial,
+    })
+    mejor_resultado = mejor_inicial
+
+    instancia_ga = pygad.GA(
+        initial_population=poblacion_inicial,
+        num_parents_mating=parametros["cantidad_padres"],
+        fitness_func=fitness_func,
+        num_generations=parametros["maximo_generaciones"],
+        parent_selection_type="rws",
+        keep_elitism=parametros["elitismo"],
+        crossover_type="single_point",
+        crossover_probability=parametros["probabilidad_cruce"],
+        mutation_type="random",                 # con gene_space=[0,1] equivale a flip
+        mutation_probability=parametros["probabilidad_mutacion"],
+        gene_type=int,
+        gene_space=[0, 1],
+        on_generation=on_generation,
+        save_solutions=False,
+        suppress_warnings=True,
+    )
+    instancia_ga.run()
+
+    return mejor_resultado, pd.DataFrame(historial)
+
+
+def inicializar_poblacion(tamano):
+    """Poblacion inicial completamente aleatoria 50/50 por bit."""
+    poblacion = []
+    for _ in range(tamano):
+        poblacion.append(cromosoma_aleatorio())
+    return np.asarray(poblacion, dtype=int)
+
+
+def evaluar_base_reglas(cromosoma, datos, membresias):
+    """Decodifica el cromosoma a una base S, infiere sobre los datos y calcula fitness Pittsburgh.
+
+    Entradas:
+        cromosoma:  array de ints [1, 0, 1, ...] — un bit por regla candidata
+        datos:      dict {"entradas": {variable: np.array}, "riesgos": np.array de strings}
+        membresias: dict {variable: {categoria: np.array([a, b, c, d])}}
+    Salida:
+        ResultadoBase con aciertos (NCP), cantidad_reglas (|S|) y fitness.
+
+    Si la base resulta vacia, devuelve fitness 0 (penalizacion fuerte para la ruleta).
+    """
+    # Copia defensiva: PyGAD reutiliza/muta arrays de la poblacion.
+    # El resultado evaluado debe conservar exactamente el cromosoma evaluado.
+    cromosoma = np.asarray(cromosoma, dtype=int).copy()
+    cantidad_reglas = cantidad_reglas_activas(cromosoma)
+
+    if es_base_vacia(cromosoma):
+        return ResultadoBase(
+            cromosoma=cromosoma,
+            balanced_accuracy=0.0,
+            compacidad=0.0,
+            cantidad_reglas=0,
+            fitness=0.0,
+        )
+
+    reglas_activas = seleccion_a_base_reglas(cromosoma)
+    sistema = SistemaDifusoMamdani(membresias, reglas=reglas_activas)
+    inferencia = sistema.inferir_lote(datos["entradas"])
+
+    riesgos_predichos = predicciones_con_sin_activacion(
+        inferencia["riesgos"],
+        inferencia["sin_activacion"],
+    )
+    riesgos_reales = datos["riesgos"]
+
+    # BA: promedio del recall por clase — trata todas las clases por igual sin importar su tamano
+    ba = float(balanced_accuracy_score(riesgos_reales, riesgos_predichos))
+
+    # C(S): fraccion de reglas candidatas seleccionadas — penaliza bases grandes
+    compacidad = cantidad_reglas / CANTIDAD_REGLAS_CANDIDATAS
+
+    fitness = (
+        PESOS_FITNESS["balanced_accuracy"] * ba
+        - PESOS_FITNESS["compacidad"] * compacidad
+    )
+
+    return ResultadoBase(
+        cromosoma=cromosoma,
+        balanced_accuracy=ba,
+        compacidad=compacidad,
+        cantidad_reglas=cantidad_reglas,
+        fitness=float(fitness),
+    )
+
+
+def predicciones_con_sin_activacion(predichos, sin_activacion):
+    predichos = np.asarray(predichos, dtype=object).copy()
+    predichos[np.asarray(sin_activacion, dtype=bool)] = "__sin_activacion__"
+    return predichos

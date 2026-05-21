@@ -1,0 +1,101 @@
+{
+  "reglas": 91,
+  "frontera": {
+    "limite_inferior": 36.95,
+    "limite_superior": 42.97,
+    "corte": 39.92,
+    "delta_subir": 3.049999999999997,
+    "delta_bajar": 2.969999999999999
+  },
+  "antes": {
+    "accuracy": 0.6679841897233202,
+    "balanced_accuracy": 0.6725710911427277,
+    "aciertos": 676,
+    "errores": 336,
+    "total": 1012,
+    "sin_activacion": 38,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk",
+        "__sin_activacion__"
+      ],
+      "matriz": [
+        [
+          261,
+          102,
+          14,
+          27
+        ],
+        [
+          89,
+          220,
+          19,
+          8
+        ],
+        [
+          12,
+          62,
+          195,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "despues": {
+    "accuracy": 0.6996047430830039,
+    "balanced_accuracy": 0.7023133510830074,
+    "aciertos": 708,
+    "errores": 304,
+    "total": 1012,
+    "sin_activacion": 38,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk",
+        "__sin_activacion__"
+      ],
+      "matriz": [
+        [
+          273,
+          90,
+          14,
+          27
+        ],
+        [
+          69,
+          240,
+          19,
+          8
+        ],
+        [
+          12,
+          62,
+          195,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "nota": "Usa y_true para decidir la direccion del ajuste; es un postprocesado supervisado.",
+  "delta": {
+    "accuracy": 0.03162055335968372,
+    "balanced_accuracy": 0.02974225994027968,
+    "aciertos": 32
+  },
+  "casos_postprocesados": 32
+}

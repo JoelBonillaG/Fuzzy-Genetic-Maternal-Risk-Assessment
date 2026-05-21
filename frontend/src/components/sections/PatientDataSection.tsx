@@ -1,4 +1,6 @@
+import ReactECharts from "echarts-for-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   Activity,
   Droplets,
@@ -9,114 +11,363 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
-import type { ChangeEvent, FormEvent } from "react";
-import type { PatientFormData } from "../../data/mockData";
-import { getFieldRange, numericFieldSpecs, type NumericFormField } from "../../lib/riesgoMaterno";
+import { generateMembershipSeries, resolveMembershipPoints, trapezoidMembership } from "../../lib/membership";
+import {
+  getCategoryLabel,
+  getFieldLabel,
+  getFieldUnit,
+  getFieldUnitDescription,
+  obtenerDefinicionesDifusas,
+  toDisplayVariableDefinition,
+  VARIABLE_ORDER,
+  type ExplicacionResponse,
+  type FuzzyDefinicionesResponse,
+  type VariableDefinicion,
+} from "../../lib/riesgoMaterno";
+import type { PatientValues } from "../../data/mockData";
 import { GlassPanel } from "../ui/GlassPanel";
 import { SectionHeader } from "../ui/SectionHeader";
 
-interface PatientDataSectionProps {
-  formData: PatientFormData;
-  isAnalyzing: boolean;
-  onFieldChange: (
-    field: keyof PatientFormData,
-    event: ChangeEvent<HTMLInputElement>,
-  ) => void;
-  onAnalyze: () => void;
-}
+const CATEGORY_COLORS = ["#22d3ee", "#60a5fa", "#c084fc", "#f472b6", "#fb923c"];
 
-const iconByField: Record<NumericFormField, LucideIcon> = {
-  age: UserRound,
-  systolicBP: Stethoscope,
-  diastolicBP: Activity,
-  bloodGlucose: Droplets,
-  bodyTemperature: Thermometer,
-  heartRate: HeartPulse,
+const iconByVariable: Record<string, LucideIcon> = {
+  edad: UserRound,
+  presion_sistolica: Stethoscope,
+  presion_diastolica: Activity,
+  azucar_sangre: Droplets,
+  temperatura_corporal: Thermometer,
+  frecuencia_cardiaca: HeartPulse,
 };
 
+type TooltipParam = {
+  axisValue?: number | string;
+  marker?: string;
+  seriesName?: string;
+  value?: [number, number] | number[];
+};
+
+interface PatientDataSectionProps {
+  values: PatientValues;
+  isAnalyzing: boolean;
+  onValueChange: (variable: string, value: number) => void;
+  onAnalyze: () => void;
+  onClear: () => void;
+  explanationResult?: ExplicacionResponse | null;
+}
+
 export function PatientDataSection({
-  formData,
+  values,
   isAnalyzing,
-  onFieldChange,
+  onValueChange,
   onAnalyze,
+  onClear,
+  explanationResult,
 }: PatientDataSectionProps) {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    onAnalyze();
-  }
+  const [definitions, setDefinitions] = useState<FuzzyDefinicionesResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    obtenerDefinicionesDifusas()
+      .then(setDefinitions)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const allFilled = VARIABLE_ORDER.every((v) => values[v] !== undefined);
+  const anyTouched = VARIABLE_ORDER.some((v) => values[v] !== undefined);
 
   return (
     <section className="section-anchor pt-10" id="patient-entry">
       <SectionHeader
         eyebrow="Ingreso clinico"
         title="Variables del paciente"
-        description="Ingrese los 6 indicadores clinicos para ejecutar la inferencia difusa."
+        description="Ajuste cada indicador clinico con el control deslizante. Las curvas muestran los grados de pertenencia en tiempo real."
       />
-      <GlassPanel className="overflow-hidden">
-        <form className="p-6 sm:p-8" onSubmit={handleSubmit}>
+
+      {loading ? (
+        <GlassPanel className="flex min-h-48 items-center justify-center gap-3 p-8 text-slate-600">
+          <LoaderCircle className="h-5 w-5 animate-spin text-cyan-600" />
+          <span className="text-sm">Cargando definiciones del sistema difuso...</span>
+        </GlassPanel>
+      ) : definitions ? (
+        <>
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {numericFieldSpecs.map((field, index) => {
-              const Icon = iconByField[field.formKey];
+            {VARIABLE_ORDER.map((variable, index) => {
+              const rawVarDef = definitions.variables[variable];
+              if (!rawVarDef) return null;
+              const varDef = toDisplayVariableDefinition(variable, rawVarDef);
+              const touched = values[variable] !== undefined;
+              const currentValue = values[variable] ?? varDef.limites[0];
+              const Icon = iconByVariable[variable] ?? UserRound;
+
               return (
-                <motion.label
-                  key={field.formKey}
+                <motion.div
+                  key={variable}
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-3xl border border-sky-100 bg-white/78 p-4 transition hover:border-cyan-300/35 hover:bg-cyan-50"
                   initial={{ opacity: 0, y: 16 }}
                   transition={{ duration: 0.4, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <div className="mb-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-2xl border border-cyan-300/30 bg-cyan-50 p-2.5 text-cyan-700">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <span className="block text-sm font-semibold text-slate-900">
-                          {field.label}
-                        </span>
-                        <span className="block text-[11px] text-slate-400">
-                          {getFieldRange(field.formKey)}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 text-xs font-medium text-slate-600">
-                      {field.unit}
-                    </span>
-                  </div>
-                  <input
-                    className="w-full rounded-2xl border border-sky-100 bg-white px-4 py-3 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-200"
-                    inputMode="decimal"
-                    max={field.max}
-                    min={field.min}
-                    placeholder={field.placeholder}
-                    step={field.step}
-                    type="number"
-                    value={formData[field.formKey]}
-                    onChange={(event) => onFieldChange(field.formKey, event)}
+                  <VariableCard
+                    variable={variable}
+                    varDef={varDef}
+                    currentValue={currentValue}
+                    touched={touched}
+                    Icon={Icon}
+                    onValueChange={onValueChange}
                   />
-                </motion.label>
+                </motion.div>
               );
             })}
           </div>
 
-          <div className="mt-6">
-            <button
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-600 to-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:scale-[1.01] hover:brightness-105 disabled:cursor-wait disabled:opacity-90"
-              disabled={isAnalyzing}
-              type="submit"
-            >
-              {isAnalyzing ? (
-                <>
-                  <LoaderCircle className="h-4 w-4 animate-spin" />
-                  Ejecutando inferencia...
-                </>
-              ) : (
-                "Ejecutar inferencia"
+          <div className="mt-6 flex items-start gap-3">
+            <div className="flex flex-col items-start gap-3">
+              <button
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-600 to-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:scale-[1.01] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isAnalyzing || !allFilled}
+                onClick={onAnalyze}
+                type="button"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                    Ejecutando inferencia...
+                  </>
+                ) : (
+                  "Ejecutar inferencia"
+                )}
+              </button>
+              {explanationResult?.fuente_reglas && (
+                <span className="ml-1 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-800">
+                  Fuente: {explanationResult.fuente_reglas}
+                </span>
               )}
-            </button>
+            </div>
+            {anyTouched && (
+              <button
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+                disabled={isAnalyzing}
+                onClick={onClear}
+                type="button"
+              >
+                Limpiar
+              </button>
+            )}
+            {!allFilled && (
+              <span className="text-xs text-slate-400">
+                Ajuste los 6 indicadores para continuar.
+              </span>
+            )}
           </div>
-        </form>
-      </GlassPanel>
+        </>
+      ) : (
+        <GlassPanel className="p-6 text-sm text-rose-700">
+          No se pudieron cargar las definiciones del sistema difuso.
+        </GlassPanel>
+      )}
     </section>
   );
+}
+
+function VariableCard({
+  variable,
+  varDef,
+  currentValue,
+  touched,
+  Icon,
+  onValueChange,
+}: {
+  variable: string;
+  varDef: VariableDefinicion;
+  currentValue: number;
+  touched: boolean;
+  Icon: LucideIcon;
+  onValueChange: (variable: string, value: number) => void;
+}) {
+  const [domainMin, domainMax] = varDef.limites;
+  const domain: [number, number] = [domainMin, domainMax];
+  const categoryNames = Object.keys(varDef.categorias);
+
+  const activeMemberships = categoryNames
+    .map((cat, idx) => ({
+      cat,
+      mu: trapezoidMembership(currentValue, resolveMembershipPoints(varDef.categorias[cat])),
+      color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+    }))
+    .filter((m) => m.mu > 0.01)
+    .sort((a, b) => b.mu - a.mu)
+    .slice(0, 3);
+
+  const range = domainMax - domainMin;
+  const step = range <= 20 ? 0.1 : 1;
+
+  const curveSeries = categoryNames.map((cat, idx) => {
+    const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
+    const points = resolveMembershipPoints(varDef.categorias[cat]);
+    return {
+      name: getCategoryLabel(cat),
+      type: "line",
+      smooth: false,
+      symbol: "none",
+      color,
+      itemStyle: { color },
+      lineStyle: { width: 2, color },
+      areaStyle: { opacity: 0.07, color },
+      data: generateMembershipSeries(domain, points).map((p) => [p.x, p.membership]),
+    };
+  });
+
+  const markerSeries = touched
+    ? [
+        {
+          name: "__marker",
+          type: "line",
+          symbol: "none",
+          color: "#f59e0b",
+          itemStyle: { color: "#f59e0b" },
+          lineStyle: { width: 0 },
+          data: [] as number[][],
+          markLine: {
+            symbol: "none",
+            animation: false,
+            lineStyle: { color: "#f59e0b", type: "solid" as const, width: 2 },
+            label: { show: false },
+            data: [{ xAxis: currentValue }],
+          },
+        },
+      ]
+    : [];
+
+  const chartOption = {
+    backgroundColor: "transparent",
+    animation: false,
+    grid: { left: 6, right: 6, top: 6, bottom: 6, containLabel: true },
+    xAxis: {
+      type: "value",
+      min: domainMin,
+      max: domainMax,
+      axisLine: { lineStyle: { color: "rgba(148,163,184,0.3)" } },
+      splitLine: { show: false },
+      axisLabel: { color: "rgba(30,41,59,0.55)", fontSize: 9 },
+    },
+    yAxis: {
+      type: "value",
+      min: 0,
+      max: 1,
+      axisLine: { show: false },
+      splitLine: { lineStyle: { color: "rgba(148,163,184,0.12)" } },
+      axisLabel: { show: false },
+    },
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: "rgba(255,255,255,0.96)",
+      borderColor: "rgba(125,211,252,0.65)",
+      textStyle: { color: "#0f172a", fontSize: 11 },
+      formatter: formatMembershipTooltip,
+    },
+    series: [...curveSeries, ...markerSeries],
+  };
+
+  return (
+    <div
+      className={`rounded-3xl border p-4 transition-all duration-300 ${
+        touched
+          ? "border-emerald-300/60 bg-emerald-50/40 shadow-sm shadow-emerald-100"
+          : "border-sky-100 bg-white/78"
+      }`}
+    >
+      {/* Header */}
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div
+            className={`rounded-2xl border p-2.5 transition-colors ${
+              touched
+                ? "border-emerald-300/40 bg-emerald-100 text-emerald-700"
+                : "border-cyan-300/30 bg-cyan-50 text-cyan-700"
+            }`}
+          >
+            <Icon className="h-4 w-4" />
+          </div>
+          <span className="text-sm font-semibold text-slate-900">{getFieldLabel(variable)}</span>
+        </div>
+        <span
+          aria-label={getFieldUnitDescription(variable)}
+          className="rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 text-xs font-medium text-slate-600"
+          title={getFieldUnitDescription(variable)}
+        >
+          {getFieldUnit(variable)}
+        </span>
+      </div>
+
+      {/* Membership curves chart */}
+      <div className="h-[108px]">
+        <ReactECharts
+          notMerge={false}
+          lazyUpdate={false}
+          option={chartOption}
+          style={{ height: "100%", width: "100%" }}
+        />
+      </div>
+
+      {/* Slider */}
+      <div className="mt-2 px-0.5">
+        <input
+          type="range"
+          min={domainMin}
+          max={domainMax}
+          step={step}
+          value={touched ? currentValue : domainMin}
+          className="w-full cursor-pointer accent-cyan-500"
+          onChange={(e) => onValueChange(variable, parseFloat(e.target.value))}
+        />
+      </div>
+
+      {/* Value display */}
+      <div className="mt-1.5 flex items-start justify-between gap-2 min-h-[20px]">
+        {touched ? (
+          <>
+            <span className="shrink-0 font-mono text-sm font-semibold text-slate-800">
+              {step < 1 ? currentValue.toFixed(1) : currentValue.toFixed(0)}
+            </span>
+            <div className="flex flex-wrap justify-end gap-1">
+              {activeMemberships.map(({ cat, mu, color }) => (
+                <span
+                  key={cat}
+                  className="rounded-full border px-2 py-0.5 text-xs font-semibold"
+                  style={{ color, backgroundColor: `${color}18`, borderColor: `${color}40` }}
+                >
+                  {getCategoryLabel(cat)} {mu.toFixed(2)}
+                </span>
+              ))}
+            </div>
+          </>
+        ) : (
+          <span className="text-xs text-slate-400">Mueva el control para seleccionar</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function formatMembershipTooltip(params: TooltipParam | TooltipParam[]) {
+  const items = Array.isArray(params) ? params : [params];
+  const visibleItems = items.filter((item) => item.seriesName && item.seriesName !== "__marker");
+  const axisValue = visibleItems[0]?.axisValue ?? items[0]?.axisValue ?? "";
+
+  const rows = visibleItems.map((item) => {
+    const value = Array.isArray(item.value) ? Number(item.value[1] ?? 0) : 0;
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:4px;">
+        <span>${item.marker ?? ""}${item.seriesName}</span>
+        <strong style="font-family:monospace;">μ=${value.toFixed(2)}</strong>
+      </div>
+    `;
+  });
+
+  return `
+    <div>
+      <div style="margin-bottom:6px;">${axisValue}</div>
+      ${rows.join("")}
+    </div>
+  `;
 }

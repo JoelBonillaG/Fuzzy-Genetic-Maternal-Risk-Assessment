@@ -12,5 +12,5 @@ def definiciones_difusas() -> FuzzyDefinicionesResponse:
 
 
 @router.get("/reglas", response_model=FuzzyReglasResponse)
-def reglas_difusas() -> FuzzyReglasResponse:
-    return FuzzyReglasResponse(**obtener_reglas_difusas())
+def reglas_difusas(fuente: str = "AG") -> FuzzyReglasResponse:
+    return FuzzyReglasResponse(**obtener_reglas_difusas(fuente))
