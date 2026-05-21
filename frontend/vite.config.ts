@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  preview: {
+    allowedHosts: ["med-maternal-risk.stratiumhub.com"],
+  },
   server: {
     proxy: {
       "/api": {
