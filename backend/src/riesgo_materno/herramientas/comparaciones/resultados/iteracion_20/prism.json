@@ -1,0 +1,139 @@
+﻿{
+    "id_experimento":  "prueba_michigan_binario_recall_precision_rapida",
+    "iteracion":  20,
+    "algoritmo":  "PRISM_ESTOCASTICO",
+    "datos":  {
+                  "estrategia":  "dataset_completo_sin_splits",
+                  "total_instancias":  1012
+              },
+    "hiperparametros":  {
+                            "modo":  "prism_bootstrap",
+                            "fraccion_bootstrap":  0.75,
+                            "cobertura_minima_regla":  2,
+                            "orden_clases":  [
+                                                 "low risk",
+                                                 "mid risk",
+                                                 "high risk"
+                                             ],
+                            "maximo_condiciones_por_regla":  6,
+                            "maximo_reglas_por_clase":  40,
+                            "eliminar_positivos_cubiertos":  true
+                        },
+    "resumen_reglas":  {
+                           "total_reglas":  2,
+                           "reglas_duplicadas":  0,
+                           "reglas_por_clase":  {
+                                                    "low risk":  0,
+                                                    "mid risk":  1,
+                                                    "high risk":  1
+                                                }
+                       },
+    "metricas":  {
+                     "accuracy":  0.021739130434782608,
+                     "error_clasificacion":  0.9782608695652174,
+                     "errores":  990,
+                     "aciertos":  22,
+                     "total":  1012,
+                     "sin_activacion":  990,
+                     "balanced_accuracy":  0.026027077497665734,
+                     "error_balanceado":  0.9739729225023342
+                 },
+    "matriz_confusion":  {
+                             "etiquetas":  [
+                                               "low risk",
+                                               "mid risk",
+                                               "high risk",
+                                               "__sin_activacion__"
+                                           ],
+                             "matriz":  [
+                                            [
+                                                0,
+                                                0,
+                                                0,
+                                                404
+                                            ],
+                                            [
+                                                0,
+                                                4,
+                                                0,
+                                                332
+                                            ],
+                                            [
+                                                0,
+                                                0,
+                                                18,
+                                                254
+                                            ],
+                                            [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        ]
+                         },
+    "reglas_finales":  [
+                           {
+                               "id":  "R001",
+                               "antecedentes":  [
+                                                    {
+                                                        "variable":  "edad",
+                                                        "etiqueta_linguistica":  "optima"
+                                                    },
+                                                    {
+                                                        "variable":  "presion_sistolica",
+                                                        "etiqueta_linguistica":  "normal"
+                                                    },
+                                                    {
+                                                        "variable":  "presion_diastolica",
+                                                        "etiqueta_linguistica":  "elevada"
+                                                    },
+                                                    {
+                                                        "variable":  "azucar_sangre",
+                                                        "etiqueta_linguistica":  "normoglucemia"
+                                                    },
+                                                    {
+                                                        "variable":  "temperatura_corporal",
+                                                        "etiqueta_linguistica":  "febricular"
+                                                    },
+                                                    {
+                                                        "variable":  "frecuencia_cardiaca",
+                                                        "etiqueta_linguistica":  "normal"
+                                                    }
+                                                ],
+                               "consecuente":  "mid risk",
+                               "origen":  "PRISM_ESTOCASTICO"
+                           },
+                           {
+                               "id":  "R002",
+                               "antecedentes":  [
+                                                    {
+                                                        "variable":  "edad",
+                                                        "etiqueta_linguistica":  "avanzada"
+                                                    },
+                                                    {
+                                                        "variable":  "presion_sistolica",
+                                                        "etiqueta_linguistica":  "hipertension"
+                                                    },
+                                                    {
+                                                        "variable":  "presion_diastolica",
+                                                        "etiqueta_linguistica":  "hipertension"
+                                                    },
+                                                    {
+                                                        "variable":  "azucar_sangre",
+                                                        "etiqueta_linguistica":  "diabetes_manifiesta"
+                                                    },
+                                                    {
+                                                        "variable":  "temperatura_corporal",
+                                                        "etiqueta_linguistica":  "normal"
+                                                    },
+                                                    {
+                                                        "variable":  "frecuencia_cardiaca",
+                                                        "etiqueta_linguistica":  "normal"
+                                                    }
+                                                ],
+                               "consecuente":  "high risk",
+                               "origen":  "PRISM_ESTOCASTICO"
+                           }
+                       ]
+}

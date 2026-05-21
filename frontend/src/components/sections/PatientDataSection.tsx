@@ -11,12 +11,16 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
-import { generateMembershipSeries, trapezoidMembership } from "../../lib/membership";
+import { generateMembershipSeries, resolveMembershipPoints, trapezoidMembership } from "../../lib/membership";
 import {
+  getCategoryLabel,
   getFieldLabel,
   getFieldUnit,
+  getFieldUnitDescription,
   obtenerDefinicionesDifusas,
+  toDisplayVariableDefinition,
   VARIABLE_ORDER,
+  type ExplicacionResponse,
   type FuzzyDefinicionesResponse,
   type VariableDefinicion,
 } from "../../lib/riesgoMaterno";
@@ -35,12 +39,20 @@ const iconByVariable: Record<string, LucideIcon> = {
   frecuencia_cardiaca: HeartPulse,
 };
 
+type TooltipParam = {
+  axisValue?: number | string;
+  marker?: string;
+  seriesName?: string;
+  value?: [number, number] | number[];
+};
+
 interface PatientDataSectionProps {
   values: PatientValues;
   isAnalyzing: boolean;
   onValueChange: (variable: string, value: number) => void;
   onAnalyze: () => void;
   onClear: () => void;
+  explanationResult?: ExplicacionResponse | null;
 }
 
 export function PatientDataSection({
@@ -49,6 +61,7 @@ export function PatientDataSection({
   onValueChange,
   onAnalyze,
   onClear,
+  explanationResult,
 }: PatientDataSectionProps) {
   const [definitions, setDefinitions] = useState<FuzzyDefinicionesResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -80,8 +93,9 @@ export function PatientDataSection({
         <>
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {VARIABLE_ORDER.map((variable, index) => {
-              const varDef = definitions.variables[variable];
-              if (!varDef) return null;
+              const rawVarDef = definitions.variables[variable];
+              if (!rawVarDef) return null;
+              const varDef = toDisplayVariableDefinition(variable, rawVarDef);
               const touched = values[variable] !== undefined;
               const currentValue = values[variable] ?? varDef.limites[0];
               const Icon = iconByVariable[variable] ?? UserRound;
@@ -106,22 +120,29 @@ export function PatientDataSection({
             })}
           </div>
 
-          <div className="mt-6 flex items-center gap-3">
-            <button
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-600 to-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:scale-[1.01] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isAnalyzing || !allFilled}
-              onClick={onAnalyze}
-              type="button"
-            >
-              {isAnalyzing ? (
-                <>
-                  <LoaderCircle className="h-4 w-4 animate-spin" />
-                  Ejecutando inferencia...
-                </>
-              ) : (
-                "Ejecutar inferencia"
+          <div className="mt-6 flex items-start gap-3">
+            <div className="flex flex-col items-start gap-3">
+              <button
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-600 to-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:scale-[1.01] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isAnalyzing || !allFilled}
+                onClick={onAnalyze}
+                type="button"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                    Ejecutando inferencia...
+                  </>
+                ) : (
+                  "Ejecutar inferencia"
+                )}
+              </button>
+              {explanationResult?.fuente_reglas && (
+                <span className="ml-1 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-800">
+                  Fuente: {explanationResult.fuente_reglas}
+                </span>
               )}
-            </button>
+            </div>
             {anyTouched && (
               <button
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
@@ -170,7 +191,7 @@ function VariableCard({
   const activeMemberships = categoryNames
     .map((cat, idx) => ({
       cat,
-      mu: trapezoidMembership(currentValue, varDef.categorias[cat] as [number, number, number, number]),
+      mu: trapezoidMembership(currentValue, resolveMembershipPoints(varDef.categorias[cat])),
       color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
     }))
     .filter((m) => m.mu > 0.01)
@@ -182,12 +203,14 @@ function VariableCard({
 
   const curveSeries = categoryNames.map((cat, idx) => {
     const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
-    const points = varDef.categorias[cat] as [number, number, number, number];
+    const points = resolveMembershipPoints(varDef.categorias[cat]);
     return {
-      name: cat,
+      name: getCategoryLabel(cat),
       type: "line",
       smooth: false,
       symbol: "none",
+      color,
+      itemStyle: { color },
       lineStyle: { width: 2, color },
       areaStyle: { opacity: 0.07, color },
       data: generateMembershipSeries(domain, points).map((p) => [p.x, p.membership]),
@@ -200,6 +223,8 @@ function VariableCard({
           name: "__marker",
           type: "line",
           symbol: "none",
+          color: "#f59e0b",
+          itemStyle: { color: "#f59e0b" },
           lineStyle: { width: 0 },
           data: [] as number[][],
           markLine: {
@@ -238,6 +263,7 @@ function VariableCard({
       backgroundColor: "rgba(255,255,255,0.96)",
       borderColor: "rgba(125,211,252,0.65)",
       textStyle: { color: "#0f172a", fontSize: 11 },
+      formatter: formatMembershipTooltip,
     },
     series: [...curveSeries, ...markerSeries],
   };
@@ -264,7 +290,11 @@ function VariableCard({
           </div>
           <span className="text-sm font-semibold text-slate-900">{getFieldLabel(variable)}</span>
         </div>
-        <span className="rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+        <span
+          aria-label={getFieldUnitDescription(variable)}
+          className="rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 text-xs font-medium text-slate-600"
+          title={getFieldUnitDescription(variable)}
+        >
           {getFieldUnit(variable)}
         </span>
       </div>
@@ -306,7 +336,7 @@ function VariableCard({
                   className="rounded-full border px-2 py-0.5 text-xs font-semibold"
                   style={{ color, backgroundColor: `${color}18`, borderColor: `${color}40` }}
                 >
-                  {cat.replaceAll("_", " ")} {mu.toFixed(2)}
+                  {getCategoryLabel(cat)} {mu.toFixed(2)}
                 </span>
               ))}
             </div>
@@ -317,4 +347,27 @@ function VariableCard({
       </div>
     </div>
   );
+}
+
+function formatMembershipTooltip(params: TooltipParam | TooltipParam[]) {
+  const items = Array.isArray(params) ? params : [params];
+  const visibleItems = items.filter((item) => item.seriesName && item.seriesName !== "__marker");
+  const axisValue = visibleItems[0]?.axisValue ?? items[0]?.axisValue ?? "";
+
+  const rows = visibleItems.map((item) => {
+    const value = Array.isArray(item.value) ? Number(item.value[1] ?? 0) : 0;
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:4px;">
+        <span>${item.marker ?? ""}${item.seriesName}</span>
+        <strong style="font-family:monospace;">μ=${value.toFixed(2)}</strong>
+      </div>
+    `;
+  });
+
+  return `
+    <div>
+      <div style="margin-bottom:6px;">${axisValue}</div>
+      ${rows.join("")}
+    </div>
+  `;
 }

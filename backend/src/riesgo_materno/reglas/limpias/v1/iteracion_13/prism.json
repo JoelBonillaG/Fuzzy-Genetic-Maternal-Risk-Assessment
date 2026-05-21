@@ -1,0 +1,258 @@
+{
+  "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
+  "iteracion": 13,
+  "algoritmo": "PRISM_ESTOCASTICO",
+  "archivo_origen": "src\\riesgo_materno\\herramientas\\comparaciones\\resultados\\iteracion_13\\prism.json",
+  "datos": {
+    "estrategia": "dataset_completo_sin_splits",
+    "total_instancias": 1012
+  },
+  "hiperparametros": {
+    "modo": "prism_bootstrap",
+    "fraccion_bootstrap": 0.75,
+    "cobertura_minima_regla": 2,
+    "orden_clases": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "maximo_condiciones_por_regla": 6,
+    "maximo_reglas_por_clase": 40,
+    "eliminar_positivos_cubiertos": true
+  },
+  "metricas_originales": {
+    "accuracy": 0.036561264822134384,
+    "error_clasificacion": 0.9634387351778656,
+    "errores": 975,
+    "aciertos": 37,
+    "total": 1012,
+    "sin_activacion": 969,
+    "balanced_accuracy": 0.04040708692718011,
+    "error_balanceado": 0.9595929130728199
+  },
+  "matriz_confusion_original": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk",
+      "__sin_activacion__"
+    ],
+    "matriz": [
+      [
+        3,
+        6,
+        0,
+        395
+      ],
+      [
+        0,
+        16,
+        0,
+        320
+      ],
+      [
+        0,
+        0,
+        18,
+        254
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "resumen_reglas_original": {
+    "total_reglas": 4,
+    "reglas_duplicadas": 0,
+    "reglas_por_clase": {
+      "low risk": 2,
+      "mid risk": 1,
+      "high risk": 1
+    }
+  },
+  "resumen_reglas_limpias": {
+    "total_reglas": 4,
+    "reglas_duplicadas_eliminadas": 0,
+    "reglas_por_clase": {
+      "low risk": 2,
+      "mid risk": 1,
+      "high risk": 1
+    },
+    "antecedentes_promedio": 6.0,
+    "antecedentes_min": 6,
+    "antecedentes_max": 6
+  },
+  "metricas_limpias": {
+    "accuracy": 0.036561264822134384,
+    "balanced_accuracy": 0.04040708692718011,
+    "error_clasificacion": 0.9634387351778656,
+    "error_balanceado": 0.9595929130728199,
+    "aciertos": 37,
+    "errores": 975,
+    "total": 1012,
+    "sin_activacion": 969
+  },
+  "matriz_confusion_limpia": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk",
+      "__sin_activacion__"
+    ],
+    "matriz": [
+      [
+        3,
+        6,
+        0,
+        395
+      ],
+      [
+        0,
+        16,
+        0,
+        320
+      ],
+      [
+        0,
+        0,
+        18,
+        254
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "reglas_finales": [
+    {
+      "id": "R001",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "adolescente"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R002",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "adolescente"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "hiperglucemia_gestacional"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R003",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "fiebre"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R004",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "PRISM_ESTOCASTICO"
+    }
+  ]
+}

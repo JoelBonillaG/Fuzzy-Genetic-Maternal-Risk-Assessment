@@ -1,8 +1,7 @@
-import React, { Component, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useAnimationControls } from "framer-motion";
-import { ActivitySquare, AlertTriangle, FlaskConical, Microscope, Stethoscope } from "lucide-react";
+import { ActivitySquare, AlertTriangle, FlaskConical, Stethoscope } from "lucide-react";
 import { DifusoSection } from "./components/sections/DifusoSection";
-import { OptimizationSection } from "./components/sections/OptimizationSection";
 import { PatientDataSection } from "./components/sections/PatientDataSection";
 import { RecommendationSection } from "./components/sections/RecommendationSection";
 import { initialPatientValues, type PatientValues } from "./data/mockData";
@@ -16,7 +15,6 @@ import { cn } from "./lib/utils";
 const navigation = [
   { key: "prediccion", label: "Prediccion", icon: Stethoscope },
   { key: "difuso", label: "Sistema difuso", icon: FlaskConical },
-  { key: "ga", label: "Algoritmo genetico", icon: Microscope },
 ] as const;
 
 type SectionKey = (typeof navigation)[number]["key"];
@@ -84,9 +82,6 @@ export default function App() {
     setIsAnalyzing(false);
   }
 
-  const activeSectionLabel =
-    navigation.find((item) => item.key === activeSection)?.label ?? "Prediccion";
-
   return (
     <div className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
@@ -104,9 +99,6 @@ export default function App() {
               <div>
                 <div className="text-base font-semibold leading-tight text-slate-900">
                   Riesgo materno
-                </div>
-                <div className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
-                  Logica difusa Mamdani + AG
                 </div>
               </div>
             </div>
@@ -156,6 +148,7 @@ export default function App() {
               onAnalyze={handleAnalyze}
               onValueChange={handleValueChange}
               onClear={handleClear}
+              explanationResult={explanationResult}
             />
             <AnimatePresence>
               {(isAnalyzing || explanationResult || analysisError) && (
@@ -181,38 +174,9 @@ export default function App() {
           <DifusoSection explanationResult={explanationResult} />
         </AnimatedSection>
 
-        <AnimatedSection isActive={activeSection === "ga"}>
-          <SectionErrorBoundary>
-            <OptimizationSection />
-          </SectionErrorBoundary>
-        </AnimatedSection>
       </main>
     </div>
   );
-}
-
-class SectionErrorBoundary extends Component<
-  { children: React.ReactNode },
-  { error: string | null }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { error: null };
-  }
-  static getDerivedStateFromError(error: unknown) {
-    return { error: error instanceof Error ? error.message : "Error inesperado." };
-  }
-  render() {
-    if (this.state.error) {
-      return (
-        <div className="mt-6 flex items-start gap-3 rounded-[1.75rem] border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{this.state.error}</span>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
 }
 
 function getErrorMessage(error: unknown) {

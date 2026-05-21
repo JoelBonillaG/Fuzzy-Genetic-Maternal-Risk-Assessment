@@ -1,10 +1,30 @@
-# Backend de `riesgo_materno`
+# Backend de riesgo materno difuso
 
-Este backend implementa un sistema difuso tipo Mamdani para estimar riesgo materno a partir de variables clinicas. El proyecto tambien incorpora un algoritmo genetico que ajusta las funciones de pertenencia de entrada y persiste el mejor cromosoma encontrado en disco.
+Este backend implementa un sistema de inferencia difusa Mamdani para clasificar riesgo materno usando reglas IF-THEN. El proyecto tambien incluye un pipeline experimental para comparar y procesar reglas generadas por RIPPER, PRISM y un algoritmo genetico tipo Michigan binario.
 
-## Objetivo
+La salida del sistema es una de estas clases:
 
-El sistema trabaja con estas entradas:
+- `low risk`
+- `mid risk`
+- `high risk`
+
+Si ninguna regla se activa, el sistema no inventa una clase ni usa un valor neutro. En ese caso devuelve:
+
+- puntaje: `NaN` internamente, `null` en JSON
+- riesgo: `None` internamente, `null` en JSON
+- `sin_activacion: true`
+
+Esto evita reportar falsamente `50 -> mid risk` cuando no existe evidencia difusa.
+
+## Variables usadas
+
+El dataset se carga desde:
+
+```text
+src/riesgo_materno/datos/Maternal Health Risk Data Set.csv
+```
+
+Variables de entrada:
 
 - `edad`
 - `presion_sistolica`
@@ -13,145 +33,289 @@ El sistema trabaja con estas entradas:
 - `temperatura_corporal`
 - `frecuencia_cardiaca`
 
-La salida final es una etiqueta de riesgo:
+## Estructura importante
 
-- `low risk`
-- `mid risk`
-- `high risk`
+```text
+src/app/
+```
 
-El flujo general es el siguiente:
+Capa HTTP/FastAPI del proyecto.
 
-1. El dataset CSV se carga desde `src/riesgo_materno/datos/`.
-2. La capa de entrenamiento limpia, valida y divide los datos.
-3. El sistema difuso base se evalua sobre los splits definidos.
-4. El algoritmo genetico optimiza las membresias de entrada.
-5. El mejor cromosoma se guarda en `src/riesgo_materno/modelos/modelo_optimizado.json`.
-6. La capa de prediccion reutiliza ese modelo persistido; si no existe, lo entrena de nuevo desde el CSV.
+```text
+src/riesgo_materno/logica_difusa/
+```
 
-## Responsabilidad por modulo
+Motor Mamdani, variables difusas, salida difusa y carga de reglas activas.
 
-### `src/app/`
+Archivos clave:
 
-Contiene la capa HTTP del proyecto.
+- `variables.py`: funciones de pertenencia de entrada y salida.
+- `motor.py`: fuzzificacion, evaluacion de reglas, agregacion y desfusificacion.
+- `reglas.py`: carga las reglas que consume el motor web.
 
-- `main.py`: crea la aplicacion FastAPI.
-- `run.py`: levanta `uvicorn` usando la configuracion central.
-- `core/config.py`: define nombre, puerto, host y otras variables de entorno.
+```text
+src/riesgo_materno/optimizacion/
+```
 
-### `src/riesgo_materno/logica_difusa/`
+Algoritmos geneticos y variantes experimentales.
 
-Contiene la definicion del sistema Mamdani.
+Subcarpetas importantes:
 
-- `variables.py`: universos, categorias difusas, limites y salida difusa.
-- `reglas.py`: conocimiento experto expresado como reglas.
-- `motor.py`: inferencia, agregacion y desfusificacion.
+- `michigan_binario/`: AG actual para evolucionar reglas binarias.
+- `pittsburgh/`: selector de subconjuntos de reglas.
+- `pittsburgh_michigan/`: variante anterior/experimental.
 
-### `src/riesgo_materno/optimizacion/`
+```text
+src/riesgo_materno/herramientas/pipeline_reglas/
+```
 
-Contiene la optimizacion de las membresias.
+Pipeline principal para experimentos de reglas.
 
-- `algoritmo_genetico.py`: ejecucion del AG.
-- `cromosoma.py`: codificacion, decodificacion y reparacion del cromosoma.
-- `penalizaciones.py`: restricciones y penalizaciones del fitness.
+Archivos clave:
 
-### `src/riesgo_materno/entrenamiento/`
+- `experimento_reglas.py`: ejecuta RIPPER, PRISM y AG por iteraciones.
+- `limpiar_reglas_iteraciones.py`: elimina reglas duplicadas y recalcula metricas.
+- `preparar_reglas_web.py`: publica la mejor base limpia para que la use el sistema web.
 
-Contiene la orquestacion de datos, evaluacion y persistencia.
+```text
+src/riesgo_materno/reglas/
+```
 
-- `datos.py`: carga, limpieza y split estratificado del dataset.
-- `evaluacion.py`: evaluacion del sistema sobre entrenamiento, validacion y prueba.
-- `metricas.py`: metricas de clasificacion.
-- `modelo.py`: rutas, parametros del AG y proporciones de split.
-- `entrenador.py`: entrena, compara y guarda el mejor modelo.
+Reglas limpias y reglas publicadas para produccion.
 
-### `src/riesgo_materno/prediccion/`
+Archivos/carpetas clave:
 
-Contiene el caso de uso de prediccion.
-
-- `predictor.py`: arma la prediccion completa a partir de una entrada nueva.
-- `validacion_entrada.py`: valida valores y satura pequenas desviaciones cercanas al rango permitido.
-
-### `src/riesgo_materno/herramientas/`
-
-Agrupa los scripts operativos del proyecto.
-
-- `predecir_cli.py`: prediccion individual por linea de comandos.
-- `optimizar_mamdani_ag.py`: reentrenamiento forzado y reporte de comparacion.
-- `pruebas_algoritmos.py`: ejecucion masiva desde CSV y exportacion a texto.
-
-## Rutas importantes
-
-- Dataset: `src/riesgo_materno/datos/Maternal Health Risk Data Set.csv`
-- Modelo persistido: `src/riesgo_materno/modelos/modelo_optimizado.json`
-- Documento tecnico complementario: `docs/roadmap_codigo_riesgo_materno.md`
-
-## Requisitos
-
-Las dependencias declaradas actualmente son:
-
-- `numpy`
-- `pandas`
-- `scikit-fuzzy`
-- `pygad`
-- `scikit-learn`
-- `fastapi[standard]`
+- `limpias/vN/`: resultados limpios versionados.
+- `reglas_sistema_difuso.json`: reglas activas que consume la web.
+- `metadata_reglas_sistema_difuso.json`: metadata de la base publicada.
 
 ## Instalacion
 
-La ejecucion esperada parte desde la carpeta `backend`.
+Desde la carpeta `backend`:
 
-```bash
-python -m venv venv
-venv\Scripts\activate
+```powershell
+python -m venv env
+.\env\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-## Ejecucion
+Si el entorno ya existe, solo activa:
 
-### Levantar la API
+```powershell
+.\env\Scripts\Activate.ps1
+```
 
-```bash
+## Levantar la API
+
+Desde `backend`:
+
+```powershell
 python -m src.app.run
 ```
 
-Endpoint disponible:
+Health check:
 
 ```text
 GET http://127.0.0.1:8000/health
 ```
 
-### Ejecutar una prediccion individual por CLI
+## Prediccion individual por CLI
 
-```bash
-python -m src.riesgo_materno.herramientas.predecir_cli ^
-  --edad 28 ^
-  --presion-sistolica 120 ^
-  --presion-diastolica 80 ^
-  --azucar-sangre 7.5 ^
-  --temperatura-corporal 98.6 ^
+Desde `backend`:
+
+```powershell
+python -m src.riesgo_materno.herramientas.predecir_cli `
+  --edad 28 `
+  --presion-sistolica 120 `
+  --presion-diastolica 80 `
+  --azucar-sangre 7.5 `
+  --temperatura-corporal 98.6 `
   --frecuencia-cardiaca 72
 ```
 
-### Reentrenar y guardar el modelo optimizado
+Si no se activa ninguna regla, la salida esperada es similar a:
 
-```bash
-python -m src.riesgo_materno.herramientas.optimizar_mamdani_ag
+```text
+Puntaje de riesgo: NaN
+Riesgo: sin clasificacion
+Motivo: ninguna regla se activo para este perfil.
 ```
 
-## Flujo de prediccion actual
+## Pipeline principal de reglas
 
-1. `predecir_caso(...)` solicita las membresias optimizadas.
-2. Si `modelo_optimizado.json` existe y es valido, el sistema lo reutiliza.
-3. Si el archivo no existe o es invalido, `entrenador.py` vuelve a entrenar desde el CSV.
-4. `validacion_entrada.py` valida cada valor y ajusta pequenas desviaciones cercanas al limite permitido.
-5. `SistemaDifusoMamdani` calcula el puntaje difuso y lo convierte a una clase de riesgo.
+Este es el flujo recomendado para generar, limpiar y publicar reglas.
 
-## Estado actual de la arquitectura
+### 1. Ejecutar experimento completo
 
-La arquitectura vigente ya separa responsabilidades de forma clara:
+Corre RIPPER, PRISM y AG Michigan binario usando el dataset completo, sin split entrenamiento/prueba.
 
-- `src/app` administra la configuracion y la exposicion HTTP.
-- `src/riesgo_materno` concentra el dominio del problema.
-- `docs/` conserva documentacion tecnica adicional.
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.experimento_reglas
+```
 
-El README anterior describia una organizacion mas antigua. Esta version documenta la estructura real presente hoy en el repositorio.
+Guarda resultados crudos en una version nueva:
+
+```text
+src/riesgo_materno/herramientas/pipeline_reglas/resultados/vN/
+```
+
+Al terminar, tambien ejecuta la limpieza automaticamente y guarda reglas limpias en:
+
+```text
+src/riesgo_materno/reglas/limpias/vN/
+```
+
+### 2. Limpiar reglas duplicadas manualmente
+
+Usa esto si ya tienes resultados crudos y quieres recalcular metricas despues de limpiar duplicadas.
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.limpiar_reglas_iteraciones
+```
+
+Por defecto toma la ultima version disponible en:
+
+```text
+src/riesgo_materno/herramientas/pipeline_reglas/resultados/
+```
+
+Tambien puedes indicar una entrada concreta:
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.limpiar_reglas_iteraciones `
+  --entrada src\riesgo_materno\herramientas\pipeline_reglas\resultados\v1
+```
+
+O limpiar solo un algoritmo:
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.limpiar_reglas_iteraciones `
+  --algoritmo AG_MICHIGAN_BINARIO
+```
+
+Salidas generadas:
+
+```text
+src/riesgo_materno/reglas/limpias/vN/resumen_iteraciones.csv
+src/riesgo_materno/reglas/limpias/vN/resumen_estadistico.csv
+src/riesgo_materno/reglas/limpias/vN/resumen_metricas.json
+src/riesgo_materno/reglas/limpias/vN/mejor_ag_limpio.json
+src/riesgo_materno/reglas/limpias/vN/mejor_global_limpio.json
+```
+
+### 3. Publicar reglas para la web
+
+Este comando toma la base limpia elegida y la copia al archivo que consume el motor difuso conectado al frontend.
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web
+```
+
+Por defecto publica la iteracion 12 del AG si existe en la ultima version limpia.
+
+Salidas:
+
+```text
+src/riesgo_materno/reglas/reglas_sistema_difuso.json
+src/riesgo_materno/reglas/metadata_reglas_sistema_difuso.json
+```
+
+Para publicar la mejor iteracion entre todas:
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web `
+  --todas-iteraciones
+```
+
+Para publicar una iteracion especifica:
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web `
+  --iteracion 12
+```
+
+Para publicar desde una carpeta limpia especifica:
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web `
+  --entrada src\riesgo_materno\reglas\limpias\v1 `
+  --iteracion 12
+```
+
+## Comandos rapidos
+
+Activar entorno:
+
+```powershell
+.\env\Scripts\Activate.ps1
+```
+
+API:
+
+```powershell
+python -m src.app.run
+```
+
+Experimento completo:
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.experimento_reglas
+```
+
+Limpiar reglas:
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.limpiar_reglas_iteraciones
+```
+
+Publicar reglas para la web:
+
+```powershell
+python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web
+```
+
+Prediccion CLI:
+
+```powershell
+python -m src.riesgo_materno.herramientas.predecir_cli `
+  --edad 28 `
+  --presion-sistolica 120 `
+  --presion-diastolica 80 `
+  --azucar-sangre 7.5 `
+  --temperatura-corporal 98.6 `
+  --frecuencia-cardiaca 72
+```
+
+## Frontend
+
+Desde la carpeta `frontend`:
+
+```powershell
+npm install
+npm run dev
+```
+
+Build:
+
+```powershell
+npm run build
+```
+
+Nota: si el build falla en `OptimizationSection.tsx`, esos errores pertenecen a tipos ya existentes en esa seccion y no al cambio del motor difuso.
+
+## Notas metodologicas
+
+- El motor ya no tiene modo neutro.
+- Un caso sin activacion no se clasifica.
+- En evaluacion experimental, `sin_activacion` se cuenta como error mediante la etiqueta interna `__sin_activacion__`.
+- Las rutas guardadas en JSON del pipeline deben ser relativas desde `backend`, no rutas absolutas de la PC.
+- No se debe volver a guardar resultados nuevos en `backend/limpieza`; esa carpeta era de pruebas antiguas.
+
+## Orden recomendado para un experimento nuevo
+
+1. Activar entorno.
+2. Ejecutar `experimento_reglas`.
+3. Revisar `src/riesgo_materno/reglas/limpias/vN/resumen_estadistico.csv`.
+4. Revisar `mejor_ag_limpio.json` y `mejor_global_limpio.json`.
+5. Publicar reglas con `preparar_reglas_web`.
+6. Levantar API y probar desde el frontend.

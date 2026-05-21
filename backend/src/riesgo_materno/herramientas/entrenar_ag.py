@@ -12,30 +12,31 @@ def principal():
     print("Entrenamiento AG Pittsburgh - seleccion de reglas difusas")
     print("=" * 70)
 
-    resultado = entrenar_seleccion_reglas()
+    resultado = entrenar_seleccion_reglas(semilla=42)
 
     mejor = resultado["mejor"]
     prueba = resultado["resultado_prueba"]
     historial = resultado["historial"]
     resumen_splits = resultado["resumen_splits"]
-    total_prueba = len(resultado["splits"]["prueba"])
+    total_dataset = len(resultado["splits"]["dataset_completo"])
 
     print()
-    print("Reparticion de los datos (70/30 estratificado)")
+    print("Datos usados para entrenamiento y evaluacion")
     print("-" * 70)
     print(resumen_splits.to_string(index=False))
 
     print()
     print("Mejor base de reglas encontrada")
     print("-" * 70)
-    print(f"Reglas activas |S|:             {mejor.cantidad_reglas} / {total_prueba}")
-    print(f"Balanced Accuracy entrenamiento: {mejor.balanced_accuracy:.4f}")
-    print(f"Compacidad C(S) entrenamiento:   {mejor.compacidad:.4f}")
-    print(f"Fitness entrenamiento:           {mejor.fitness:.4f}")
+    print(f"Reglas activas |S|:        {mejor.cantidad_reglas}")
+    print(f"Total instancias:          {total_dataset}")
+    print(f"Balanced Accuracy:         {mejor.balanced_accuracy:.4f}")
+    print(f"Compacidad C(S):           {mejor.compacidad:.4f}")
+    print(f"Fitness:                   {mejor.fitness:.4f}")
     print(f"Generaciones ejecutadas:         {len(historial) - 1}")
 
     print()
-    print("Desempeno en prueba (split 30%)")
+    print("Desempeno sobre dataset completo")
     print("-" * 70)
     print(f"Balanced Accuracy: {prueba.balanced_accuracy:.4f}")
     print(f"Compacidad C(S):   {prueba.compacidad:.4f}")

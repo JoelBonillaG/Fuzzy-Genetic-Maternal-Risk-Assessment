@@ -1,0 +1,30 @@
+{
+  "archivo_reglas": "src/riesgo_materno/reglas/reglas_sistema_difuso.json",
+  "archivo_origen": "src/riesgo_materno/reglas/limpias/v1/iteracion_12/genetic_algorithm.json",
+  "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
+  "iteracion": 12,
+  "algoritmo": "AG_MICHIGAN_BINARIO",
+  "criterio": "mayor balanced_accuracy despues de limpiar duplicadas",
+  "metricas_limpias": {
+    "accuracy": 0.5365612648221344,
+    "balanced_accuracy": 0.5397495631916133,
+    "error_clasificacion": 0.4634387351778656,
+    "error_balanceado": 0.46025043680838673,
+    "aciertos": 543,
+    "errores": 469,
+    "total": 1012,
+    "sin_activacion": 27
+  },
+  "resumen_reglas_limpias": {
+    "total_reglas": 159,
+    "duplicadas_eliminadas": 0,
+    "reglas_por_clase": {
+      "low risk": 49,
+      "mid risk": 48,
+      "high risk": 62
+    },
+    "antecedentes_promedio": 6.0,
+    "antecedentes_min": 6,
+    "antecedentes_max": 6
+  }
+}
