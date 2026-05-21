@@ -1,4 +1,4 @@
-from src.riesgo_materno.logica_difusa.reglas import REGLAS
+from src.riesgo_materno.logica_difusa.reglas import REGLAS, REGLAS_RIPPER
 from src.riesgo_materno.logica_difusa.variables import ESPECIFICACIONES_VARIABLES, SALIDA_DIFUSA
 from src.riesgo_materno.prediccion import predecir_caso
 from src.riesgo_materno.prediccion.predictor import obtener_curvas_membresia, predecir_caso_con_explicacion
@@ -45,7 +45,15 @@ def obtener_definiciones_difusas() -> dict:
     }
 
 
-def obtener_reglas_difusas() -> dict:
+def obtener_reglas_difusas(fuente: str = "AG") -> dict:
+    fuente_normalizada = fuente.upper()
+    if fuente_normalizada == "RIPPER":
+        reglas = REGLAS_RIPPER
+        fuente_reglas = "RIPPER"
+    else:
+        reglas = REGLAS
+        fuente_reglas = "AG"
+
     reglas_formateadas = [
         {
             "numero": regla["numero"],
@@ -55,9 +63,10 @@ def obtener_reglas_difusas() -> dict:
             ],
             "consecuente": regla["consecuente"],
         }
-        for regla in REGLAS
+        for regla in reglas
     ]
     return {
         "reglas": reglas_formateadas,
-        "total": len(REGLAS),
+        "total": len(reglas),
+        "fuente_reglas": fuente_reglas,
     }

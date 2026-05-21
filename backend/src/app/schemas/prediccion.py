@@ -21,8 +21,11 @@ class AjusteEntradaResponse(BaseModel):
 class PrediccionResponse(BaseModel):
     puntaje: float | None
     riesgo: str | None
+    sin_activacion: bool = False
     sistema: str
     origen_modelo: str
+    fuente_reglas: str = "AG"
+    fallback_ripper: bool = False
     ajustes_entrada: list[AjusteEntradaResponse]
 
 
@@ -46,7 +49,11 @@ class ExplicacionResponse(BaseModel):
     activaciones: dict[str, float]
     puntaje: float | None
     riesgo: str | None
+    sin_activacion: bool = False
+    sistema: str = ""
     origen_modelo: str
+    fuente_reglas: str = "AG"
+    fallback_ripper: bool = False
     ajustes_entrada: list[AjusteEntradaResponse]
 
 
@@ -99,3 +106,4 @@ class ReglaSchema(BaseModel):
 class FuzzyReglasResponse(BaseModel):
     reglas: list[ReglaSchema]
     total: int
+    fuente_reglas: str = "AG"

@@ -4,7 +4,7 @@ Si no hay un modelo guardado, cae a las reglas publicadas del sistema difuso.
 """
 
 from ..entrenamiento.entrenador import cargar_seleccion_reglas, construir_membresias_base
-from ..logica_difusa.reglas import REGLAS
+from ..logica_difusa.reglas import REGLAS, REGLAS_RIPPER
 from ..logica_difusa.motor import SistemaDifusoMamdani
 from .validacion_entrada import construir_entrada_lote, validar_valores_entrada
 
@@ -14,6 +14,12 @@ def predecir_caso(valores_entrada):
     sistema, seleccion = _construir_sistema()
     entradas, ajustes = construir_entrada_lote(valores_entrada)
     inferencia = sistema.inferir_lote(entradas)
+    seleccion_usada = seleccion
+
+    if bool(inferencia["sin_activacion"][0]):
+        sistema, seleccion_usada = _construir_sistema_ripper()
+        inferencia = sistema.inferir_lote(entradas)
+
     puntaje = _puntaje_para_respuesta(inferencia["puntajes"][0])
     riesgo = inferencia["riesgos"][0]
 
@@ -21,10 +27,12 @@ def predecir_caso(valores_entrada):
         "puntaje": puntaje,
         "riesgo": str(riesgo) if riesgo is not None else None,
         "sin_activacion": bool(inferencia["sin_activacion"][0]),
-        "sistema": "Mamdani con seleccion Pittsburgh",
-        "origen_modelo": seleccion["ruta_modelo"],
+        "sistema": seleccion_usada["sistema"],
+        "origen_modelo": seleccion_usada["ruta_modelo"],
+        "fuente_reglas": seleccion_usada["fuente_reglas"],
+        "fallback_ripper": seleccion_usada["fuente_reglas"] == "RIPPER",
         "ajustes_entrada": ajustes,
-        "cantidad_reglas_activas": seleccion["cantidad_reglas"],
+        "cantidad_reglas_activas": seleccion_usada["cantidad_reglas"],
     }
 
 
@@ -33,6 +41,12 @@ def predecir_caso_con_explicacion(valores_entrada):
     sistema, seleccion = _construir_sistema()
     entradas, ajustes = validar_valores_entrada(valores_entrada)
     resultado = sistema.inferir_con_explicacion(entradas)
+    seleccion_usada = seleccion
+
+    if resultado["sin_activacion"]:
+        sistema, seleccion_usada = _construir_sistema_ripper()
+        resultado = sistema.inferir_con_explicacion(entradas)
+
     puntaje = _puntaje_para_respuesta(resultado["puntaje"])
 
     return {
@@ -40,10 +54,13 @@ def predecir_caso_con_explicacion(valores_entrada):
         "puntaje": puntaje,
         "riesgo": resultado["riesgo"] if resultado["riesgo"] is not None else None,
         "entrada_validada": entradas,
-        "origen_modelo": seleccion["ruta_modelo"],
+        "origen_modelo": seleccion_usada["ruta_modelo"],
+        "sistema": seleccion_usada["sistema"],
+        "fuente_reglas": seleccion_usada["fuente_reglas"],
+        "fallback_ripper": seleccion_usada["fuente_reglas"] == "RIPPER",
         "ajustes_entrada": ajustes,
         "sin_activacion": resultado["sin_activacion"],
-        "cantidad_reglas_activas": seleccion["cantidad_reglas"],
+        "cantidad_reglas_activas": seleccion_usada["cantidad_reglas"],
     }
 
 
@@ -79,8 +96,27 @@ def _construir_sistema():
             "reglas_activas": REGLAS,
             "ruta_modelo": "reglas_publicadas",
             "cantidad_reglas": len(REGLAS),
+            "fuente_reglas": "AG",
+            "sistema": "Mamdani con reglas del algoritmo genetico",
         }
+    else:
+        seleccion["fuente_reglas"] = "AG"
+        seleccion["sistema"] = "Mamdani con reglas del algoritmo genetico"
 
+    membresias = construir_membresias_base()
+    sistema = SistemaDifusoMamdani(membresias, reglas=seleccion["reglas_activas"])
+    return sistema, seleccion
+
+
+def _construir_sistema_ripper():
+    """Construye el sistema alterno con reglas RIPPER para casos sin activacion AG."""
+    seleccion = {
+        "reglas_activas": REGLAS_RIPPER,
+        "ruta_modelo": "src/riesgo_materno/reglas/reglas_sistema_difuso_ripper.json",
+        "cantidad_reglas": len(REGLAS_RIPPER),
+        "fuente_reglas": "RIPPER",
+        "sistema": "Mamdani con reglas RIPPER",
+    }
     membresias = construir_membresias_base()
     sistema = SistemaDifusoMamdani(membresias, reglas=seleccion["reglas_activas"])
     return sistema, seleccion

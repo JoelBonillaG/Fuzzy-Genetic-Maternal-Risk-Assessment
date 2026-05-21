@@ -23,6 +23,8 @@ export interface PrediccionResponse {
   sin_activacion: boolean;
   sistema: string;
   origen_modelo: string;
+  fuente_reglas: string;
+  fallback_ripper: boolean;
   ajustes_entrada: AjusteEntradaResponse[];
 }
 
@@ -47,7 +49,10 @@ export interface ExplicacionResponse {
   puntaje: number | null;
   riesgo: string | null;
   sin_activacion: boolean;
+  sistema: string;
   origen_modelo: string;
+  fuente_reglas: string;
+  fallback_ripper: boolean;
   ajustes_entrada: AjusteEntradaResponse[];
 }
 
@@ -84,18 +89,45 @@ export interface ReglaSchema {
 export interface FuzzyReglasResponse {
   reglas: ReglaSchema[];
   total: number;
-  total_activas: number;
+  total_activas?: number;
+  fuente_reglas: string;
 }
 
 // ── Field specs (labels / units para display) ─────────────────────────────────
 
-const fieldMetaByApiKey: Record<string, { label: string; unit: string }> = {
-  edad:                { label: "Edad",                  unit: "años"   },
-  presion_sistolica:   { label: "Presion sistolica",     unit: "mmHg"   },
-  presion_diastolica:  { label: "Presion diastolica",    unit: "mmHg"   },
-  azucar_sangre:       { label: "Glucemia",              unit: "mmol/L" },
-  temperatura_corporal:{ label: "Temperatura corporal",  unit: "°F"     },
-  frecuencia_cardiaca: { label: "Frecuencia cardiaca",   unit: "bpm"    },
+const TEMPERATURE_VARIABLE = "temperatura_corporal";
+
+const fieldMetaByApiKey: Record<string, { label: string; unit: string; unitDescription: string }> = {
+  edad: {
+    label: "Edad",
+    unit: "años",
+    unitDescription: "Edad del paciente expresada en años.",
+  },
+  presion_sistolica: {
+    label: "Presion sistolica",
+    unit: "mmHg",
+    unitDescription: "Milimetros de mercurio: unidad usada para medir la presion arterial.",
+  },
+  presion_diastolica: {
+    label: "Presion diastolica",
+    unit: "mmHg",
+    unitDescription: "Milimetros de mercurio: unidad usada para medir la presion arterial.",
+  },
+  azucar_sangre: {
+    label: "Glucemia",
+    unit: "mmol/L",
+    unitDescription: "Milimoles por litro: concentracion de glucosa en sangre.",
+  },
+  temperatura_corporal: {
+    label: "Temperatura corporal",
+    unit: "°C",
+    unitDescription: "Grados Celsius: unidad de temperatura usada para el ingreso del paciente.",
+  },
+  frecuencia_cardiaca: {
+    label: "Frecuencia cardiaca",
+    unit: "bpm",
+    unitDescription: "Latidos por minuto: cantidad de pulsaciones del corazon en un minuto.",
+  },
 };
 
 export const VARIABLE_ORDER = [
@@ -112,12 +144,16 @@ const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "/api/v1").replace(/\/$
 // ── Builders ──────────────────────────────────────────────────────────────────
 
 export function buildPredictionPayload(values: Record<string, number>): PrediccionRequest {
+  const payload: Record<string, number> = {};
+
   for (const key of VARIABLE_ORDER) {
     if (values[key] === undefined || !Number.isFinite(values[key])) {
       throw new Error(`Valor faltante o invalido para ${getFieldLabel(key)}.`);
     }
+    payload[key] = toBackendValue(key, values[key]);
   }
-  return values as unknown as PrediccionRequest;
+
+  return payload as unknown as PrediccionRequest;
 }
 
 export function getFieldLabel(variable: string): string {
@@ -125,7 +161,12 @@ export function getFieldLabel(variable: string): string {
 }
 
 export function getFieldUnit(variable: string): string {
+  if (variable === TEMPERATURE_VARIABLE) return "°C";
   return fieldMetaByApiKey[variable]?.unit ?? "";
+}
+
+export function getFieldUnitDescription(variable: string): string {
+  return fieldMetaByApiKey[variable]?.unitDescription ?? "";
 }
 
 export function getRiskTone(value: string | null | undefined): RiskTone {
@@ -153,8 +194,37 @@ export function formatPercentage(value: number) {
 }
 
 export function formatValue(variable: string, value: number) {
+  const displayValue = toDisplayValue(variable, value);
   const unit = getFieldUnit(variable);
-  return unit ? `${numberFormatter.format(value)} ${unit}` : numberFormatter.format(value);
+  return unit ? `${numberFormatter.format(displayValue)} ${unit}` : numberFormatter.format(displayValue);
+}
+
+export function toBackendValue(variable: string, value: number) {
+  if (variable !== TEMPERATURE_VARIABLE) return value;
+  return roundToTwo((value * 9) / 5 + 32);
+}
+
+export function toDisplayValue(variable: string, value: number) {
+  if (variable !== TEMPERATURE_VARIABLE) return value;
+  return roundToTwo(((value - 32) * 5) / 9);
+}
+
+export function toDisplayVariableDefinition(variable: string, definition: VariableDefinicion): VariableDefinicion {
+  if (variable !== TEMPERATURE_VARIABLE) return definition;
+
+  return {
+    ...definition,
+    limites: definition.limites.map((value) => toDisplayValue(variable, value)),
+    categorias: Object.fromEntries(
+      Object.entries(definition.categorias).map(([category, points]) => [
+        category,
+        {
+          puntos_base: points.puntos_base.map((value) => toDisplayValue(variable, value)),
+          puntos_optimizados: points.puntos_optimizados.map((value) => toDisplayValue(variable, value)),
+        },
+      ]),
+    ),
+  };
 }
 
 export function formatAntecedentLabel(antecedent: AntecedentExplicacion) {
@@ -256,8 +326,8 @@ export async function obtenerDefinicionesDifusas() {
   return apiRequest<FuzzyDefinicionesResponse>("/difuso/definiciones", { method: "GET" });
 }
 
-export async function obtenerReglasDifusas() {
-  return apiRequest<FuzzyReglasResponse>("/difuso/reglas", { method: "GET" });
+export async function obtenerReglasDifusas(fuente: string = "AG") {
+  return apiRequest<FuzzyReglasResponse>(`/difuso/reglas?fuente=${encodeURIComponent(fuente)}`, { method: "GET" });
 }
 
 // ── Internal ──────────────────────────────────────────────────────────────────
@@ -298,7 +368,7 @@ const categoryLabels: Record<string, string> = {
   alto: "alto",
 };
 
-function getCategoryLabel(categoria: string): string {
+export function getCategoryLabel(categoria: string): string {
   return categoryLabels[categoria] ?? humanize(categoria);
 }
 
@@ -332,4 +402,8 @@ function capitalize(text: string): string {
 
 function humanize(value: string) {
   return value.replaceAll("_", " ");
+}
+
+function roundToTwo(value: number) {
+  return Number(value.toFixed(2));
 }

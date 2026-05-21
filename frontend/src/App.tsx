@@ -148,6 +148,7 @@ export default function App() {
               onAnalyze={handleAnalyze}
               onValueChange={handleValueChange}
               onClear={handleClear}
+              explanationResult={explanationResult}
             />
             <AnimatePresence>
               {(isAnalyzing || explanationResult || analysisError) && (

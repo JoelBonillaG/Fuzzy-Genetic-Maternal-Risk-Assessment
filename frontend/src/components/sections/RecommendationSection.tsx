@@ -4,10 +4,10 @@ import { AlertTriangle, BookOpen, CheckCircle2, LoaderCircle, ShieldAlert } from
 import {
   buildClinicalNarrative,
   buildResultSummary,
-  buildRuleNarrative,
   formatPercentage,
   formatScore,
   formatValue,
+  getCategoryLabel,
   getFieldLabel,
   getRiskUi,
   type ExplicacionResponse,
@@ -291,7 +291,6 @@ function ResultContent({ result }: { result: ExplicacionResponse }) {
               )}
               {sortedRules.map((rule, index) => {
                 const ruleRisk = getRiskUi(rule.consecuente);
-                const ruleNarrative = buildRuleNarrative(rule);
 
                 return (
                   <motion.div
@@ -318,10 +317,29 @@ function ResultContent({ result }: { result: ExplicacionResponse }) {
                         </div>
                       </div>
 
-                      <p className="mt-4 text-sm leading-7 text-slate-700">
-                        <span className="font-medium text-slate-500">Se activo porque: </span>
-                        {ruleNarrative}
-                      </p>
+                      <div className="mt-4">
+                        <div className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+                          Antecedentes activados
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {rule.antecedentes.map((antecedent, antecedentIndex) => (
+                            <div
+                              key={`${rule.numero}-${antecedent.variable}-${antecedent.categoria}-${antecedentIndex}`}
+                              className="inline-flex items-center overflow-hidden rounded-full border border-sky-100 bg-white shadow-sm"
+                            >
+                              <span className="bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800">
+                                {getFieldLabel(antecedent.variable)}
+                              </span>
+                              <span className="border-x border-sky-100 bg-white px-2 py-1.5 text-xs font-semibold text-slate-400">
+                                =
+                              </span>
+                              <span className="bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-800">
+                                {getCategoryLabel(antecedent.categoria)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
 
                       <div className="mt-4 overflow-hidden rounded-full bg-slate-100">
                         <div

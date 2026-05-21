@@ -6,10 +6,13 @@ import {
   buildClinicalNarrative,
   buildRuleNarrative,
   formatPercentage,
+  getCategoryLabel,
   getFieldLabel,
   getRiskUi,
   obtenerDefinicionesDifusas,
   obtenerReglasDifusas,
+  toDisplayValue,
+  toDisplayVariableDefinition,
   type ExplicacionResponse,
   type FuzzyDefinicionesResponse,
   type FuzzyReglasResponse,
@@ -40,6 +43,13 @@ const activationOrder = [
   { key: "bajo", label: "Riesgo bajo" },
 ] as const;
 
+type TooltipParam = {
+  axisValue?: number | string;
+  marker?: string;
+  seriesName?: string;
+  value?: [number, number] | number[];
+};
+
 export function DifusoSection({ explanationResult }: DifusoSectionProps) {
   const [definitions, setDefinitions] = useState<FuzzyDefinicionesResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +63,7 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
     mid: false,
     high: false,
   });
+  const fuenteReglasActual = explanationResult?.fuente_reglas ?? null;
 
   useEffect(() => {
     obtenerDefinicionesDifusas()
@@ -66,12 +77,17 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
   }, []);
 
   useEffect(() => {
-    if (showReglas && !reglasData) {
-      obtenerReglasDifusas()
+    setReglasData(null);
+    setShowReglas(false);
+  }, [fuenteReglasActual]);
+
+  useEffect(() => {
+    if (showReglas && fuenteReglasActual && !reglasData) {
+      obtenerReglasDifusas(fuenteReglasActual)
         .then(setReglasData)
         .catch(() => {});
     }
-  }, [showReglas, reglasData]);
+  }, [showReglas, fuenteReglasActual, reglasData]);
 
   return (
     <section className="section-anchor pt-10" id="difuso">
@@ -99,14 +115,14 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
             explanationResult={explanationResult}
           />
 
-          {/* Tabla de todas las reglas aprendidas por RIPPER */}
+          {explanationResult && fuenteReglasActual && (
           <div className="mt-6">
             <button
               onClick={() => setShowReglas((v) => !v)}
               className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-cyan-300 hover:bg-cyan-50"
             >
               <List className="h-4 w-4 text-cyan-600" />
-              {showReglas ? "Ocultar reglas" : "Ver reglas"}
+              {showReglas ? `Ocultar reglas ${fuenteReglasActual}` : `Ver reglas ${fuenteReglasActual}`}
               {reglasData && (
                 <span className="rounded-full bg-cyan-100 px-2 py-0.5 text-xs font-semibold text-cyan-700">
                   {reglasData.total}
@@ -116,7 +132,9 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
 
             {showReglas && reglasData && (
               <GlassPanel className="mt-3 p-5 sm:p-6">
-                <div className="text-xs uppercase tracking-[0.22em] text-cyan-700/80 mb-4">Reglas</div>
+                <div className="text-xs uppercase tracking-[0.22em] text-cyan-700/80 mb-4">
+                  Reglas usadas en la inferencia: {reglasData.fuente_reglas}
+                </div>
                 <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
                   {(() => {
                     const groups: Record<string, ReglaSchema[]> = { low: [], mid: [], high: [] };
@@ -165,7 +183,7 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
                                       <span key={i} className="flex items-center gap-1 text-xs">
                                         <span className="font-medium text-slate-700">{getFieldLabel(ant.variable)}</span>
                                         <span className="text-slate-400">=</span>
-                                        <span className="rounded-full bg-sky-50 px-2 py-0.5 font-mono text-sky-700">{ant.categoria}</span>
+                                        <span className="rounded-full bg-sky-50 px-2 py-0.5 font-mono text-sky-700">{getCategoryLabel(ant.categoria)}</span>
                                         {i < regla.antecedentes.length - 1 && <span className="text-slate-400 ml-1">AND</span>}
                                       </span>
                                     ))}
@@ -189,6 +207,7 @@ export function DifusoSection({ explanationResult }: DifusoSectionProps) {
               </GlassPanel>
             )}
           </div>
+          )}
 
           {explanationResult ? (
             <>
@@ -233,13 +252,16 @@ function MembershipCurvesPanel({
   onSelectVariable: (v: string) => void;
   explanationResult: ExplicacionResponse | null;
 }) {
-  const varDef = definitions.variables[selectedVariable];
-  if (!varDef) return null;
+  const rawVarDef = definitions.variables[selectedVariable];
+  if (!rawVarDef) return null;
+  const varDef = toDisplayVariableDefinition(selectedVariable, rawVarDef);
 
   const [domainMin, domainMax] = varDef.limites;
   const domain: [number, number] = [domainMin, domainMax];
   const categoryNames = Object.keys(varDef.categorias);
-  const currentPoint = explanationResult?.entrada_validada?.[selectedVariable] ?? null;
+  const rawCurrentPoint = explanationResult?.entrada_validada?.[selectedVariable] ?? null;
+  const currentPoint =
+    rawCurrentPoint !== null ? toDisplayValue(selectedVariable, rawCurrentPoint) : null;
 
   const series = categoryNames.map((cat, idx) => {
     const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
@@ -248,7 +270,7 @@ function MembershipCurvesPanel({
     const mu = explanationResult?.pertenencias?.[selectedVariable]?.[cat] ?? null;
 
     return {
-      name: cat,
+      name: getCategoryLabel(cat),
       type: "line",
       smooth: false,
       symbol: "none",
@@ -292,6 +314,7 @@ function MembershipCurvesPanel({
       backgroundColor: "rgba(255,255,255,0.96)",
       borderColor: "rgba(125,211,252,0.65)",
       textStyle: { color: "#0f172a" },
+      formatter: formatMembershipTooltip,
     },
     legend: { show: false },
     grid: { left: 12, right: 12, top: 16, bottom: 12, containLabel: true },
@@ -351,7 +374,7 @@ function MembershipCurvesPanel({
                 >
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                    <span className="font-semibold text-slate-800">{cat}</span>
+                    <span className="font-semibold text-slate-800">{getCategoryLabel(cat)}</span>
                     {mu !== undefined && mu > 0 && (
                       <span className="ml-auto rounded-full bg-cyan-50 px-2 py-0.5 text-cyan-700 font-mono">
                         μ={mu.toFixed(2)}
@@ -415,7 +438,8 @@ function FuzzificationPanel({ result }: { result: ExplicacionResponse }) {
           </thead>
           <tbody>
             {variables.map(([variable, cats]) => {
-              const valor = result.entrada_validada[variable];
+              const valorCrudo = result.entrada_validada[variable];
+              const valor = valorCrudo !== undefined ? toDisplayValue(variable, valorCrudo) : undefined;
               const catEntries = Object.entries(cats);
               return (
                 <tr key={variable} className="border-b border-sky-50 hover:bg-sky-50/30">
@@ -615,7 +639,6 @@ function RulesPanel({ result }: { result: ExplicacionResponse }) {
         )}
         {sortedRules.map((rule, index) => {
           const ruleRisk = getRiskUi(rule.consecuente);
-          const narrative = buildRuleNarrative(rule);
 
           return (
             <motion.div
@@ -640,10 +663,32 @@ function RulesPanel({ result }: { result: ExplicacionResponse }) {
                     </span>
                   </div>
                 </div>
-                <p className="mt-4 text-sm leading-7 text-slate-700">
-                  <span className="font-medium text-slate-500">Se activo porque: </span>
-                  {narrative}
-                </p>
+                <div className="mt-4">
+                  <div className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+                    Antecedentes activados
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {rule.antecedentes.map((ant, antecedentIndex) => (
+                      <div
+                        key={`${rule.numero}-${ant.variable}-${ant.categoria}-${antecedentIndex}`}
+                        className="inline-flex items-center overflow-hidden rounded-full border border-sky-100 bg-white shadow-sm"
+                      >
+                        <span className="bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800">
+                          {getFieldLabel(ant.variable)}
+                        </span>
+                        <span className="border-x border-sky-100 bg-white px-2 py-1.5 text-xs font-semibold text-slate-400">
+                          =
+                        </span>
+                        <span className="bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-800">
+                          {getCategoryLabel(ant.categoria)}
+                        </span>
+                        <span className="bg-white px-3 py-1.5 font-mono text-[11px] text-slate-400">
+                          μ={ant.pertenencia.toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 <div className="mt-4 overflow-hidden rounded-full bg-slate-100">
                   <div
                     className="h-1.5 rounded-full"
@@ -653,14 +698,14 @@ function RulesPanel({ result }: { result: ExplicacionResponse }) {
                     }}
                   />
                 </div>
-                <div className="mt-3 flex flex-wrap gap-1.5">
+                <div className="hidden">
                   {rule.antecedentes.map((ant) => (
                     <span
                       key={`${ant.variable}-${ant.categoria}`}
                       className="rounded-full border border-sky-100 bg-white px-2.5 py-0.5 text-xs text-slate-600"
                     >
                       {getFieldLabel(ant.variable)}{" "}
-                      <span className="font-semibold text-cyan-700">{ant.categoria}</span>{" "}
+                      <span className="font-semibold text-cyan-700">{getCategoryLabel(ant.categoria)}</span>{" "}
                       <span className="font-mono text-slate-400">μ={ant.pertenencia.toFixed(2)}</span>
                     </span>
                   ))}
@@ -672,4 +717,27 @@ function RulesPanel({ result }: { result: ExplicacionResponse }) {
       </div>
     </GlassPanel>
   );
+}
+
+function formatMembershipTooltip(params: TooltipParam | TooltipParam[]) {
+  const items = Array.isArray(params) ? params : [params];
+  const visibleItems = items.filter((item) => item.seriesName && item.seriesName !== "__marker");
+  const axisValue = visibleItems[0]?.axisValue ?? items[0]?.axisValue ?? "";
+
+  const rows = visibleItems.map((item) => {
+    const value = Array.isArray(item.value) ? Number(item.value[1] ?? 0) : 0;
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:4px;">
+        <span>${item.marker ?? ""}${item.seriesName}</span>
+        <strong style="font-family:monospace;">μ=${value.toFixed(2)}</strong>
+      </div>
+    `;
+  });
+
+  return `
+    <div>
+      <div style="margin-bottom:6px;">${axisValue}</div>
+      ${rows.join("")}
+    </div>
+  `;
 }
