@@ -1,2 +1,0 @@
-"""Postprocesado de predicciones difusas."""
-

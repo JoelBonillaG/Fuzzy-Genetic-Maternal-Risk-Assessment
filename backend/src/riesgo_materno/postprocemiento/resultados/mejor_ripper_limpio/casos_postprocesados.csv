@@ -1,5 +1,0 @@
-indice,direccion,y_true,y_pred_antes,y_pred_despues,puntaje_antes,puntaje_despues,delta,edad,presion_sistolica,presion_diastolica,azucar_sangre,temperatura_corporal,frecuencia_cardiaca
-464,real_low_pred_mid,low risk,mid risk,low risk,41.6,38.63,-2.97,20.0,120.0,75.0,6.8,98.0,70.0
-590,real_mid_pred_low,mid risk,low risk,mid risk,39.31,42.36,3.05,22.0,120.0,90.0,7.5,98.0,82.0
-829,real_mid_pred_low,mid risk,low risk,mid risk,39.31,42.36,3.05,22.0,120.0,90.0,7.5,98.0,82.0
-886,real_low_pred_mid,low risk,mid risk,low risk,41.6,38.63,-2.97,20.0,120.0,75.0,6.8,98.0,70.0

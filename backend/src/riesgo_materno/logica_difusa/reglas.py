@@ -1,13 +1,12 @@
-# Reglas del sistema difuso Mamdani para riesgo materno.
+﻿# Reglas del sistema difuso Mamdani para riesgo materno.
 #
 # Carga las reglas publicadas para el sistema web.
 # Para publicar reglas limpias:
-# python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web
+# python -m src.riesgo_materno.pipeline_reglas.preparar_reglas_web
 
 import json
 
 from ..entrenamiento.modelo import (
-    RUTA_REGLAS_APRENDIDAS,
     RUTA_REGLAS_SISTEMA_DIFUSO,
     RUTA_REGLAS_SISTEMA_DIFUSO_RIPPER,
 )
@@ -29,14 +28,11 @@ def cargar_reglas_desde_ruta(ruta):
 
 
 def _cargar_reglas():
-    """Carga reglas publicadas; si no existen, usa el archivo historico."""
+    """Carga las reglas publicadas para el sistema difuso."""
     ruta = RUTA_REGLAS_SISTEMA_DIFUSO
     if not ruta.exists():
-        ruta = RUTA_REGLAS_APRENDIDAS
-    if not ruta.exists():
         raise FileNotFoundError(
-            f"No se encontraron reglas publicadas en {RUTA_REGLAS_SISTEMA_DIFUSO} "
-            f"ni reglas historicas en {RUTA_REGLAS_APRENDIDAS}."
+            f"No se encontraron reglas publicadas en {RUTA_REGLAS_SISTEMA_DIFUSO}."
         )
     return _leer_json(ruta)
 

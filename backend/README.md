@@ -1,6 +1,6 @@
-# Backend de riesgo materno difuso
+﻿# Backend de riesgo materno difuso
 
-Este backend implementa un sistema de inferencia difusa Mamdani para clasificar riesgo materno usando reglas IF-THEN. El proyecto tambien incluye un pipeline experimental para comparar y procesar reglas generadas por RIPPER, PRISM y un algoritmo genetico tipo Michigan binario.
+Este backend implementa un sistema de inferencia difusa Mamdani para clasificar riesgo materno usando reglas IF-THEN. El proyecto tambien incluye un pipeline experimental para comparar y procesar reglas generadas por RIPPER, PRISM y un algoritmo genetico.
 
 La salida del sistema es una de estas clases:
 
@@ -57,16 +57,12 @@ Archivos clave:
 src/riesgo_materno/optimizacion/
 ```
 
-Algoritmos geneticos y variantes experimentales.
+Algoritmo genetico usado por el pipeline.
 
-Subcarpetas importantes:
-
-- `michigan_binario/`: AG actual para evolucionar reglas binarias.
-- `pittsburgh/`: selector de subconjuntos de reglas.
-- `pittsburgh_michigan/`: variante anterior/experimental.
+- `genetic_algorithm/`: AG actual para evolucionar reglas binarias.
 
 ```text
-src/riesgo_materno/herramientas/pipeline_reglas/
+src/riesgo_materno/pipeline_reglas/
 ```
 
 Pipeline principal para experimentos de reglas.
@@ -76,6 +72,7 @@ Archivos clave:
 - `experimento_reglas.py`: ejecuta RIPPER, PRISM y AG por iteraciones.
 - `limpiar_reglas_iteraciones.py`: elimina reglas duplicadas y recalcula metricas.
 - `preparar_reglas_web.py`: publica la mejor base limpia para que la use el sistema web.
+- `preparar_ripper_respaldo.py`: prepara las reglas RIPPER incompletas usadas como respaldo.
 
 ```text
 src/riesgo_materno/reglas/
@@ -85,8 +82,9 @@ Reglas limpias y reglas publicadas para produccion.
 
 Archivos/carpetas clave:
 
-- `limpias/vN/`: resultados limpios versionados.
+- `experimentos/vN/`: resultados limpios versionados.
 - `reglas_sistema_difuso.json`: reglas activas que consume la web.
+- `reglas_sistema_difuso_ripper.json`: reglas RIPPER de respaldo.
 - `metadata_reglas_sistema_difuso.json`: metadata de la base publicada.
 
 ## Instalacion
@@ -124,7 +122,7 @@ GET http://127.0.0.1:8000/health
 Desde `backend`:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.predecir_cli `
+python -m src.riesgo_materno.prediccion.cli `
   --edad 28 `
   --presion-sistolica 120 `
   --presion-diastolica 80 `
@@ -147,22 +145,22 @@ Este es el flujo recomendado para generar, limpiar y publicar reglas.
 
 ### 1. Ejecutar experimento completo
 
-Corre RIPPER, PRISM y AG Michigan binario usando el dataset completo, sin split entrenamiento/prueba.
+Corre RIPPER, PRISM y AG usando el dataset completo, sin split entrenamiento/prueba.
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.experimento_reglas
+python -m src.riesgo_materno.pipeline_reglas.experimento_reglas
 ```
 
 Guarda resultados crudos en una version nueva:
 
 ```text
-src/riesgo_materno/herramientas/pipeline_reglas/resultados/vN/
+src/riesgo_materno/pipeline_reglas/resultados/vN/
 ```
 
 Al terminar, tambien ejecuta la limpieza automaticamente y guarda reglas limpias en:
 
 ```text
-src/riesgo_materno/reglas/limpias/vN/
+src/riesgo_materno/reglas/experimentos/vN/
 ```
 
 ### 2. Limpiar reglas duplicadas manualmente
@@ -170,48 +168,46 @@ src/riesgo_materno/reglas/limpias/vN/
 Usa esto si ya tienes resultados crudos y quieres recalcular metricas despues de limpiar duplicadas.
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.limpiar_reglas_iteraciones
+python -m src.riesgo_materno.pipeline_reglas.limpiar_reglas_iteraciones
 ```
 
 Por defecto toma la ultima version disponible en:
 
 ```text
-src/riesgo_materno/herramientas/pipeline_reglas/resultados/
+src/riesgo_materno/pipeline_reglas/resultados/
 ```
 
 Tambien puedes indicar una entrada concreta:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.limpiar_reglas_iteraciones `
-  --entrada src\riesgo_materno\herramientas\pipeline_reglas\resultados\v1
+python -m src.riesgo_materno.pipeline_reglas.limpiar_reglas_iteraciones `
+  --entrada src\riesgo_materno\pipeline_reglas\resultados\v1
 ```
 
 O limpiar solo un algoritmo:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.limpiar_reglas_iteraciones `
-  --algoritmo AG_MICHIGAN_BINARIO
+python -m src.riesgo_materno.pipeline_reglas.limpiar_reglas_iteraciones `
+  --algoritmo GENETIC_ALGORITHM
 ```
 
 Salidas generadas:
 
 ```text
-src/riesgo_materno/reglas/limpias/vN/resumen_iteraciones.csv
-src/riesgo_materno/reglas/limpias/vN/resumen_estadistico.csv
-src/riesgo_materno/reglas/limpias/vN/resumen_metricas.json
-src/riesgo_materno/reglas/limpias/vN/mejor_ag_limpio.json
-src/riesgo_materno/reglas/limpias/vN/mejor_global_limpio.json
+src/riesgo_materno/reglas/experimentos/vN/resumen_iteraciones.csv
+src/riesgo_materno/reglas/experimentos/vN/resumen_estadistico.csv
+src/riesgo_materno/reglas/experimentos/vN/resumen_metricas.json
+src/riesgo_materno/reglas/experimentos/vN/mejor_ag_limpio.json
+src/riesgo_materno/reglas/experimentos/vN/mejor_global_limpio.json
 ```
 
 ### 3. Publicar reglas para la web
 
-Este comando toma la base limpia elegida y la copia al archivo que consume el motor difuso conectado al frontend.
+Este comando toma la ultima version limpia, selecciona automaticamente la base del AG con mayor BA y la publica en el archivo que consume el motor difuso conectado al frontend.
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web
+python -m src.riesgo_materno.pipeline_reglas.preparar_reglas_web
 ```
-
-Por defecto publica la iteracion 12 del AG si existe en la ultima version limpia.
 
 Salidas:
 
@@ -220,26 +216,26 @@ src/riesgo_materno/reglas/reglas_sistema_difuso.json
 src/riesgo_materno/reglas/metadata_reglas_sistema_difuso.json
 ```
 
-Para publicar la mejor iteracion entre todas:
+Para revisar una iteracion especifica de forma manual:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web `
-  --todas-iteraciones
-```
-
-Para publicar una iteracion especifica:
-
-```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web `
+python -m src.riesgo_materno.pipeline_reglas.preparar_reglas_web `
   --iteracion 12
 ```
 
 Para publicar desde una carpeta limpia especifica:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web `
-  --entrada src\riesgo_materno\reglas\limpias\v1 `
-  --iteracion 12
+python -m src.riesgo_materno.pipeline_reglas.preparar_reglas_web `
+  --entrada src\riesgo_materno\reglas\experimentos\v1
+```
+
+### 4. Publicar respaldo RIPPER
+
+Este comando consolida las reglas RIPPER incompletas ya guardadas, elimina duplicados exactos y actualiza el respaldo usado por la web cuando el AG no activa reglas.
+
+```powershell
+python -m src.riesgo_materno.pipeline_reglas.preparar_ripper_respaldo
 ```
 
 ## Comandos rapidos
@@ -259,25 +255,31 @@ python -m src.app.run
 Experimento completo:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.experimento_reglas
+python -m src.riesgo_materno.pipeline_reglas.experimento_reglas
 ```
 
 Limpiar reglas:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.limpiar_reglas_iteraciones
+python -m src.riesgo_materno.pipeline_reglas.limpiar_reglas_iteraciones
 ```
 
 Publicar reglas para la web:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.pipeline_reglas.preparar_reglas_web
+python -m src.riesgo_materno.pipeline_reglas.preparar_reglas_web
+```
+
+Publicar respaldo RIPPER:
+
+```powershell
+python -m src.riesgo_materno.pipeline_reglas.preparar_ripper_respaldo
 ```
 
 Prediccion CLI:
 
 ```powershell
-python -m src.riesgo_materno.herramientas.predecir_cli `
+python -m src.riesgo_materno.prediccion.cli `
   --edad 28 `
   --presion-sistolica 120 `
   --presion-diastolica 80 `
@@ -309,13 +311,13 @@ Nota: si el build falla en `OptimizationSection.tsx`, esos errores pertenecen a 
 - Un caso sin activacion no se clasifica.
 - En evaluacion experimental, `sin_activacion` se cuenta como error mediante la etiqueta interna `__sin_activacion__`.
 - Las rutas guardadas en JSON del pipeline deben ser relativas desde `backend`, no rutas absolutas de la PC.
-- No se debe volver a guardar resultados nuevos en `backend/limpieza`; esa carpeta era de pruebas antiguas.
 
 ## Orden recomendado para un experimento nuevo
 
 1. Activar entorno.
 2. Ejecutar `experimento_reglas`.
-3. Revisar `src/riesgo_materno/reglas/limpias/vN/resumen_estadistico.csv`.
+3. Revisar `src/riesgo_materno/reglas/experimentos/vN/resumen_estadistico.csv`.
 4. Revisar `mejor_ag_limpio.json` y `mejor_global_limpio.json`.
 5. Publicar reglas con `preparar_reglas_web`.
-6. Levantar API y probar desde el frontend.
+6. Publicar respaldo RIPPER con `preparar_ripper_respaldo`.
+7. Levantar API y probar desde el frontend.

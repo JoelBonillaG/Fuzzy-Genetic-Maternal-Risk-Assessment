@@ -1,0 +1,91 @@
+{
+  "iteracion": 8,
+  "resumen_reglas_limpias": {
+    "total_reglas": 1,
+    "reglas_duplicadas_eliminadas": 0,
+    "reglas_por_clase": {
+      "low risk": 0,
+      "mid risk": 0,
+      "high risk": 1
+    },
+    "antecedentes_promedio": 6.0,
+    "antecedentes_min": 6,
+    "antecedentes_max": 6
+  },
+  "metricas_limpias": {
+    "accuracy": 0.017786561264822136,
+    "balanced_accuracy": 0.022058823529411766,
+    "error_clasificacion": 0.9822134387351779,
+    "error_balanceado": 0.9779411764705882,
+    "aciertos": 18,
+    "errores": 994,
+    "total": 1012,
+    "sin_activacion": 994
+  },
+  "matriz_confusion_limpia": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk",
+      "__sin_activacion__"
+    ],
+    "matriz": [
+      [
+        0,
+        0,
+        0,
+        404
+      ],
+      [
+        0,
+        0,
+        0,
+        336
+      ],
+      [
+        0,
+        0,
+        18,
+        254
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "reglas_finales": [
+    {
+      "id": "R001",
+      "antecedentes": [
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "avanzada"
+        },
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "diabetes_manifiesta"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "normal"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "normal"
+        }
+      ],
+      "consecuente": "high risk"
+    }
+  ]
+}

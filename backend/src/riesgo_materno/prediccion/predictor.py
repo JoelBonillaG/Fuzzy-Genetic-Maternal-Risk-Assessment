@@ -1,11 +1,10 @@
-"""Predictor: usa las membresias base y, si existe, la base de reglas seleccionada por el AG Pittsburgh.
+"""Predictor: usa las reglas publicadas del sistema y RIPPER como respaldo."""
 
-Si no hay un modelo guardado, cae a las reglas publicadas del sistema difuso.
-"""
+import numpy as np
 
-from ..entrenamiento.entrenador import cargar_seleccion_reglas, construir_membresias_base
 from ..logica_difusa.reglas import REGLAS, REGLAS_RIPPER
 from ..logica_difusa.motor import SistemaDifusoMamdani
+from ..logica_difusa.variables import ESPECIFICACIONES_VARIABLES
 from .validacion_entrada import construir_entrada_lote, validar_valores_entrada
 
 
@@ -86,23 +85,14 @@ def obtener_curvas_membresia():
 
 
 def _construir_sistema():
-    """Construye el sistema difuso con membresias base y la seleccion de reglas guardada.
-
-    Si no existe una seleccion persistida, usa las reglas publicadas del sistema.
-    """
-    seleccion = cargar_seleccion_reglas()
-    if seleccion is None:
-        seleccion = {
-            "reglas_activas": REGLAS,
-            "ruta_modelo": "reglas_publicadas",
-            "cantidad_reglas": len(REGLAS),
-            "fuente_reglas": "AG",
-            "sistema": "Mamdani con reglas del algoritmo genetico",
-        }
-    else:
-        seleccion["fuente_reglas"] = "AG"
-        seleccion["sistema"] = "Mamdani con reglas del algoritmo genetico"
-
+    """Construye el sistema difuso con las reglas publicadas del algoritmo genetico."""
+    seleccion = {
+        "reglas_activas": REGLAS,
+        "ruta_modelo": "src/riesgo_materno/reglas/reglas_sistema_difuso.json",
+        "cantidad_reglas": len(REGLAS),
+        "fuente_reglas": "AG",
+        "sistema": "Mamdani con reglas del algoritmo genetico",
+    }
     membresias = construir_membresias_base()
     sistema = SistemaDifusoMamdani(membresias, reglas=seleccion["reglas_activas"])
     return sistema, seleccion
@@ -128,3 +118,13 @@ def _puntaje_para_respuesta(puntaje):
     if puntaje != puntaje:
         return None
     return puntaje
+
+
+def construir_membresias_base():
+    return {
+        variable: {
+            categoria: np.asarray(puntos, dtype=float)
+            for categoria, puntos in especificacion["categorias"].items()
+        }
+        for variable, especificacion in ESPECIFICACIONES_VARIABLES.items()
+    }
