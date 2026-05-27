@@ -1,0 +1,100 @@
+{
+  "reglas": 5,
+  "frontera": {
+    "limite_inferior": 36.95,
+    "limite_superior": 42.97,
+    "corte": 39.92,
+    "delta_subir": 3.049999999999997,
+    "delta_bajar": 2.969999999999999
+  },
+  "antes": {
+    "accuracy": 0.05731225296442688,
+    "balanced_accuracy": 0.05573004779469543,
+    "aciertos": 58,
+    "errores": 954,
+    "total": 1012,
+    "sin_activacion": 946,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk",
+        "__sin_activacion__"
+      ],
+      "matriz": [
+        [
+          36,
+          0,
+          0,
+          368
+        ],
+        [
+          7,
+          4,
+          0,
+          325
+        ],
+        [
+          1,
+          0,
+          18,
+          253
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "despues": {
+    "accuracy": 0.05731225296442688,
+    "balanced_accuracy": 0.05573004779469543,
+    "aciertos": 58,
+    "errores": 954,
+    "total": 1012,
+    "sin_activacion": 946,
+    "matriz_confusion": {
+      "etiquetas": [
+        "low risk",
+        "mid risk",
+        "high risk",
+        "__sin_activacion__"
+      ],
+      "matriz": [
+        [
+          36,
+          0,
+          0,
+          368
+        ],
+        [
+          7,
+          4,
+          0,
+          325
+        ],
+        [
+          1,
+          0,
+          18,
+          253
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "delta": {
+    "accuracy": 0.0,
+    "balanced_accuracy": 0.0,
+    "aciertos": 0
+  },
+  "casos_postprocesados": 0
+}

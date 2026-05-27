@@ -1,0 +1,37 @@
+{
+  "tabla_resumen": [
+    {
+      "algoritmo": "AG_MICHIGAN_BINARIO",
+      "accuracy_promedio": 0.47490118577075097,
+      "accuracy_desviacion_estandar": 0.02146890314891723,
+      "error_promedio": 0.525098814229249,
+      "error_desviacion_estandar": 0.02146890314891723,
+      "error_balanceado_promedio": 0.5749032492534967,
+      "error_balanceado_desviacion_estandar": 0.017401192605016838,
+      "balanced_accuracy_promedio": 0.42509675074650327,
+      "balanced_accuracy_desviacion_estandar": 0.017401192605016824
+    },
+    {
+      "algoritmo": "PRISM_ESTOCASTICO",
+      "accuracy_promedio": 0.25548418972332015,
+      "accuracy_desviacion_estandar": 0.13100815587868692,
+      "error_promedio": 0.7445158102766797,
+      "error_desviacion_estandar": 0.13100815587868694,
+      "error_balanceado_promedio": 0.7384042973625093,
+      "error_balanceado_desviacion_estandar": 0.10518498390092665,
+      "balanced_accuracy_promedio": 0.26159570263749055,
+      "balanced_accuracy_desviacion_estandar": 0.10518498390092666
+    },
+    {
+      "algoritmo": "RIPPER",
+      "accuracy_promedio": 0.6476778656126482,
+      "accuracy_desviacion_estandar": 0.014842836246841684,
+      "error_promedio": 0.35232213438735177,
+      "error_desviacion_estandar": 0.014842836246841684,
+      "error_balanceado_promedio": 0.36327123258544336,
+      "error_balanceado_desviacion_estandar": 0.013203832593329905,
+      "balanced_accuracy_promedio": 0.6367287674145565,
+      "balanced_accuracy_desviacion_estandar": 0.013203832593329905
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
+  "iteracion": 13,
+  "algoritmo": "PRISM_ESTOCASTICO",
+  "datos": {
+    "estrategia": "dataset_completo_sin_splits",
+    "total_instancias": 1012
+  },
+  "hiperparametros": {
+    "modo": "prism_bootstrap",
+    "fraccion_bootstrap": 0.75,
+    "cobertura_minima_regla": 2,
+    "orden_clases": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "maximo_condiciones_por_regla": 5,
+    "maximo_reglas_por_clase": 40,
+    "eliminar_positivos_cubiertos": true
+  },
+  "resumen_reglas": {
+    "total_reglas": 6,
+    "reglas_duplicadas": 0,
+    "reglas_por_clase": {
+      "low risk": 3,
+      "mid risk": 2,
+      "high risk": 1
+    },
+    "antecedentes_promedio": 1.8333333333333333,
+    "antecedentes_min": 1,
+    "antecedentes_max": 3
+  },
+  "metricas": {
+    "accuracy": 0.2628458498023715,
+    "error_clasificacion": 0.7371541501976284,
+    "errores": 746,
+    "aciertos": 266,
+    "total": 1012,
+    "sin_activacion": 611,
+    "balanced_accuracy": 0.2712268075547051,
+    "error_balanceado": 0.7287731924452949
+  },
+  "matriz_confusion": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk",
+      "__sin_activacion__"
+    ],
+    "matriz": [
+      [
+        128,
+        4,
+        0,
+        272
+      ],
+      [
+        73,
+        15,
+        5,
+        243
+      ],
+      [
+        46,
+        7,
+        123,
+        96
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "reglas_finales": [
+    {
+      "id": "R001",
+      "antecedentes": [
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        },
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "optima"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R002",
+      "antecedentes": [
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        },
+        {
+          "variable": "frecuencia_cardiaca",
+          "etiqueta_linguistica": "bradicardia"
+        },
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R003",
+      "antecedentes": [
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipotension"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R004",
+      "antecedentes": [
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R005",
+      "antecedentes": [
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R006",
+      "antecedentes": [
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "PRISM_ESTOCASTICO"
+    }
+  ]
+}
