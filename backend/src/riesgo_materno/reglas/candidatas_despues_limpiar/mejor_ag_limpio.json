@@ -2,7 +2,7 @@
   "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
   "iteracion": 12,
   "algoritmo": "AG_MICHIGAN_BINARIO",
-  "archivo_origen": "C:\\Users\\Joel\\Desktop\\Universidad\\Septimo Semestre\\Inteligencia Artificial\\Proyecto-Paper\\Fuzzy-Genetic-Maternal-Risk-Assessment\\backend\\src\\riesgo_materno\\herramientas\\comparaciones\\resultados\\iteracion_12\\genetic_algorithm.json",
+  "archivo_origen": "C:\\Users\\josue\\Documents\\Paper_Riesgo_Maternal_q4\\code\\Riesgo\\backend\\src\\riesgo_materno\\herramientas\\comparaciones\\resultados\\iteracion_12\\genetic_algorithm.json",
   "datos": {
     "estrategia": "dataset_completo_sin_splits",
     "total_instancias": 1012
@@ -33,6 +33,61 @@
     "sin_activacion": 27,
     "balanced_accuracy": 0.5397495631916133,
     "error_balanceado": 0.46025043680838673
+  },
+  "matriz_confusion_original": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk",
+      "__sin_activacion__"
+    ],
+    "matriz": [
+      [
+        167,
+        208,
+        2,
+        27
+      ],
+      [
+        80,
+        252,
+        4,
+        0
+      ],
+      [
+        1,
+        147,
+        124,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "resumen_reglas_original": {
+    "total_reglas": 368,
+    "reglas_duplicadas": 209,
+    "reglas_por_clase": {
+      "low risk": 114,
+      "mid risk": 104,
+      "high risk": 150
+    }
+  },
+  "resumen_reglas_limpias": {
+    "total_reglas": 159,
+    "reglas_duplicadas_eliminadas": 209,
+    "reglas_por_clase": {
+      "low risk": 49,
+      "mid risk": 48,
+      "high risk": 62
+    },
+    "antecedentes_promedio": 6.0,
+    "antecedentes_min": 6,
+    "antecedentes_max": 6
   },
   "metricas_limpias": {
     "accuracy": 0.5365612648221344,
@@ -77,18 +132,6 @@
         0
       ]
     ]
-  },
-  "resumen_reglas_limpias": {
-    "total_reglas": 159,
-    "duplicadas_eliminadas": 209,
-    "reglas_por_clase": {
-      "low risk": 49,
-      "mid risk": 48,
-      "high risk": 62
-    },
-    "antecedentes_promedio": 6.0,
-    "antecedentes_min": 6,
-    "antecedentes_max": 6
   },
   "reglas_finales": [
     {

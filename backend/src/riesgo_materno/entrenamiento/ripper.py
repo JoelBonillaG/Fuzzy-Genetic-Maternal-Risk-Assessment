@@ -14,7 +14,6 @@ import pandas as pd
 from wittgenstein import RIPPER
 
 from ..logica_difusa.variables import ESPECIFICACIONES_VARIABLES
-from .reglas_completas import completar_antecedentes_reglas
 
 ORDEN_CLASES = ["high risk", "mid risk", "low risk"]
 
@@ -23,7 +22,6 @@ MAPA_CONSECUENTE = {
     "mid risk":  "medio",
     "low risk":  "bajo",
 }
-CONSECUENTE_A_CLASE = {v: k for k, v in MAPA_CONSECUENTE.items()}
 
 
 # ── Discretización ────────────────────────────────────────────────────────────
@@ -106,7 +104,6 @@ def aprender_reglas_ripper(tabla, orden_clases=None, parametros=None):
             })
             numero += 1
 
-    reglas = completar_antecedentes_reglas(reglas, df, CONSECUENTE_A_CLASE)
     return reglas
 
 # Después de aprender_reglas_ripper, evalúa así:

@@ -5,8 +5,7 @@ from __future__ import annotations
 import pandas as pd
 
 from ..logica_difusa.variables import ESPECIFICACIONES_VARIABLES, VARIABLES_ENTRADA
-from .reglas_completas import completar_antecedentes_reglas
-from .ripper import CONSECUENTE_A_CLASE, MAPA_CONSECUENTE, _discretizar
+from .ripper import MAPA_CONSECUENTE, _discretizar
 
 
 CLASES = ["low risk", "mid risk", "high risk"]
@@ -48,7 +47,6 @@ def aprender_reglas_prism(tabla, config):
                 }
             )
             reglas_clase += 1
-    reglas = completar_antecedentes_reglas(reglas, df, CONSECUENTE_A_CLASE)
     return quitar_duplicadas(reglas)
 
 

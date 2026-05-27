@@ -1,0 +1,181 @@
+{
+  "id_experimento": "prueba_michigan_binario_recall_precision_rapida",
+  "iteracion": 10,
+  "algoritmo": "PRISM_ESTOCASTICO",
+  "datos": {
+    "estrategia": "dataset_completo_sin_splits",
+    "total_instancias": 1012
+  },
+  "hiperparametros": {
+    "modo": "prism_bootstrap",
+    "fraccion_bootstrap": 0.75,
+    "cobertura_minima_regla": 2,
+    "orden_clases": [
+      "low risk",
+      "mid risk",
+      "high risk"
+    ],
+    "maximo_condiciones_por_regla": 5,
+    "maximo_reglas_por_clase": 40,
+    "eliminar_positivos_cubiertos": true
+  },
+  "resumen_reglas": {
+    "total_reglas": 7,
+    "reglas_duplicadas": 0,
+    "reglas_por_clase": {
+      "low risk": 4,
+      "mid risk": 2,
+      "high risk": 1
+    },
+    "antecedentes_promedio": 1.8571428571428572,
+    "antecedentes_min": 1,
+    "antecedentes_max": 3
+  },
+  "metricas": {
+    "accuracy": 0.44861660079051385,
+    "error_clasificacion": 0.5513833992094861,
+    "errores": 558,
+    "aciertos": 454,
+    "total": 1012,
+    "sin_activacion": 224,
+    "balanced_accuracy": 0.41142496602601436,
+    "error_balanceado": 0.5885750339739857
+  },
+  "matriz_confusion": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk",
+      "__sin_activacion__"
+    ],
+    "matriz": [
+      [
+        362,
+        2,
+        0,
+        40
+      ],
+      [
+        265,
+        0,
+        0,
+        71
+      ],
+      [
+        61,
+        6,
+        92,
+        113
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "reglas_finales": [
+    {
+      "id": "R001",
+      "antecedentes": [
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "hipertension"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R002",
+      "antecedentes": [
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        },
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "hiperpirexia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R003",
+      "antecedentes": [
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        },
+        {
+          "variable": "edad",
+          "etiqueta_linguistica": "muy_avanzada"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R004",
+      "antecedentes": [
+        {
+          "variable": "azucar_sangre",
+          "etiqueta_linguistica": "normoglucemia"
+        }
+      ],
+      "consecuente": "low risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R005",
+      "antecedentes": [
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        },
+        {
+          "variable": "presion_diastolica",
+          "etiqueta_linguistica": "elevada"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R006",
+      "antecedentes": [
+        {
+          "variable": "temperatura_corporal",
+          "etiqueta_linguistica": "febricular"
+        }
+      ],
+      "consecuente": "mid risk",
+      "origen": "PRISM_ESTOCASTICO"
+    },
+    {
+      "id": "R007",
+      "antecedentes": [
+        {
+          "variable": "presion_sistolica",
+          "etiqueta_linguistica": "hipertension"
+        }
+      ],
+      "consecuente": "high risk",
+      "origen": "PRISM_ESTOCASTICO"
+    }
+  ]
+}

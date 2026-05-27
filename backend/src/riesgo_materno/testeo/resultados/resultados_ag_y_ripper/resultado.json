@@ -1,0 +1,74 @@
+{
+  "base_principal": "C:\\Users\\josue\\Documents\\Paper_Riesgo_Maternal_q4\\code\\Riesgo\\backend\\src\\riesgo_materno\\reglas\\candidatas_despues_limpiar\\mejor_ag_limpio.json",
+  "base_respaldo": "C:\\Users\\josue\\Documents\\Paper_Riesgo_Maternal_q4\\code\\Riesgo\\backend\\src\\riesgo_materno\\reglas\\reglas_sistema_difuso_ripper.json",
+  "criterio_muestra": {
+    "desigualdad": "Hoeffding",
+    "epsilon": 0.05,
+    "confianza": 0.95,
+    "delta": 0.050000000000000044,
+    "n_calculado": 738,
+    "semilla": 42,
+    "muestreo": "estratificado por clase de riesgo"
+  },
+  "datos": {
+    "total_dataset_procesado": 1012,
+    "total_muestra": 738,
+    "distribucion_muestra": {
+      "low risk": 295,
+      "mid risk": 245,
+      "high risk": 198
+    }
+  },
+  "reglas": {
+    "ag_limpio": 159,
+    "ripper_respaldo": 141,
+    "total_disponibles": 300
+  },
+  "respaldo": {
+    "casos_sin_activacion_ag": 22,
+    "casos_resueltos_por_ripper": 22,
+    "casos_sin_activacion_final": 0
+  },
+  "metricas": {
+    "accuracy": 0.5663956639566395,
+    "balanced_accuracy": 0.5629064774343225,
+    "aciertos": 418,
+    "errores": 320,
+    "total": 738,
+    "sin_activacion": 0
+  },
+  "matriz_confusion": {
+    "etiquetas": [
+      "low risk",
+      "mid risk",
+      "high risk",
+      "__sin_activacion__"
+    ],
+    "matriz": [
+      [
+        147,
+        147,
+        1,
+        0
+      ],
+      [
+        58,
+        184,
+        3,
+        0
+      ],
+      [
+        1,
+        110,
+        87,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  }
+}
